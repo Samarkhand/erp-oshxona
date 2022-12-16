@@ -86,22 +86,26 @@ class _MBolimRoyxatViewState extends State<MBolimRoyxatView> {
           child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  children: [
-                    Text("Kontaktlar qarzi", style: MyTheme.small),
-                    Text(sumFormat.format(sumQarz.abs()),
-                        style: MyTheme.h2.copyWith(color: Colors.red[700])),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text("Kontaktlar haqi", style: MyTheme.small),
-                    Text(sumFormat.format(sumHaq.abs()),
-                        style: MyTheme.h2.copyWith(color: Colors.orange[700])),
-                  ],
-                ),
+                SizedBox(),
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.add),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MBolimIchiView.yangi(widget.turi!.tr)),
+                  );
+                  setState(() {
+                    _cont.objectList;
+                  });
+                },
+                label: const Text("Yangi"),
+              ),
+            ),
               ],
             ),
           ),
