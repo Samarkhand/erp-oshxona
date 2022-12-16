@@ -1,0 +1,46 @@
+{
+    "foydalanish_shartlari": {
+        "title": "FinMaster ilovasi",
+        "text": "<h2>FOYDALANISH SHARTLARI</h2><p>Bu sahifada shartlar bilan qisqacha tanishasiz. Foydalanish shartlari - <a href=\"http://finmaster.uz/ommaviyTak.php\">ommaviy ofertada</a> batafsil yozilgan, o'qib chiqing.</p><p><b>Ilovadan foydalanish - pullik. Ilovadan to'g'ri foydalansangiz sizga sarflagan pulingizdan ko'proq foyda keltiradi.</b> Shaxsiy kabinetingiz orqali istagan tarifingizga ulanishingiz va ulangan to'lov tizimlari orqali balansingizni to'ldirishingiz mumkun.</p><p><h3>Ilova muallifi majburiyatlari</h3>1. Ilovani bir tekisda ishlashini ta'minlash.<br />2. Foydalanuvchilarga rasmiy sayt va ijtimoiy tarmoq orqali axborot yordami ko'rsatish.<br />3. Foydalanuvchilar maxfiy ma'lumotlarini muhofaza qilish.</p><h3>Foydalanuvchi majburiyatlari</h3><p>1. Ilovadan maksimum foyda olish uchun qo'llanma bilan tanishib chiqish;<br />2. Ommaviy oferta hujjati bilan tanishib chiqish;<br />3. So'ralgan ma'lumotlarni to'g'ri kiritish;<br />4. Tizim ishlashiga halal beruvchi yoki ishdan chiqaruvchi harakatlar sodir etmaslik;</p><p></p>"
+    },
+    "asosiy": {
+        "title": "FinMaster ilovasi",
+        "text": "<h2>Foydalanish haqida qo'llanma</h2><p>Ilovani barcha oynalarida qo'llanma bor va bu qo'llanma ushbu \"?\" so'roq belgisini bosib ochishingiz mumkun</p>"
+    },
+    "hisobot": {
+        "title": "Hisobot",
+        "text": "<p>Ixtiyoriy sanadan sanagacha bo'lgan davrdagi mablag' aylanmasi, mahsulot aylanmasi va kko'rsatilgan xizmatlar bo'yicha hisobor. Dastur kiritilgan bo'limlar bo'yicha summalarni jamlab beradi</p>"
+    },
+    "hisob": {
+        "title": "Hisoblar",
+        "text": "<p>Hisob - bu mablag'ingiz qoldig'ini bir qismi.</p><p>Ushbu oynada sizni hisbolaringiz va undagi qoldiqni ko'rasiz. Masalan: oila byudjeti uchun ajratilgan summani alohida, ishxona puli alohida, bir necha plastik kartangizdagi mablag' qoldiqlari alohida ko'rinib turadi </p>"
+    },
+    "kont": {
+        "title": "Kontaktlar",
+        "text": "<p>Kontakt - bu siz moliyaviy munosabatga kirishgan shaxs, qarzdor yoki haqdor.</p><p>O'zaro hisob kitob qilishingiz mumkun bo'lgan shaxslar.<br />Masalan: mijozlar, hamkorlar, hamkasblar, xizmat ko'rsatish hodimlari/firmalari, do'stlar va h.k. ismlarini kirib qo'yishingiz mumkun, oldi berdilar tarixini kuzatishingiz mumkun. Dastur kontakt balansini avtomat hisob qilib boradi</p>"
+    },
+    "kont_info": {
+        "title": "Kontakt tarixi",
+        "text": "<p>Kontakt bilan mablag', mahsulot oldi-berdi amaliyotlari va ko'rsatilgan xizmatlar tarixi</p>"
+    },
+    "bkont": {
+        "title": "Kontakt bo'limlari",
+        "text": "<p>Kontakt bo'limi - bu kontakt guruhlari, jamlanmasidir.</p><p>Kontaktlarni jami haqi/qarzini oson ko'rish uchun, saralash uchun bo'limlar yordam beradi.<br />Masalan: mijozlar, hamkorlar, hamkasblar, xizmat ko'rsatish hodimlari/firmalari, do'stlar va h.k. deya kiritib qo'yish mumkun</p>"
+    },
+    "bolim": {
+        "title": "Bo'limlar",
+        "text": "<p>Bo'lim - bu summalar yigindisini oson ko'rish uchun kerak.</p><p>Bu yerga kiritilgan bo'limlar - hisobotni ko'rishni osonlashtiradi. Hisobotda har bir bo'lim bo'yicha amaliyotlarni jamlab beradi. Masalan: jami qancha kommunal to'lov, yo'l kira, sog'lik yoki oziq ovqat uchun mablag' sarfladingiz, qarz berdingiz/oldingiz yoki qaytarib oldingiz. Jami qancha xizmat ko'rsatdingiz yoki sizga xizmat ko'rsatildi.</p>"
+    },
+    "amaliyot": {
+        "title": "Mablag' amaliyotlari",
+        "text": "<p>Mablag' chiqim, tushumlar; O'z hisoblaringiz aro o'tkazmalar;</p>"
+    },
+    "xizmat": {
+        "title": "Xizmat",
+        "text": "<p>Xizmat ko'rsatganingiz yoki sizga xizmat ko'rsatilgani haqida qaydlar</p>"
+    },
+    "mahsulot": {
+        "title": "Mahsulot",
+        "text": "<p>Mahsulot kirim, savdo, ro'yxatdan o'chirish, kontaktdan qaytarish va kontaktga qaytarish amaliyotlari ro'yxati</p>"
+    }
+}

@@ -1,0 +1,46 @@
+{
+  "language": "O'zbekcha",
+  "@language": {
+    "description": "Language"
+  },
+  "brand": "INWARE",
+  "@brand": {
+    "description": "Author company brand"
+  },
+  "companyName": "\"Innovation Software\" Co.",
+  "@companyName": {
+    "description": "Author company name"
+  },
+  "appname": "INWARE: Sotuvchi",
+  "@appname": {
+    "description": "App name"
+  },
+  "title_KontRoyhatRoute": "Konragentlar",
+  "@title_KontRoyhatRoute": {
+    "description": "Title"
+  },
+  "title_HujjatRoyhatRoute": "Hujjatlar",
+  "@title_HujjatRoyhatRoute": {
+    "description": "Title"
+  },
+  "title_AmaliyotRoyhatRoute": "Amaliyotlar",
+  "@title_AmaliyotRoyhatRoute": {
+    "description": "Title"
+  },
+  "title_HisobRoyhatRoute": "Hisoblar",
+  "@title_HisobRoyhatRoute": {
+    "description": "Title"
+  },
+  "title_MahsulotRoyhatRoute": "Mahsulotlar",
+  "@title_MahsulotRoyhatRoute": {
+    "description": "Title"
+  },
+  "title_SozlashRoute": "Sozlash",
+  "@title_SozlashRoute": {
+    "description": "Title"
+  },
+  "title_MahQoldiqRoyhatRoute": "Mahsulotlar qoldig'i",
+  "@title_MahQoldiqRoyhatRoute": {
+    "description": "Title"
+  }
+}

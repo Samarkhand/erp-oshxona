@@ -1,0 +1,363 @@
+import 'package:flutter/material.dart';
+import 'package:erp_oshxona/Library/global.dart';
+import 'package:erp_oshxona/View/Hisob/transfer_controller.dart';
+import 'package:erp_oshxona/Model/Transfer.dart';
+import 'package:erp_oshxona/Model/hisob.dart';
+
+class TransferListRoute extends StatefulWidget {
+  TransferListRoute({Key? key, required this.trans}) : super(key: key);
+  Transfer trans;
+
+  @override
+  _TransferListRouteState createState() => _TransferListRouteState();
+}
+
+class _TransferListRouteState extends State<TransferListRoute> {
+  final TransferCont _cont = TransferCont();
+  String _title = "";
+
+  List<DropdownMenuItem<Hisob>> hisoblarItemList = [];
+  Hisob? itemSelHisobdan;
+  Hisob? itemSelHisobga;
+
+  bool adKorsat = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.trans != null) {
+      _title = "Tahrirlash: Transfer";
+    } else {
+      _title = "Hisoblar aro ";
+    }
+
+    initialize();
+
+    setState(() {
+      if (_cont.trans != null) {
+        _cont.trans = _cont.trans;
+      }
+    });
+  }
+
+  void initialize() async {
+    _cont.init(widget, setState, context);
+    int i = 1;
+    var items = await _cont.olHisoblar();
+    for (Hisob item in items) {
+      if(item.tr == 0) continue;
+      hisoblarItemList.add(DropdownMenuItem(
+        value: item,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              item.nomi,
+              style:
+                  TextStyle(color: item.active ? Colors.black87 : Colors.grey),
+            ),
+            Text(
+              sumFormat.format(item.balans),
+              style:
+                  TextStyle(color: item.active ? Colors.black87 : Colors.grey),
+            ),
+          ],
+        ),
+        onTap: item.active && item.tr != 0 ? null : () => {},
+      ));
+      i++;
+    }
+    setState(() {
+      // ignore: unnecessary_statements
+      hisoblarItemList;
+      _cont.yuklanibBoldi = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_title),
+        actions: <Widget>[
+          Builder(
+            builder: (context) => IconButton(
+                icon: Icon(Icons.check),
+                onPressed: () {
+                  _saqla(context);
+                }),
+          ),
+        ],
+      ),
+      //backgroundColor: Color(0xfff0f0f0),
+      body: Builder(
+        builder: (context) => (!_cont.yuklanibBoldi)
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : (hisoblarItemList.length == 0)
+                ? Center(
+                    child: Text(
+                      Nomlar.ol("tturlar_kiritilmagan", guruh: "TransferRoute"),
+                      style: TextStyle(color: Colors.black54, fontSize: 20.0),
+                    ),
+                  )
+                : Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView(
+                          //padding: EdgeInsets.all(20),
+                          //shrinkWrap: true,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 0.0,
+                                bottom: 0.0,
+                                left: 20.0,
+                                right: 20.0,
+                              ),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                //isDense: true,
+                                value: itemSelHisobdan,
+                                items: hisoblarItemList,
+                                hint: Text(
+                                      Nomlar.ol("hisobdan",
+                                          guruh: "TransferRoute"),
+                                      style: TextStyle(color: Colors.black54)),
+                                onChanged: (Hisob value) {
+                                  if (!value.active) return;
+                                  setState(() {
+                                    itemSelHisobdan = value;
+                                    _cont.trans.trHisobdan = value.tr;
+                                  });
+                                  _cont.transferTempTanla(value.tr, true);
+                                },
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 0.0,
+                                bottom: 0.0,
+                                left: 20.0,
+                                right: 20.0,
+                              ),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                value: itemSelHisobga,
+                                items: hisoblarItemList,
+                                hint: Text(
+                                      Nomlar.ol("hisobga",
+                                          guruh: "TransferRoute"),
+                                      style: TextStyle(color: Colors.black54)),
+                                onChanged: (Hisob value) {
+                                  if (!value.active) return;
+                                  setState(() {
+                                    itemSelHisobga = value;
+                                    _cont.trans.trHisobga = value.tr;
+                                  });
+                                  _cont.transferTempTanla(value.tr, false);
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 0.0,
+                                bottom: 0.0,
+                                left: 20.0,
+                                right: 20.0,
+                              ),
+                              child: TextFormField(
+                                //autofocus: true,
+                                controller: _cont.miqdorController,
+                                cursorColor: Theme.of(context).cursorColor,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText:
+                                      Nomlar.ol("miqdori", guruh: "qayd"),
+                                  //suffix:
+                                ),
+                                onChanged: (String value) {
+                                  setState(() {
+                                    if (value == null || value == "") {
+                                      _cont.trans.miqdor = 0;
+                                    } else
+                                      _cont.trans.miqdor = num.parse(value);
+                                  });
+                                },
+                              ),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 1,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      top: 0.0,
+                                      bottom: 0.0,
+                                      left: 20.0,
+                                      right: 10.0,
+                                    ),
+                                    child: TextFormField(
+                                      //autofocus: true,
+                                      controller: _cont.foizController,
+                                      cursorColor:
+                                          Theme.of(context).cursorColor,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        labelText: Nomlar.ol("komissiya_foiz",
+                                            guruh: "TransferRoute"),
+                                        //suffix:
+                                      ),
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          if (value == null || value == "") {
+                                            _cont.trans.foiz = 0;
+                                          } else
+                                            _cont.trans.foiz = num.parse(value);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      top: 0.0,
+                                      bottom: 0.0,
+                                      left: 10.0,
+                                      right: 20.0,
+                                    ),
+                                    child: TextFormField(
+                                      //autofocus: true,
+                                      controller: _cont.sumController,
+                                      cursorColor:
+                                          Theme.of(context).cursorColor,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        labelText: Nomlar.ol("komissiya_sum",
+                                            guruh: "TransferRoute"),
+                                        //suffix:
+                                      ),
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          if (value == null || value == "") {
+                                            _cont.trans.sum = 0;
+                                          } else
+                                            _cont.trans.sum = num.parse(value);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    top: 10.0,
+                                    bottom: 0.0,
+                                    left: 20.0,
+                                    right: 20.0,
+                                  ),
+                                  child: Wrap(
+                                    children: [
+                                      Text(
+                                          Nomlar.ol("olinadigan_sum",
+                                                  guruh: "TransferRoute") +
+                                              ": ",
+                                          style:
+                                              TextStyle(color: Colors.black54)),
+                                      Text(
+                                          sumFormat.format((_cont.trans.miqdor +
+                                              _cont.trans.getSumXizmat())),
+                                          style:
+                                              TextStyle(color: Colors.black54)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 0.0,
+                                bottom: 0.0,
+                                left: 20.0,
+                                right: 20.0,
+                              ),
+                              child: TextFormField(
+                                controller: _cont.izohController,
+                                cursorColor: Theme.of(context).cursorColor,
+                                maxLength: 255,
+                                decoration: InputDecoration(
+                                  labelText: Nomlar.ol("izoh", guruh: "qayd"),
+                                ),
+                                maxLines: 2,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 0.0,
+                                  bottom: 0.0,
+                                  left: 20.0,
+                                  right: 20.0),
+                              child: Container(
+                                child: MaterialButton(
+                                  child: Text(
+                                      Nomlar.ol("Kiritish", guruh: "form"),
+                                      style: TextStyle(color: Colors.white)),
+                                  color: Theme.of(context).accentColor,
+                                  onPressed: () {
+                                    _saqla(context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+      ),
+    );
+  }
+
+  void _saqla(BuildContext context) async {
+    var hatobor = false;
+
+    if (_cont.trans.trHisobdan == null || _cont.trans.trHisobga == null) {
+      hatobor = true;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(Nomlar.ol("hisob_tanla", guruh: "TransferRoute")),
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.orangeAccent,
+      ));
+    }
+    if (_cont.miqdorController.text == null ||
+        _cont.miqdorController.text == "") {
+      hatobor = true;
+      logConsole(_cont.miqdorController.text);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(Nomlar.ol("miqdor_hato", guruh: "TransferRoute")),
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.orangeAccent,
+      ));
+    }
+    if (hatobor) {
+      return;
+    } 
+    _cont.saqla(context);
+  }
+}

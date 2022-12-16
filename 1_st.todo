@@ -1,0 +1,22 @@
+Concept:
+    - Qoldiq
+        - royxat @done
+        - mah ichi @done
+        - mah tarixi
+        - oson narx o'zgartirish oynasi (qoldiq ichida faqat sotnarx o'zgartira oladi)
+        - saqlash va yangi mah knopkasi
+        - mah crud #MAN
+        - Delete shart bilan: agar qoldig'i yoki bu oy davomida kirim, chiqim bo'lmagan bo'lsagina o'chirilsin
+    - MBolim, MOlchov, MBrend crud #MAN
+    - Hujjat
+        - Model.
+        - ro'yxati
+    - kirim
+        - Model
+        - ro'yxati
+    - savdo
+        - Model
+        - ro'yxati
+    - Himoya
+        - login-parol kirish
+        - device PC register

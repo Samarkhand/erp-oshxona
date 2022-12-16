@@ -1,0 +1,68 @@
+name: erp_oshxona
+description: Savdo - 
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.18+18
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+
+  device_info_plus: ^3.1.1 # qurilma infosini olish
+  package_info: ^2.0.0 # ilova infosini olish
+  connectivity_plus: ^2.3.9 # internet bormi
+  http: ^0.13.1 # Post va get so'rovlar (web apiga)
+  url_launcher: ^6.1.6 # Personal cabinetga kirish uchun / url launcher
+  dart_jsonwebtoken: ^2.4.1 # json parser
+  path_provider: ^2.0.0
+  path: ^1.8.0
+  hive: ^2.0.6 # nosql db
+  hive_flutter: ^1.1.0 # nosql db
+  sqlite3: ^1.7.1
+  sqlite3_flutter_libs: ^0.5.7
+  sqlite_wrapper: ^0.0.5
+  intl: ^0.17.0 # Sonni format qilish. Internationalization
+  intl_phone_field: ^3.1.0 # Registratsiya / Kirish / telefon nomerga maska
+  select_dialog: ^2.0.0
+  flutter_widget_from_html_core: ^0.8.5 # Qollanma view / html ishlaydigan widget
+  syncfusion_flutter_charts: ^20.3.47 # Hisobot / chart
+  modal_bottom_sheet: ^2.1.2 # Barcha qidiruvlarga / bottom sheet
+  tutorial_coach_mark: ^1.2.4
+  pinput: ^2.2.16
+  flutter_file_dialog: ^2.3.2
+  charset: ^1.1.0 # Encoding to utf16
+  # unicons: ^2.1.0
+  # https://pub.dev/packages/unicons/example
+  flutter_barcode_scanner: ^2.0.0 # barcode scanner
+  flutter_svg: ^1.1.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.1.2
+  hive_generator: ^1.1.1
+
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: Jost
+      fonts:
+        - asset: fonts/jost/Jost-Regular.ttf
+        - asset: fonts/jost/Jost-Bold.ttf
+        - asset: fonts/jost/Jost-Light.ttf
+
+  assets:
+    - assets/
+    - assets/qollanma/
+    - assets/sf_icons/

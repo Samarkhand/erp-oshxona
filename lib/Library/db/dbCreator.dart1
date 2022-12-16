@@ -1,0 +1,385 @@
+import 'dart:io';
+import 'dart:convert';
+import 'package:sqlite3/sqlite3.dart';
+
+import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+
+late Database db;
+
+class DatabaseCreator {
+  static const int db_version = 5;
+
+  Future<void> createStaticTables(Database db) async {
+    final List<String> myQuery = [];
+
+    myQuery.add(ServiceHisob.createTable);
+
+    for (var query in myQuery) {
+      db.execute(query);
+    }
+  }
+
+  Future<void> createOylikTables(Database db, {String yil = "", String oy = ""}) async {
+    final List<String> myQuery = [];
+
+    myQuery.add(ServiceAmaliyot.createTable);
+
+    for (var query in myQuery) {
+      await db.execute(query);
+    }
+  }
+
+  Future<void> insertThings(Database db) async {
+    var logger = Logger(filter: MyFilter());
+    //Ilova.til = await Global.prefs.getString("til");
+    final String file =
+        await rootBundle.loadString('src/til/qiymat/${Ilova.til}.json');
+    final bool log = true;
+    final Map data = await json.decode(file);
+    final Map rep = {
+      "TUR_TUSHUM": QMaqsad.TUR_TUSHUM.toString(),
+      "TUR_CHIQIM": QMaqsad.TUR_CHIQIM.toString()
+    };
+    if (log) logger.d(file);
+    if (log) logger.d(data);
+
+    data.forEach((k, v) {
+      if (log) logger.d("Boshlandi: $k => " + v.runtimeType.toString());
+      for (Map qator in v) {
+        qator.forEach((key, value) {
+          if (value.runtimeType.toString() == "String") {
+            rep.forEach((izla, qoy) {
+              value = value.replaceAll("\$\{$izla\}", qoy);
+            });
+            qator[key] = value;
+          }
+        });
+        
+        if (log) logger.d("$k" + qator.toString());
+        db.insert(k, qator);
+      }
+    });
+  }
+
+  Future<void> createTables(Database db, int version) async {
+    var logger = Logger(filter: MyFilter());
+    logger.d("createTables boshlandi");
+    try{
+      logger.d("createOylikTables boshlandi");
+      createOylikTables(db);
+      logger.d("createStaticTables boshlandi");
+      await createStaticTables(db);
+      logger.d("insertThings boshlandi");
+      await insertThings(db);
+      logger.d("insertThings tugadi");
+    }
+    catch(e){
+      logger.d("Logger is working!");
+      logger.e("$e");
+    }
+    logger.d("createTables tugadi");
+  }
+
+  static void databaseLog(
+      String functionName, String sql,
+      [List<Map<String, dynamic>> selectQueryResult,
+      int insertAndUpdateQueryResult,
+      List<dynamic> params]
+  ) 
+  {
+    if(!Global.logFunction) return;
+    logConsole(functionName);
+    logConsole(sql);
+    if (params != null) {
+      logConsole(params);
+    }
+    if (selectQueryResult != null) {
+      logConsole(selectQueryResult);
+    } else if (insertAndUpdateQueryResult != null) {
+      logConsole(insertAndUpdateQueryResult);
+    }
+  }
+
+  Future<void> onCreate(Database db, int version) async {
+    logConsole('onCreate(Database db=$db, int version=$version)');
+    await createTables(db, version);
+  }
+
+  Future<void> onUpgrade(Database db, int oldVersion, int newVersion) async {
+    logConsole("Upgrade $oldVersion to $newVersion");
+    //logConsole('onUpgrade(Database db=$db, int oldVersion=$oldVersion, int newVersion=$newVersion)');
+    if(oldVersion == 2 && newVersion == 3){
+      await X9Upgrade.from2to3(db);
+      await X9Upgrade.from3to4(db);
+      await X9Upgrade.to6(db);
+    }
+    else if(oldVersion == 2){
+      await X9Upgrade.from2to3(db);
+      await X9Upgrade.from3to4(db);
+      await X9Upgrade.to6(db);
+    }
+    else if(oldVersion == 3){
+      await X9Upgrade.from3to4(db);
+      await X9Upgrade.to6(db);
+    }
+    else if(oldVersion == 4){
+      await X9Upgrade.to6(db);
+    }
+    else if(oldVersion == 5){
+      await X9Upgrade.from5to6(db);
+    }
+  }
+
+  Future<String> getDatabasePath(String dbName) async {
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, dbName);
+
+    //make sure the folder exists
+    if (await Directory(dirname(path)).exists()) {
+      //await deleteDatabase(path);
+    } else {
+      await Directory(dirname(path)).create(recursive: true);
+    }
+    return path;
+  }
+
+  Future<void> initDatabase() async {
+    var dbName = Global.prefs.getString("db_sel");
+    final path = await getDatabasePath(dbName + ".db");
+    //logConsole('initDatabase($dbName)');
+    db = await openDatabase(path, version: db_version, onCreate: onCreate, onUpgrade: onUpgrade);
+  }
+}
+
+class X9Upgrade{
+
+  static Future<void> from5to6(Database preDb) async {
+    logConsole("from3to4()");
+    db = preDb;
+    // qaydlar table nomi o'zgartirish
+    final List<String> myQuery = [];
+    myQuery.add("""
+      DROP TABLE ${ServiceAmaliyot.table};
+    """);
+    myQuery.add("""
+      ALTER TABLE y2021_${ServiceAmaliyot.oldTable} RENAME TO ${ServiceAmaliyot.table};
+    """);
+
+    for (var query in myQuery) {
+      if(query == null) continue;
+      await db.execute(query);
+    }
+  }
+  static Future<void> to6(Database preDb) async {
+    logConsole("from3to4()");
+    db = preDb;
+    // qaydlar table nomi o'zgartirish
+    final List<String> myQuery = [];
+    myQuery.add("""
+      ALTER TABLE q2021_${ServiceAmaliyot.oldTable} RENAME TO ${ServiceAmaliyot.table};
+    """);
+
+    for (var query in myQuery) {
+      if(query == null) continue;
+      await db.execute(query);
+    }
+  }
+
+  static Future<void> from3to4(Database preDb) async {
+    logConsole("from3to4()");
+    db = preDb;
+    // struktura to'g'rilash
+    final List<String> myQuery = [];
+    myQuery.add(ServiceTransferTemp.createTable);
+    myQuery.add(TransferService.createTable);
+
+    for (var query in myQuery) {
+      if(query == null) continue;
+      await db.execute(query);
+    }
+  }
+
+  static Future<void> from2to3(Database preDb) async {
+    logConsole("from2to3()");
+    db = preDb;
+    var oldDb = X9Database(tr: 1, name: "arzon_harid_inware1.0.8");
+    await Global.prefs.setString("db_sel", oldDb.name);
+    await Global.prefs.setStringList("db_list", [oldDb.toJson().toString()]);
+
+    // struktura to'g'rilash
+    final List<String> myQuery = [];
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "plan"	INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "balans"	INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "turi"	INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "abh"	INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "val"	INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "color" INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "icon" INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceHisob.table} ADD COLUMN "active"	INTEGER DEFAULT 1;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceQMaqsad.table} ADD COLUMN "trBobo"	INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceQMaqsad.table} ADD COLUMN "summa"	INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceQMaqsad.table} ADD COLUMN "color" INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceQMaqsad.table} ADD COLUMN "icon" INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceQMaqsad.table} ADD COLUMN "active"	INTEGER DEFAULT 1;
+    """);
+    Global.prefs.getStringList('yillar').forEach((String yil) {
+      myQuery.add("""
+        ALTER TABLE ${ServiceAmaliyot.oldTablePrefix}${yil}_${ServiceAmaliyot.oldTable} ADD COLUMN "photo" TEXT;
+      """);
+    });
+    myQuery.add("""
+      ALTER TABLE ${ServiceMijoz.table} ADD COLUMN active INTEGER DEFAULT 1;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceMTuri.table} ADD COLUMN  color INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceMTuri.table} ADD COLUMN icon INTEGER DEFAULT 0;
+    """);
+    myQuery.add("""
+      ALTER TABLE ${ServiceMTuri.table} ADD COLUMN active INTEGER DEFAULT 1;
+    """);
+
+    for (var query in myQuery) {
+      if(query == null) continue;
+      await db.execute(query);
+    }
+
+    final sql1 = '''SELECT * FROM ${ServiceHisob.table}''';
+    final data1 = await db.rawQuery(sql1);
+    for (final node in data1) {
+      Hisob obyekt = HisobExImport.fromJson(node);
+      Hisob.obyektlar[obyekt.tr] = obyekt;
+      await ServiceHisob.update(obyekt);
+    }
+
+    final sql2 = '''SELECT * FROM ${ServiceQMaqsad.table}''';
+    final data2 = await db.rawQuery(sql2);
+    for (final node in data2) {
+      QMaqsad obyekt = QMaqsadExImport.fromJson(node);
+      QMaqsad.obyektlar[obyekt.tr] = obyekt;
+      await ServiceQMaqsad.update(obyekt);
+    }
+
+    final sql3 = '''SELECT * FROM ${ServiceMTuri.table}''';
+    final data3 = await db.rawQuery(sql3);
+    for (final node in data3) {
+      MTuri obyekt = MTuriExImport.fromJson(node);
+      MTuri.obyektlar[obyekt.tr] = obyekt;
+      await ServiceMTuri.update(obyekt);
+    }
+
+    final sql4 = '''SELECT * FROM ${ServiceMijoz.table}''';
+    final data4 = await db.rawQuery(sql4);
+    for (final node in data4) {
+      Mijoz obyekt = MijozExImport.fromJson(node);
+      Mijoz.obyektlar[obyekt.tr] = obyekt;
+      await ServiceMijoz.update(obyekt);
+    }
+/*
+    Hisob.obyektlar = await ServiceHisob.getAll();
+    await Hisob.obyektlar.forEach((tr, obyekt) async {
+      await ServiceHisob.update(HisobExImport.fromJson(obyekt.toJson()));
+    });
+    QMaqsad.obyektlar = await ServiceQMaqsad.getAll();
+    await QMaqsad.obyektlar.forEach((tr, obyekt) async {
+      await ServiceQMaqsad.update(QMaqsadExImport.fromJson(obyekt.toJson()));
+    });
+    MTuri.obyektlar = await ServiceMTuri.getAll();
+    await MTuri.obyektlar.forEach((tr, obyekt) async {
+      await ServiceMTuri.update(MTuriExImport.fromJson(obyekt.toJson()));
+    });
+    Mijoz.obyektlar = await ServiceMijoz.getAll();
+    await Mijoz.obyektlar.forEach((tr, obyekt) async {
+      await ServiceMijoz.update(MijozExImport.fromJson(obyekt.toJson()));
+    });
+    await Future.delayed(Duration(seconds: 5));
+*/
+
+    // barcha qaydlarni olisb, loop qilish
+    Map<int, Amaliyot> qaydlar;
+    Amaliyot qaydEski;
+    Amaliyot qaydYangi;
+    Global.prefs.getStringList('yillar').forEach((String yil) async {
+      qaydlar = await ServiceAmaliyot.getAll(yil: yil);
+      qaydlar.forEach((int key, Amaliyot qayd) async {
+        //qaydEski = new Amaliyot.fromJson(qayd.toJson());
+        // tushumlarni - hisob qo'yish
+        if(qayd.turi == 1){
+          qaydYangi = new Amaliyot.fromJson(qayd.toJson());
+          qaydYangi.tr = 0;
+          qaydYangi.turi = Amaliyot.TUR_ORDER_BER;
+          await ServiceAmaliyot.add(qaydYangi);
+        }
+        // chiqimlarni - hisob olish va chiqim qilish
+        else if(qayd.turi == 2){
+          qaydYangi = new Amaliyot.fromJson(qayd.toJson());
+          qaydYangi.tr = 0;
+          qaydYangi.turi = Amaliyot.TUR_ORDER_OL;
+          await ServiceAmaliyot.add(qaydYangi);
+        }
+        // TUR_NAISYA_BER = 3 // Qarz berishni chiqim qilish
+        else if(qayd.turi == 3){
+          qayd.turi = Amaliyot.TUR_CHIQIM;
+          qayd.izoh = qayd.izoh + " (Qarz berish)";
+          await ServiceAmaliyot.update(qayd);
+          if(qayd.tol_turi != 0) await Hisob.obyektlar[qayd.tol_turi].balansOzaytir(qayd.miqdor);
+        }
+        // TUR_NAISYA_OL = 4 // Qarz olishni tushum qilish
+        else if(qayd.turi == 4){
+          logConsole("${qayd.tr} ${qayd.turi} ${qayd.miqdor}");
+          qayd.turi = Amaliyot.TUR_TUSHUM;
+          qayd.izoh = qayd.izoh + " (Qarz olish)";
+          await ServiceAmaliyot.update(qayd);
+          if(qayd.tol_turi != 0) await Hisob.obyektlar[qayd.tol_turi].balansKopaytir(qayd.miqdor);
+        }
+        // TUR_NAISYA_BER_QAYT = 5 // Qarz qytib berishni chiqim qilish
+        else if(qayd.turi == 5){
+          logConsole("Tr:${qayd.tr} Turi:5=${qayd.turi} Miqdor:${qayd.miqdor}");
+          qayd.turi = Amaliyot.TUR_CHIQIM;
+          qayd.izoh = qayd.izoh + " (Qarz qaytib berish)";
+          await ServiceAmaliyot.update(qayd);
+          if(qayd.tol_turi != 0) await Hisob.obyektlar[qayd.tol_turi].balansOzaytir(qayd.miqdor);
+        }
+        // TUR_NAISYA_OL_QAYT = 6 // Qarz qaytib olishni tushum qilish
+        else if(qayd.turi == 6){
+          logConsole("Tr:${qayd.tr} Turi:6=${qayd.turi} Miqdor:${qayd.miqdor}");
+          qayd.turi = Amaliyot.TUR_TUSHUM;
+          qayd.izoh = qayd.izoh + " (Qarz qaytib olish)";
+          await ServiceAmaliyot.update(qayd);
+          if(qayd.tol_turi != 0) await Hisob.obyektlar[qayd.tol_turi].balansKopaytir(qayd.miqdor);
+        }
+      });
+    });
+    
+    // hisoblarni balansini yangilash
+    // kontragentlar balansini yangilash
+  }
+
+}*
