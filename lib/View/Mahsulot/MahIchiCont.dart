@@ -1,11 +1,9 @@
-import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Model/amaliyot.dart';
+import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:flutter/material.dart';
-import 'package:erp_oshxona/Model/hisob.dart';
 import 'package:erp_oshxona/Model/m_olchov.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
-import 'package:erp_oshxona/Model/static/mablag.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 import 'package:erp_oshxona/View/Mahsulot/MahIchiView.dart';
 import 'package:select_dialog/select_dialog.dart';
@@ -21,6 +19,9 @@ class MahIchiCont with Controller {
   late TextEditingController nomiController;
   final formKey = GlobalKey<FormState>();
 
+  List<Mahsulot> homAshyoList = [];
+  List<MTarkib> tarkibList = [];
+
   Future<void> init(widget, Function setState,
       {required BuildContext context}) async {
     this.setState = setState;
@@ -34,7 +35,8 @@ class MahIchiCont with Controller {
       sanaD = DateTime(today.year, today.month);
       sanaG = DateTime(today.year, today.month, today.day, 23, 59, 59);
       await loadItems();
-    } 
+      loadFromGlobal();
+    }
     nomiController = TextEditingController(text: object.nomi);
     hideLoading();
 
@@ -46,9 +48,8 @@ class MahIchiCont with Controller {
       context,
       label: "Bo'lim tanlang",
       selectedValue: object.mOlchov,
-      items: MOlchov.obyektlar.values
-          .where((element) => element.tr != 0)
-          .toList(),
+      items:
+          MOlchov.obyektlar.values.where((element) => element.tr != 0).toList(),
       onChange: (selected) {
         setState(() {
           object.trOlchov = selected.tr;
@@ -92,33 +93,26 @@ class MahIchiCont with Controller {
     // amaliyot
     amaliyotList = [];
     amaliyotListT = [];
-    (await Amaliyot.service!.select(
+    /*
+    (await Hujjat.service!.select(
             where:
                 " hisob='${object.tr}' AND sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)} ORDER BY sana DESC"))
         .forEach((key, value) {
-      var obj = Amaliyot.fromJson(value);
-      Amaliyot.obyektlar[key] = obj;
+      var obj = Hujjat.fromJson(value);
+      Hujjat.obyektlar.remove(value);
       amaliyotList.add(obj);
       amaliyotListT.add(obj);
-    });
-    loadFromGlobal();
+    });*/
   }
 
   loadFromGlobal() {
-    amaliyotList = amaliyotList
-        .where((element) =>
-            element.hisob == object.tr &&
-            (element.turi != AmaliyotTur.transM.tr &&
-                element.turi != AmaliyotTur.transP.tr))
-        .toList();
+    homAshyoList = Mahsulot.obyektlar.values.toList();
+    amaliyotList =
+        amaliyotList.where((element) => element.hisob == object.tr).toList();
     amaliyotList.sort((a, b) => -a.sana.compareTo(b.sana));
 
-    amaliyotListT = amaliyotListT
-        .where((element) =>
-            element.hisob == object.tr &&
-            (element.turi == AmaliyotTur.transM.tr ||
-                element.turi == AmaliyotTur.transP.tr))
-        .toList();
+    amaliyotListT =
+        amaliyotListT.where((element) => element.hisob == object.tr).toList();
     amaliyotListT.sort((a, b) => -a.sana.compareTo(b.sana));
   }
 

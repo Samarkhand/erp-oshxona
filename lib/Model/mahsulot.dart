@@ -8,8 +8,8 @@ import 'package:erp_oshxona/Model/system/turi.dart';
 import 'm_bolim.dart';
 
 class MTuri extends Tur{
-  static final MTuri mahsulot = MTuri(1, "Maxsulot");
-  static final MTuri homAshyo = MTuri(2, "Hom ashyo");
+  static final MTuri mahsulot = MTuri(1, "Taom");
+  static final MTuri homAshyo = MTuri(2, "Masalliq");
   static final MTuri buyum = MTuri(3, "Buyum");
 
   static final Map<int, MTuri> obyektlar = {

@@ -33,7 +33,7 @@ class _MahRoyxatViewState extends State<MahRoyxatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(context, title: "Maxsulotlar ro'yxati"),
+      appBar: _appBar(context, title: widget.turi?.nomi ?? "Maxsulotlar ro'yxati"),
       body: SafeArea(
         child: _cont.isLoading
             ? Center(
@@ -100,49 +100,55 @@ class _MahRoyxatViewState extends State<MahRoyxatView> {
   Widget _body(context) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Wrap(
+        Material(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: OutlinedButton(
-                      onPressed: () => _cont.sarala(Sarala.barchasi),
-                      child: const Text("Barchasi")),
+                Wrap(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: OutlinedButton(
+                          onPressed: () => _cont.sarala(Sarala.barchasi),
+                          child: const Text("Barchasi")),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: OutlinedButton(
+                          onPressed: () => _cont.sarala(Sarala.borlar),
+                          child: const Text("Qolganlar")),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: OutlinedButton(
+                          onPressed: () => _cont.sarala(Sarala.yoqlar),
+                          child: const Text("Qolmaganlar")),
+                    ),
+                  ],
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5.0),
-                  child: OutlinedButton(
-                      onPressed: () => _cont.sarala(Sarala.borlar),
-                      child: const Text("Qolganlar")),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: OutlinedButton(
-                      onPressed: () => _cont.sarala(Sarala.yoqlar),
-                      child: const Text("Qolmaganlar")),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MahsulotIchiView.yangi()),
+                      );
+                      setState(() {
+                        _cont.objectList;
+                      });
+                    },
+                    label: const Text("Yangi"),
+                  ),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MahsulotIchiView.yangi()),
-                  );
-                  setState(() {
-                    _cont.objectList;
-                  });
-                },
-                label: const Text("Yangi"),
-              ),
-            ),
-          ],
+          ),
         ),
         Expanded(
           child: ListView.builder(

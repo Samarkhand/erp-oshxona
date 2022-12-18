@@ -27,7 +27,7 @@ class _MBolimRoyxatViewState extends State<MBolimRoyxatView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: _appBar(context, title: "Kontakt bolimlar"),
+        appBar: _appBar(context, title: "Bo'limlar"),
         body: _cont.isLoading
             ? Center(
                 child: Column(
@@ -43,19 +43,6 @@ class _MBolimRoyxatViewState extends State<MBolimRoyxatView> {
                 ),
               )
             : _body(context),
-        floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MBolimIchiView.yangi(0)),
-              );
-              await _cont.loadItems();
-              setState(() {
-                _cont.objectList;
-              });
-            }),
       ),
     );
   }
@@ -71,12 +58,8 @@ class _MBolimRoyxatViewState extends State<MBolimRoyxatView> {
 
   Widget _body(context) {
     List<Widget> list = [];
-    num sumHaq = 0;
-    num sumQarz = 0;
     for (var element in _cont.objectList) {
       list.add(_buildItem(context, element));
-      sumHaq += element.sumHaq;
-      sumQarz += element.sumQarz;
     }
 
     return Column(
@@ -115,42 +98,45 @@ class _MBolimRoyxatViewState extends State<MBolimRoyxatView> {
             onRefresh: () async {
               await AsosiyCont.kBolimBalansYangila();
             },
-            child: ReorderableListView(
-              padding: const EdgeInsets.only(bottom: 75, top: 5),
-              shrinkWrap: true,
-              children: list,
-              proxyDecorator: (widget, i, anim) {
-                return Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 7,
-                        offset:
-                            const Offset(0, 3), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: widget,
-                );
-              },
-              onReorder: (int oldIndex, int newIndex) {
-                setState(() {
-                  if (oldIndex < newIndex) {
-                    newIndex -= 1;
+            child: Card(
+              margin: const EdgeInsets.all(10),
+              child: ReorderableListView(
+                padding: const EdgeInsets.only(bottom: 75, top: 5),
+                shrinkWrap: true,
+                children: list,
+                proxyDecorator: (widget, i, anim) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 7,
+                          offset:
+                              const Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: widget,
+                  );
+                },
+                onReorder: (int oldIndex, int newIndex) {
+                  setState(() {
+                    if (oldIndex < newIndex) {
+                      newIndex -= 1;
+                    }
+                    final Object item = _cont.objectList.removeAt(oldIndex);
+                    _cont.objectList.insert(newIndex, item);
+                  });
+                  int n = 0;
+                  for (MBolim object in _cont.objectList) {
+                    n++;
+                    object.tartib = n;
+                    MBolim.service!
+                        .update({'tartib': n}, where: "tr=${object.tr}");
                   }
-                  final Object item = _cont.objectList.removeAt(oldIndex);
-                  _cont.objectList.insert(newIndex, item);
-                });
-                int n = 0;
-                for (MBolim object in _cont.objectList) {
-                  n++;
-                  object.tartib = n;
-                  MBolim.service!
-                      .update({'tartib': n}, where: "tr=${object.tr}");
-                }
-              },
+                },
+              ),
             ),
           ),
         ),
@@ -159,44 +145,16 @@ class _MBolimRoyxatViewState extends State<MBolimRoyxatView> {
   }
 
   Widget _buildItem(BuildContext context, element) {
-    return Card(
+    return Material(
+      color: Colors.transparent,
       key: Key('Royhat el ${element.tr}'),
       child: InkWell(
         child: Padding(
           padding: const EdgeInsets.all(5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(element.nomi, style: MyTheme.h5),
-              const SizedBox(height: 5),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Qarzi", style: MyTheme.small),
-                        Text(sumFormat.format(element.sumQarz),
-                            style: MyTheme.h6.copyWith(
-                                color: Colors.red[700],
-                                fontWeight: FontWeight.normal)),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Haqi", style: MyTheme.small),
-                        Text("+${sumFormat.format(element.sumHaq)}",
-                            style: MyTheme.h6.copyWith(
-                                color: Colors.orange[700],
-                                fontWeight: FontWeight.normal)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),

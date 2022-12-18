@@ -47,7 +47,7 @@ class HujjatSts extends Tur {
 
 class Hujjat {
   static HujjatService? service;
-  static final List<Hujjat> obyektlar = [];
+  static final Set<Hujjat> obyektlar = {};
   /*{
     HujjatTur.kirim.tr: [],
     HujjatTur.kirimFil.tr: [],

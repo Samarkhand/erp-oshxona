@@ -52,7 +52,7 @@ class _AsosiyViewState extends State<AsosiyView>
         onWillPop: _onWillPop,
         child: SafeArea(
           child: Scaffold(
-            appBar: _appBar(context, title: "INWARE Savdo"),
+            appBar: _appBar(context, title: "ERP Oshxona v 1.0 by INWARE"),
             body: (_cont.isLoading)
                 ? Center(
                     child: Column(
@@ -217,7 +217,7 @@ class _AsosiyViewState extends State<AsosiyView>
               leading: const Icon(Icons.folder),
               title: Wrap(
                 children: const [
-                  Text(" Kontakt bolimlari"),
+                  Text(" Kontakt bo'limlari"),
                 ],
               ),
               onTap: () {
@@ -251,7 +251,7 @@ class _AsosiyViewState extends State<AsosiyView>
             ),
             ListTile(
               leading: const Icon(Icons.file_present),
-              title: const Text("Maxsulotlar ro'yxati"),
+              title: const Text("Taomlar ro'yxati"),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.push(
@@ -262,10 +262,22 @@ class _AsosiyViewState extends State<AsosiyView>
               },
             ),
             ListTile(
+              leading: const Icon(Icons.file_present),
+              title: const Text("Masalliqlar ro'yxati"),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MahRoyxatView(turi: MTuri.homAshyo),
+                    ));
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.folder),
               title: Wrap(
                 children: const [
-                  Text(" Bolimlari"),
+                  Text(" Bo'limlari"),
                 ],
               ),
               onTap: () {
@@ -401,12 +413,22 @@ class _AsosiyViewState extends State<AsosiyView>
       crossAxisCount: 6,
       children: [
         viewButton(
-          "Maxsulotlar",
+          "Taomlar",
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const MahRoyxatView()));
+                    builder: (context) => MahRoyxatView(turi: MTuri.mahsulot)));
+          },
+          icon: SvgPicture.asset("assets/sf_icons/box-full.svg", width: 50)
+        ),
+        viewButton(
+          "Masalliqlar",
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MahRoyxatView(turi: MTuri.homAshyo)));
           },
           icon: SvgPicture.asset("assets/sf_icons/box-full.svg", width: 50)
         ),

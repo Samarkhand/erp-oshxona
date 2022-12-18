@@ -36,57 +36,6 @@ class _MahIchiViewState extends State<MahIchiView> {
   final MahIchiCont _cont = MahIchiCont();
   bool yuklanmoqda = false;
 
-  @override
-  Widget build(BuildContext context) {
-    return widget.infomi
-        ? _bodyInfo(context)
-        : SafeArea(
-            child: Scaffold(
-              appBar: _appBar(context),
-              body: _cont.isLoading
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(),
-                          Container(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Text(_cont.loadingLabel),
-                          ),
-                        ],
-                      ),
-                    )
-                  : _body(context),
-            ),
-          );
-  }
-
-  AppBar? _appBar(BuildContext context, {String? title}) {
-    return AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.question_mark_outlined),
-            tooltip: "Sahifa bo'yicha qollanma",
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute<void>(
-                builder: (BuildContext context) {
-                  return const QollanmaView(sahifa: 'hisob');
-                },
-              ));
-            },
-          ),
-        ],
-        title: Text((_cont.isLoading)
-            ? _cont.loadingLabel
-            : title ??
-                (widget.yangimi
-                    ? "Yangi maxsulot"
-                    : widget.infomi
-                        ? _cont.object.nomi
-                        : "Tahrirlash: ${_cont.object.nomi}")));
-  }
-
   AppBar? _appBarInfo(BuildContext context, {String? title}) {
     return AppBar(
       title: Text(
@@ -99,13 +48,16 @@ class _MahIchiViewState extends State<MahIchiView> {
                         ? _cont.object.nomi
                         : "Tahrirlash: ${_cont.object.nomi}"),
       ),
-      bottom: const TabBar(
+      bottom: TabBar(
         isScrollable: true,
         tabs: [
-          Tab(text: "Ma'lumot"),
-          Tab(text: "Kirim"),
-          Tab(text: "Chiqim"),
-        ],
+              const Tab(text: "Ma'lumot"),
+              const Tab(text: "Kirim"),
+              const Tab(text: "Chiqim"),
+            ] +
+            (widget.turi == MTuri.mahsulot.tr
+                ? [const Tab(text: "Tarkib")]
+                : []),
       ),
       actions: [
         IconButton(
@@ -133,63 +85,10 @@ class _MahIchiViewState extends State<MahIchiView> {
     );
   }
 
-  Widget _body(context) {
-    return Form(
-      key: _cont.formKey,
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(20.0),
-              children: [
-                TextFormField(
-                  autofocus: true,
-                  controller: _cont.nomiController,
-                  decoration: InputDecoration(
-                    labelText: "Nomi:",
-                    border: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
-                  ),
-                  validator: (value) => _cont.validate(value, required: true),
-                ),
-                const SizedBox(height: 10.0),
-                _tanlanganCheck(),
-                const SizedBox(height: 10.0),
-                _taroziCheck(),
-                const SizedBox(height: 10.0),
-                _komplektCheck(),
-                const SizedBox(height: 60.0),
-              ],
-            ),
-          ),
-          Material(
-            elevation: 2,
-            color: Theme.of(context).cardColor,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Center(
-                  child: ElevatedButton(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 30.0),
-                  child: Text("Saqlash".toUpperCase()),
-                ),
-                onPressed: () => _cont.save(),
-              )),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _bodyInfo(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: widget.turi == MTuri.mahsulot.tr ? 4 : 3,
       child: SafeArea(
         child: Scaffold(
           appBar: _appBarInfo(context, title: _cont.object.nomi),
@@ -214,180 +113,193 @@ class _MahIchiViewState extends State<MahIchiView> {
   }
 
   Widget _info(context) {
-    return TabBarView(children: [
+    List<Widget> tabs = [
       _infoTab(),
       _amaliyotTab(),
       _transTab(),
-    ]);
+    ];
+    if (widget.turi == MTuri.mahsulot.tr) tabs.add(_tarkibTab());
+    return TabBarView(children: tabs);
   }
 
   Widget _infoTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(10.0),
       child: Column(children: [
-        Card(
-          margin: EdgeInsets.zero,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                Text(_cont.object.nomi, style: MyTheme.d3),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Qoldiq", style: MyTheme.infoText),
-                      _cont.object.mQoldiq != null
-                          ? Text(
-                              "${sumFormat.format(_cont.object.mQoldiq!.qoldi)} ${_cont.object.mOlchov.nomi}",
-                              style: MyTheme.h4,
-                            )
-                          : Text(
-                              "${sumFormat.format(0)} ${_cont.object.mOlchov.nomi}",
-                              style: MyTheme.h4,
-                            ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Oy davomida sotildi", style: MyTheme.infoText),
-                      _cont.object.mQoldiq != null
-                          ? Text(
-                              "${sumFormat.format(_cont.object.mQoldiq!.sotildi)} ${_cont.object.mOlchov.nomi}",
-                            )
-                          : Text(
-                              "${sumFormat.format(0)} ${_cont.object.mOlchov.nomi}",
-                            ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Sotilish narxi", style: MyTheme.infoText),
-                      Text(
-                        _cont.object.mQoldiq != null
-                            ? sumFormat.format(_cont.object.mQoldiq!.sotnarxi)
-                            : sumFormat.format(0),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(
+            child: Card(
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_cont.object.nomi, style: MyTheme.d3),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0, top: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Turi", style: MyTheme.infoText),
+                          Text(_cont.object.mTuri.nomi),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("So'nggi kirim narxi", style: MyTheme.infoText),
-                      Text(
-                        _cont.object.mQoldiq != null
-                            ? sumFormat.format(_cont.object.mQoldiq!.tannarxi)
-                            : sumFormat.format(0),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Bo'lim", style: MyTheme.infoText),
+                          Text(_cont.object.mBolim.nomi),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Qoldiq tannarxi", style: MyTheme.infoText),
-                      Text(
-                        _cont.object.mQoldiq != null
-                            ? sumFormat
-                                .format(_cont.object.mQoldiq!.sumTannarxi)
-                            : sumFormat.format(0),
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Brend", style: MyTheme.infoText),
+                          Text(_cont.object.mBrend.nomi),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Wrap(
+                        children: [
+                          _cont.object.tanlangan
+                              ? const Text("Tanlangan maxsulot")
+                              : const SizedBox(),
+                          _cont.object.tanlangan &&
+                                  (_cont.object.tarozimi ||
+                                      _cont.object.komplektmi)
+                              ? const Text(",")
+                              : const SizedBox(),
+                          _cont.object.tanlangan
+                              ? const SizedBox(width: 7.0)
+                              : const SizedBox(),
+                          _cont.object.tarozimi
+                              ? const Text("Tarozida o'lchanadi")
+                              : const SizedBox(),
+                          _cont.object.tarozimi && _cont.object.komplektmi
+                              ? const Text(",")
+                              : const SizedBox(),
+                          _cont.object.tarozimi
+                              ? const SizedBox(width: 7.0)
+                              : const SizedBox(),
+                          _cont.object.komplektmi
+                              ? const Text("Komplekt sotiladi")
+                              : const SizedBox(),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 10.0),
-        Card(
-          margin: EdgeInsets.zero,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Turi", style: MyTheme.infoText),
-                      Text(_cont.object.mTuri.nomi),
-                    ],
-                  ),
+          const SizedBox(width: 10.0),
+          Expanded(
+            child: Card(
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Qoldiq", style: MyTheme.infoText),
+                          _cont.object.mQoldiq != null
+                              ? Text(
+                                  "${sumFormat.format(_cont.object.mQoldiq!.qoldi)} ${_cont.object.mOlchov.nomi}",
+                                  style: MyTheme.h4,
+                                )
+                              : Text(
+                                  "${sumFormat.format(0)} ${_cont.object.mOlchov.nomi}",
+                                  style: MyTheme.h4,
+                                ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Oy davomida sotildi", style: MyTheme.infoText),
+                          _cont.object.mQoldiq != null
+                              ? Text(
+                                  "${sumFormat.format(_cont.object.mQoldiq!.sotildi)} ${_cont.object.mOlchov.nomi}",
+                                )
+                              : Text(
+                                  "${sumFormat.format(0)} ${_cont.object.mOlchov.nomi}",
+                                ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Sotilish narxi", style: MyTheme.infoText),
+                          Text(
+                            _cont.object.mQoldiq != null
+                                ? sumFormat
+                                    .format(_cont.object.mQoldiq!.sotnarxi)
+                                : sumFormat.format(0),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("So'nggi kirim narxi", style: MyTheme.infoText),
+                          Text(
+                            _cont.object.mQoldiq != null
+                                ? sumFormat
+                                    .format(_cont.object.mQoldiq!.tannarxi)
+                                : sumFormat.format(0),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 7.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Qoldiq tannarxi", style: MyTheme.infoText),
+                          Text(
+                            _cont.object.mQoldiq != null
+                                ? sumFormat
+                                    .format(_cont.object.mQoldiq!.sumTannarxi)
+                                : sumFormat.format(0),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Bo'lim", style: MyTheme.infoText),
-                      Text(_cont.object.mBolim.nomi),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Brend", style: MyTheme.infoText),
-                      Text(_cont.object.mBrend.nomi),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Wrap(
-                    children: [
-                      _cont.object.tanlangan
-                          ? const Text("Tanlangan maxsulot")
-                          : const SizedBox(),
-                      _cont.object.tanlangan &&
-                              (_cont.object.tarozimi || _cont.object.komplektmi)
-                          ? const Text(",")
-                          : const SizedBox(),
-                      _cont.object.tanlangan
-                          ? const SizedBox(width: 7.0)
-                          : const SizedBox(),
-                      _cont.object.tarozimi
-                          ? const Text("Tarozida o'lchanadi")
-                          : const SizedBox(),
-                      _cont.object.tarozimi && _cont.object.komplektmi
-                          ? const Text(",")
-                          : const SizedBox(),
-                      _cont.object.tarozimi
-                          ? const SizedBox(width: 7.0)
-                          : const SizedBox(),
-                      _cont.object.komplektmi
-                          ? const Text("Komplekt sotiladi")
-                          : const SizedBox(),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ]),
         const SizedBox(height: 10.0),
         Card(
           margin: EdgeInsets.zero,
@@ -441,25 +353,29 @@ class _MahIchiViewState extends State<MahIchiView> {
                 margin: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0)),
-                child: Column(children: [
-                  ListTile(
-                    leading: const Icon(Icons.edit),
-                    title: const Text("Tahrirlash"),
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MahsulotIchiView.tahrir(_cont.object.tr)),
-                      );
-                      setState(() {
-                        /*widget.infomi = false;
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.edit),
+                      title: const Text("Tahrirlash"),
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MahsulotIchiView.tahrir(_cont.object.tr)),
+                        );
+                        setState(() {
+                          /*widget.infomi = false;
                         widget.yangimi = false;*/
-                        _cont.object;
-                      });
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                  ),
-                ],),
+                          _cont.object;
+                        });
+                      },
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 10.0),
@@ -536,6 +452,93 @@ class _MahIchiViewState extends State<MahIchiView> {
         ),
       ],
     );
+  }
+
+  Widget _tarkibTab() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Card(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _mahlarRoyxati(),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 6,
+            child: Card(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _tarkiblarRoyxati(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _mahlarRoyxati() {
+    List<Widget> royxat = [];
+    for (var object in _cont.homAshyoList) {
+      royxat.add(
+        Material(
+          child: InkWell(
+            onDoubleTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(object.nomi + " ${object.nomi}"),
+                  Wrap(
+                    alignment: WrapAlignment.end,
+                    children: [
+                      InkWell(
+                        borderRadius: BorderRadius.circular(3),
+                        onTap: () {},
+                        child: const Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Icon(Icons.chevron_right),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return [
+      TextFormField(),
+      Expanded(
+          child: ListView(
+        children: royxat,
+      )),
+    ];
+  }
+
+  List<Widget> _tarkiblarRoyxati() {
+    List<Widget> royxat = [];
+    return royxat;
   }
 
   _buildSearchField(context, StateSetter setState) async {
