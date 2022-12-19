@@ -1,16 +1,30 @@
 import 'package:erp_oshxona/Library/db/db.dart';
+import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/Model/system/crudHelper.dart';
 
 class MTarkib {
   static Map<int, Set<MTarkib>> obyektlar = {};
 
-  static CrudService? service;
+  static MTarkibService? service;
 
   int	trMah=0;
   int	trMahTarkib=0;
   bool yoq = false;
   int	vaqtS=0;
   num miqdori=0;
+
+  Mahsulot get mahsulot => Mahsulot.obyektlar[trMah]!;
+  Mahsulot get mahsulotTarkib => Mahsulot.obyektlar[trMahTarkib]!;
+
+  static Future<void> loadToGlobal(int tr) async {
+    if(obyektlar[tr] == null) {
+      for (var value in (await service!.select())) {
+        var obj = MTarkib.fromJson(value);
+        if(obyektlar[obj.trMah] == null) obyektlar[obj.trMah] = {};
+        obyektlar[obj.trMah]!.add(obj);
+      }
+    }
+  }
 
   MTarkib();
 
@@ -30,6 +44,17 @@ class MTarkib {
       'vaqtS': vaqtS,
       'miqdori': miqdori,
     };
+
+  insert() async {
+    if(obyektlar[trMah] == null) obyektlar[trMah] = {};
+    obyektlar[trMah]!.add(this);
+    await service!.replace(toJson());
+  }
+
+  delete() async {
+    await service!.deleteId(trMah, trMahTarkib);
+    obyektlar[trMah]!.remove(this);
+  }
 
   @override
   String toString() {
@@ -58,14 +83,6 @@ CREATE TABLE "$table" (
   PRIMARY KEY("trMah", "trMahTarkib")
 );
   """;
-
-  static Future<void> loadToGlobal() async {
-    (await MTarkib.service!.select()).forEach((key, value) {
-      var obj = MTarkib.fromJson(value);
-      if(MTarkib.obyektlar[key] == null) MTarkib.obyektlar[key] = {};
-      MTarkib.obyektlar[key]!.add(obj);
-    });
-  }
 
   Future<List> select({String? where}) async {
     where = where == null ? "" : " WHERE $where";
@@ -116,7 +133,7 @@ CREATE TABLE "$table" (
     return insertId;
   }
 
-  Future<int> replace(Map map) async {
+  Future replace(Map map) async {
     var cols = '';
     var vals = '';
 
@@ -132,8 +149,7 @@ CREATE TABLE "$table" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
   }
 
   Future<void> update(Map map, {String? where}) async {

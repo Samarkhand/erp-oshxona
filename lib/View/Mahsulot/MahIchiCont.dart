@@ -1,5 +1,4 @@
 import 'package:erp_oshxona/Library/global.dart';
-import 'package:erp_oshxona/Model/amaliyot.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/m_olchov.dart';
@@ -17,10 +16,12 @@ class MahIchiCont with Controller {
   late DateTime sanaG;
 
   late TextEditingController nomiController;
+  TextEditingController dialogTextFieldCont = TextEditingController();
+  //Map<int, TextEditingController> tarkibCont = {};
   final formKey = GlobalKey<FormState>();
 
   List<Mahsulot> homAshyoList = [];
-  List<MTarkib> tarkibList = [];
+  Set<MTarkib> tarkibList = {};
 
   Future<void> init(widget, Function setState,
       {required BuildContext context}) async {
@@ -82,6 +83,20 @@ class MahIchiCont with Controller {
     }
   }
 
+  add(Mahsulot mah, {num miqdori = 1}) async {
+    var tarkib = MTarkib()..trMah=object.tr..trMahTarkib=mah.tr..miqdori=miqdori;
+    tarkibList.add(tarkib);
+    //tarkibCont[tarkib.trMahTarkib] = TextEditingController(text: tarkib.miqdori.toStringAsFixed(tarkib.mahsulot.kasr));
+    setState(() => tarkibList);
+    await tarkib.insert();
+  }
+
+  remove(MTarkib tarkib) async {
+    tarkibList.remove(tarkib);
+    setState(() => tarkibList);
+    tarkib.delete();
+  }
+
   validate(String? value, {bool required = false}) {
     if (required && (value == null || value.isEmpty)) {
       return 'Matn kiriting';
@@ -93,6 +108,15 @@ class MahIchiCont with Controller {
     // amaliyot
     amaliyotList = [];
     amaliyotListT = [];
+    
+    if(object.turi == MTuri.mahsulot.tr) {
+      await MTarkib.loadToGlobal(object.turi);
+      /*if(MTarkib.obyektlar[object.turi] != null){
+        for(var tarkib in MTarkib.obyektlar[object.turi]!){
+          tarkibCont[tarkib.trMahTarkib] = TextEditingController(text: tarkib.miqdori.toStringAsFixed(tarkib.mahsulot.kasr));
+        }
+      }*/
+    }
     /*
     (await Hujjat.service!.select(
             where:
@@ -107,12 +131,12 @@ class MahIchiCont with Controller {
 
   loadFromGlobal() {
     homAshyoList = Mahsulot.obyektlar.values.toList();
-    amaliyotList =
-        amaliyotList.where((element) => element.hisob == object.tr).toList();
+    homAshyoList.removeWhere((element) => element.tr == object.tr);
+    if(object.turi == MTuri.mahsulot.tr) tarkibList = MTarkib.obyektlar[object.tr] ?? {};
+    amaliyotList = amaliyotList.where((element) => element.hisob == object.tr).toList();
     amaliyotList.sort((a, b) => -a.sana.compareTo(b.sana));
 
-    amaliyotListT =
-        amaliyotListT.where((element) => element.hisob == object.tr).toList();
+    amaliyotListT = amaliyotListT.where((element) => element.hisob == object.tr).toList();
     amaliyotListT.sort((a, b) => -a.sana.compareTo(b.sana));
   }
 

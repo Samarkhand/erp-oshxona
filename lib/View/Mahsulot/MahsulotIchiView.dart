@@ -10,12 +10,16 @@ class MahsulotIchiView extends StatefulWidget {
   MahsulotIchiView(this.tr, {Key? key})
       : infomi = true,
         yangimi = false,
-        super(key: key);
+        super(key: key){
+          turi = Mahsulot.obyektlar[tr]!.mTuri;
+        }
   MahsulotIchiView.tahrir(this.tr, {Key? key})
       : yangimi = false,
         infomi = false,
-        super(key: key);
-  MahsulotIchiView.yangi({Key? key})
+        super(key: key){
+          turi = Mahsulot.obyektlar[tr]!.mTuri;
+        }
+  MahsulotIchiView.yangi(this.turi, {Key? key})
       : yangimi = true,
         infomi = false,
         tr = 0,
@@ -23,6 +27,7 @@ class MahsulotIchiView extends StatefulWidget {
   int tr;
   bool yangimi;
   bool infomi;
+  late final MTuri turi;
 
   @override
   State<MahsulotIchiView> createState() => _MahsulotIchiViewState();

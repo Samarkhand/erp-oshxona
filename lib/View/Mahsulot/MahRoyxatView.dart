@@ -51,18 +51,6 @@ class _MahRoyxatViewState extends State<MahRoyxatView> {
               )
             : _body(context),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MahsulotIchiView.yangi()),
-          );
-          setState(() {
-            _cont.objectList;
-          });
-        },
-      ),
     );
   }
 
@@ -133,17 +121,17 @@ class _MahRoyxatViewState extends State<MahRoyxatView> {
                   padding: const EdgeInsets.all(5.0),
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.add),
+                    label: const Text("Yangi"),
                     onPressed: () async {
-                      await Navigator.push(
+                      var value = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => MahsulotIchiView.yangi()),
+                            builder: (context) => MahsulotIchiView.yangi(widget.turi ?? MTuri.mahsulot)),
                       );
                       setState(() {
-                        _cont.objectList;
+                        _cont.objectList.add(value);
                       });
                     },
-                    label: const Text("Yangi"),
                   ),
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
+import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/View/Mahsulot/MahIchiCont.dart';
 import 'package:erp_oshxona/View/Mahsulot/MahsulotIchiView.dart';
 import 'package:erp_oshxona/Widget/card_amaliyot.dart';
@@ -463,6 +464,8 @@ class _MahIchiViewState extends State<MahIchiView> {
           Expanded(
             flex: 4,
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
               margin: const EdgeInsets.symmetric(vertical: 5),
               child: Padding(
                 padding: const EdgeInsets.all(5),
@@ -478,6 +481,8 @@ class _MahIchiViewState extends State<MahIchiView> {
           Expanded(
             flex: 6,
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
               margin: const EdgeInsets.symmetric(vertical: 5),
               child: Padding(
                 padding: const EdgeInsets.all(5),
@@ -496,23 +501,42 @@ class _MahIchiViewState extends State<MahIchiView> {
 
   List<Widget> _mahlarRoyxati() {
     List<Widget> royxat = [];
+    royxat.add(
+      Padding(
+        padding: const EdgeInsets.all(10),
+        child: Text(MTuri.homAshyo.nomi, style: MyTheme.h5),
+      )
+    );
     for (var object in _cont.homAshyoList) {
       royxat.add(
         Material(
           child: InkWell(
-            onDoubleTap: () {},
+            onDoubleTap: () async {
+              String value = await _dialogTextInputDialog(context, "");
+              num miqdori = 0;
+              setState(() {
+                miqdori = num.tryParse(value) ?? 0;
+              });
+              _cont.add(object, miqdori: miqdori);
+            },
             child: Padding(
               padding: const EdgeInsets.all(5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(object.nomi + " ${object.nomi}"),
+                  Text("${object.nomi} [${object.mOlchov.nomi}]"),
                   Wrap(
                     alignment: WrapAlignment.end,
                     children: [
-                      InkWell(
-                        borderRadius: BorderRadius.circular(3),
-                        onTap: () {},
+                      OutlinedButton(
+                        onPressed: () async {
+                          String value = await _dialogTextInputDialog(context, "");
+                          num miqdori = 0;
+                          setState(() {
+                            miqdori = num.tryParse(value) ?? 0;
+                          });
+                          _cont.add(object, miqdori: miqdori);
+                        },
                         child: const Padding(
                           padding: EdgeInsets.all(5),
                           child: Icon(Icons.chevron_right),
@@ -528,7 +552,9 @@ class _MahIchiViewState extends State<MahIchiView> {
       );
     }
     return [
-      TextFormField(),
+      TextFormField(
+        decoration: const InputDecoration(hintText: "Izlash..."),
+      ),
       Expanded(
           child: ListView(
         children: royxat,
@@ -538,7 +564,77 @@ class _MahIchiViewState extends State<MahIchiView> {
 
   List<Widget> _tarkiblarRoyxati() {
     List<Widget> royxat = [];
-    return royxat;
+    int n = 0;
+    royxat.add(
+      Padding(
+        padding: const EdgeInsets.all(10),
+        child: Text("Tarkib", style: MyTheme.h5),
+      )
+    );
+    for (var object in _cont.tarkibList) {
+      n++;
+      royxat.add(
+        Material(
+          child: InkWell(
+            onTap: () async {
+              //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
+              String value = await _dialogTextInputDialog(context, object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr));
+              if(object.miqdori != num.tryParse(value)) {
+                setState(() {
+                  object.miqdori = num.tryParse(value) ?? 0;
+                });
+                MTarkib.service!.update({'miqdori': object.miqdori}, where: "trMah='${object.trMah}' AND trMahTarkib='${object.trMahTarkib}'");
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                      "$n. ${object.mahsulotTarkib.nomi}"),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      /*SizedBox(
+                        width: 60,
+                        child: TextField(
+                          controller: _cont.tarkibCont[object.mahsulotTarkib.tr],
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                          decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 7.0, horizontal: 5.0),
+                              border: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 5.0),
+                              )),
+                        ),
+                      ),*/
+                      Text("${object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr)} ${object.mahsulotTarkib.mOlchov.nomi}"),
+                      const SizedBox(width: 20),
+                      OutlinedButton(
+                        onPressed: () => _cont.remove(object),
+                        child: const Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Icon(Icons.delete, color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return [
+      Expanded(
+          child: ListView(
+        children: royxat,
+      )),
+    ];
   }
 
   _buildSearchField(context, StateSetter setState) async {
@@ -775,6 +871,43 @@ class _MahIchiViewState extends State<MahIchiView> {
             where: " tr='${_cont.object.tr}'");
       },
     );
+  }
+
+  Future<String> _dialogTextInputDialog(BuildContext context, String qiymat) async {
+    _cont.dialogTextFieldCont.text = qiymat;
+    
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Miqdor kiriting'),
+          content: TextField(
+            autofocus: true,
+            controller: _cont.dialogTextFieldCont,
+            decoration: const InputDecoration(hintText: "Miqdori"),
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Bekor', style: TextStyle(color: Colors.grey)),
+              onPressed: () {
+                setState(() {});
+                _cont.dialogTextFieldCont.text = "";
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Saqlash'),
+              onPressed: () {
+                  qiymat = _cont.dialogTextFieldCont.text;
+                _cont.dialogTextFieldCont.text = "";
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
+    return qiymat;
   }
 
   /* ================= */

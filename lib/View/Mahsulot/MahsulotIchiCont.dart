@@ -33,6 +33,7 @@ class MahsulotIchiCont with Controller {
     if (formKey.currentState!.validate()) {
       showLoading(text: "Saqlanmoqda");
       object.nomi = nomiController.text;
+      object.turi = widget.turi.tr;
       if (widget.yangimi) {
         var tr = await Mahsulot.service!.insert(object.toJson());
         Mahsulot.obyektlar[tr] = object..tr = tr;
@@ -45,7 +46,7 @@ class MahsulotIchiCont with Controller {
         duration: Duration(seconds: 1),
       ));
       hideLoading();
-      Navigator.pop(context);
+      Navigator.pop(context, object);
     }
   }
 }

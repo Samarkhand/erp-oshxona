@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Library/global.dart';
+import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
@@ -58,6 +59,7 @@ class Controller {
     MBolim.service = MBolimService();
     MBrend.service = MBrendService();
     Mahsulot.service = MahsulotService();
+    MTarkib.service = MTarkibService();
     MCode.service = MCodeService();
     MArtikul.service = MArtikulService();
     Hujjat.service = HujjatService(prefix: "${today.year}_${today.month}_");

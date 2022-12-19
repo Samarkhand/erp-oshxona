@@ -80,7 +80,7 @@ class AsosiyCont with Controller {
   }
 
   bazadanMalYukla() async {
-    await mablagYukla();
+    await kontYukla();
     await mahsulotYukla();
   }
 
@@ -123,11 +123,9 @@ class AsosiyCont with Controller {
     showLoading(text: "MahQoldiq yuklanmoqda...");
     MahQoldiq.obyektlar = (await MahQoldiq.service!.select())
         .map((key, value) => MapEntry(key, MahQoldiq.fromJson(value)));
-    // load
-    await Future.delayed(const Duration(seconds: 1));
   }
 
-  mablagYukla() async {
+  kontYukla() async {
     // KBolimlar load
     showLoading(text: "Kontakt Bolimlar yuklanmoqda...");
     KBolim.obyektlar =

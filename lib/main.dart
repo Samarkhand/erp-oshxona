@@ -55,7 +55,8 @@ class MyApp extends StatelessWidget {
       title: 'ERP Oshxona by INWARE',
       theme: flutterTheme,
       home: viewKorsat,
-      localizationsDelegates: [
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
         // ... app-specific localization delegate[s] here
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
