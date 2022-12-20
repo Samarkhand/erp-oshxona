@@ -1,5 +1,6 @@
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
+import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/m_olchov.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
@@ -83,8 +84,19 @@ class MahIchiCont with Controller {
     }
   }
 
+  addToList(Mahsulot tarkib) async {
+    String? value = await inputDialog(context, "");
+    if(value != null){
+      num miqdori = num.tryParse(value) ?? 0;
+      add(tarkib, miqdori: miqdori);
+    }
+  }
+
   add(Mahsulot mah, {num miqdori = 1}) async {
     var tarkib = MTarkib()..trMah=object.tr..trMahTarkib=mah.tr..miqdori=miqdori;
+    if(tarkibList.contains(tarkib)){
+      return;
+    }
     tarkibList.add(tarkib);
     //tarkibCont[tarkib.trMahTarkib] = TextEditingController(text: tarkib.miqdori.toStringAsFixed(tarkib.mahsulot.kasr));
     setState(() => tarkibList);
@@ -105,10 +117,6 @@ class MahIchiCont with Controller {
   }
 
   Future<void> loadItems() async {
-    // amaliyot
-    amaliyotList = [];
-    amaliyotListT = [];
-    
     if(object.turi == MTuri.mahsulot.tr) {
       await MTarkib.loadToGlobal(object.turi);
       /*if(MTarkib.obyektlar[object.turi] != null){
@@ -133,11 +141,16 @@ class MahIchiCont with Controller {
     homAshyoList = Mahsulot.obyektlar.values.toList();
     homAshyoList.removeWhere((element) => element.tr == object.tr);
     if(object.turi == MTuri.mahsulot.tr) tarkibList = MTarkib.obyektlar[object.tr] ?? {};
-    amaliyotList = amaliyotList.where((element) => element.hisob == object.tr).toList();
-    amaliyotList.sort((a, b) => -a.sana.compareTo(b.sana));
+  }
 
-    amaliyotListT = amaliyotListT.where((element) => element.hisob == object.tr).toList();
-    amaliyotListT.sort((a, b) => -a.sana.compareTo(b.sana));
+  mahIzlash(String value){
+    loadFromGlobal();
+    setState(() {
+      homAshyoList = homAshyoList
+          .where((element) =>
+              element.nomi.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
   }
 
   Future<void> sanaTanlashD(BuildContext context, StateSetter setState) async {

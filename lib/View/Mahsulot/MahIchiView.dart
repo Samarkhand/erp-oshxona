@@ -6,6 +6,7 @@ import 'package:erp_oshxona/View/Mahsulot/MahIchiCont.dart';
 import 'package:erp_oshxona/View/Mahsulot/MahsulotIchiView.dart';
 import 'package:erp_oshxona/Widget/card_amaliyot.dart';
 import 'package:erp_oshxona/Model/amaliyot.dart';
+import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/View/Sistem/qollanma_view.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
@@ -37,7 +38,7 @@ class _MahIchiViewState extends State<MahIchiView> {
   final MahIchiCont _cont = MahIchiCont();
   bool yuklanmoqda = false;
 
-  AppBar? _appBarInfo(BuildContext context, {String? title}) {
+  PreferredSizeWidget? _appBarInfo(BuildContext context, {String? title}) {
     return AppBar(
       title: Text(
         (_cont.isLoading)
@@ -49,7 +50,9 @@ class _MahIchiViewState extends State<MahIchiView> {
                         ? _cont.object.nomi
                         : "Tahrirlash: ${_cont.object.nomi}"),
       ),
-      bottom: TabBar(
+
+      flexibleSpace: Center(child: 
+      TabBar(
         isScrollable: true,
         tabs: [
               const Tab(text: "Ma'lumot"),
@@ -59,6 +62,7 @@ class _MahIchiViewState extends State<MahIchiView> {
             (widget.turi == MTuri.mahsulot.tr
                 ? [const Tab(text: "Tarkib")]
                 : []),
+      ),
       ),
       actions: [
         IconButton(
@@ -462,7 +466,7 @@ class _MahIchiViewState extends State<MahIchiView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0)),
@@ -479,7 +483,7 @@ class _MahIchiViewState extends State<MahIchiView> {
           ),
           const SizedBox(width: 10),
           Expanded(
-            flex: 6,
+            flex: 5,
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0)),
@@ -511,14 +515,7 @@ class _MahIchiViewState extends State<MahIchiView> {
       royxat.add(
         Material(
           child: InkWell(
-            onDoubleTap: () async {
-              String value = await _dialogTextInputDialog(context, "");
-              num miqdori = 0;
-              setState(() {
-                miqdori = num.tryParse(value) ?? 0;
-              });
-              _cont.add(object, miqdori: miqdori);
-            },
+            onDoubleTap: () => _cont.addToList(object),
             child: Padding(
               padding: const EdgeInsets.all(5),
               child: Row(
@@ -529,14 +526,7 @@ class _MahIchiViewState extends State<MahIchiView> {
                     alignment: WrapAlignment.end,
                     children: [
                       OutlinedButton(
-                        onPressed: () async {
-                          String value = await _dialogTextInputDialog(context, "");
-                          num miqdori = 0;
-                          setState(() {
-                            miqdori = num.tryParse(value) ?? 0;
-                          });
-                          _cont.add(object, miqdori: miqdori);
-                        },
+                        onPressed: () => _cont.addToList(object),
                         child: const Padding(
                           padding: EdgeInsets.all(5),
                           child: Icon(Icons.chevron_right),
@@ -551,9 +541,13 @@ class _MahIchiViewState extends State<MahIchiView> {
         ),
       );
     }
+    royxat.add(const SizedBox(height: 60));
     return [
       TextFormField(
         decoration: const InputDecoration(hintText: "Izlash..."),
+        onChanged: (value){
+          _cont.mahIzlash(value);
+        },
       ),
       Expanded(
           child: ListView(
@@ -578,8 +572,8 @@ class _MahIchiViewState extends State<MahIchiView> {
           child: InkWell(
             onTap: () async {
               //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
-              String value = await _dialogTextInputDialog(context, object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr));
-              if(object.miqdori != num.tryParse(value)) {
+              String? value = await inputDialog(context, object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr));
+              if(value != null && object.miqdori != num.tryParse(value)) {
                 setState(() {
                   object.miqdori = num.tryParse(value) ?? 0;
                 });
@@ -629,6 +623,7 @@ class _MahIchiViewState extends State<MahIchiView> {
         ),
       );
     }
+    royxat.add(const SizedBox(height: 60));
     return [
       Expanded(
           child: ListView(
@@ -871,43 +866,6 @@ class _MahIchiViewState extends State<MahIchiView> {
             where: " tr='${_cont.object.tr}'");
       },
     );
-  }
-
-  Future<String> _dialogTextInputDialog(BuildContext context, String qiymat) async {
-    _cont.dialogTextFieldCont.text = qiymat;
-    
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Miqdor kiriting'),
-          content: TextField(
-            autofocus: true,
-            controller: _cont.dialogTextFieldCont,
-            decoration: const InputDecoration(hintText: "Miqdori"),
-            textAlign: TextAlign.center,
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Bekor', style: TextStyle(color: Colors.grey)),
-              onPressed: () {
-                setState(() {});
-                _cont.dialogTextFieldCont.text = "";
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
-              child: const Text('Saqlash'),
-              onPressed: () {
-                  qiymat = _cont.dialogTextFieldCont.text;
-                _cont.dialogTextFieldCont.text = "";
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      });
-    return qiymat;
   }
 
   /* ================= */
