@@ -4,6 +4,7 @@ import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/View/Hujjat/HujjatIchiView.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
+import 'package:erp_oshxona/View/Kirim/buyurtma_royxat_view.dart';
 import 'package:flutter/material.dart';
 
 class HujjatCard extends StatelessWidget {
@@ -16,15 +17,57 @@ class HujjatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const sumStyle = TextStyle(fontWeight: FontWeight.w700, fontSize: 20);
     return Card(
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: InkWell(
         onTap: () {
+          /*
+          showDialog(
+            context: context,
+            builder: (context) => Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(10.0)), //this right here
+            child: HujjatIchiView(object)),
+          );*/
+          Widget? view;
+          if(HujjatTur.kirim.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.kirimFil.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.qaytibOlish.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.qaytibBerish.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.zarar.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.kirimIch.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.chiqimIch.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.chiqimFil.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.buyurtma.tr == object.turi){
+            //HujjatIchiView(object);
+            view = BuyurtmaRoyxatView(object);
+          }
+          else if(HujjatTur.chiqim.tr == object.turi){
+            view = BuyurtmaRoyxatView(object);
+          }
+          if(view == null) return;
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => HujjatIchiView(object),
+                builder: (context) => view!,
               ));
         },
         borderRadius: BorderRadius.circular(10.0),

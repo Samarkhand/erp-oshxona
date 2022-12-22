@@ -438,38 +438,86 @@ class _AsosiyViewState extends State<AsosiyView>
         ),
         viewButton(
           "Taom tayyorlash",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.kirimIch),
+                ));
+          },
         ),
         viewButton(
           "Chiqim",
           icon: SvgPicture.asset("assets/sf_icons/box-out.svg", width: 50),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.chiqim),
+                ));
+          },
         ),
         viewButton(
           "Kirim",
           icon: SvgPicture.asset("assets/sf_icons/box-in.svg", width: 50),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.kirim),
+                ));
+          },
         ),
         viewButton(
           "Filialga chiqim",
           icon: SvgPicture.asset("assets/sf_icons/box-sync.svg", width: 50),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.chiqimFil),
+                ));
+          },
         ),
         viewButton(
           "Xarid buyurtma",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.buyurtma),
+                ));
+          },
         ),
         viewButton(
           "Qaytib berish",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.qaytibBerish),
+                ));
+          },
         ),
         viewButton(
           "Qaytib olish",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.qaytibOlish),
+                ));
+          },
         ),
         viewButton(
           "Qoldiqdan o'chirish",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.zarar),
+                ));
+          },
         ),
       ],
     );

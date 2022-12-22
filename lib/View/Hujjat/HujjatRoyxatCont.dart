@@ -20,7 +20,7 @@ class HujjatRoyxatCont with Controller {
     sanaG = DateTime(today.year, today.month, today.day, 23, 59, 59);
     showLoading(text: "Yuklanmoqda...");
     await loadItems();
-    loadFromGlobal();
+    await loadFromGlobal();
     hideLoading();
 
     //WidgetsBinding.instance.addPostFrameCallback((_) async {});
@@ -64,9 +64,11 @@ class HujjatRoyxatCont with Controller {
   }
 
   Future<void> loadItems() async {
-    var add = widget.turi != null ? " turi=${widget.turi!} AND " : "";
-    (await Hujjat.service!.select(where: "$add sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)} ORDER BY sana DESC, tr DESC")).forEach((key, value) {
-      Hujjat.obyektlar.add(Hujjat.fromJson(value));
+    var add = widget.turi != null ? " turi=${widget.turi!.tr} AND " : "";
+    await Hujjat.service!.select(where: "$add sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)} ORDER BY sana DESC, tr DESC").then((values) { 
+      for (var value in values) {
+        Hujjat.obyektlar.add(Hujjat.fromJson(value));
+      }
     });
   }
 

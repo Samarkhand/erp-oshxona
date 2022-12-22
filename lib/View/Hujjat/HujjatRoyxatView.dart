@@ -93,9 +93,47 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
 
     return Column(
       children: [
+        
+        Material(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(),
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text("Yangi"),
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(10.0)), //this right here
+                        child: HujjatIchiView.yangi(widget.turi!.tr)),
+                      );/*
+                      var value = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HujjatIchiView.yangi(widget.turi!.tr)),
+                      );
+                      setState(() {
+                        _cont.objectList.add(value);
+                      });*/
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.all(2),
+            padding: const EdgeInsets.all(20),
             itemCount: _cont.objectList.length,
             itemBuilder: (BuildContext context, int index) {
               if (_cont.objectList.length + 1 == index) {

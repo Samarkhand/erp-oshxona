@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onCancel, Function? onSave}) async {
     var cont = TextEditingController(text: qiymat);
@@ -26,6 +27,10 @@ Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onC
               onSave ?? false;
               Navigator.pop(context);
             },
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+            ],
           ),
           actions: <Widget>[
             TextButton(

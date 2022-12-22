@@ -1,11 +1,9 @@
-import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Model/amaliyot.dart';
 import 'package:erp_oshxona/Model/hisob.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/View/Hujjat/HujjatIchiView.dart';
-import 'package:erp_oshxona/Model/aBolim.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/form.dart';
 import 'package:select_dialog/select_dialog.dart';
@@ -17,7 +15,7 @@ class HujjatIchiCont with Controller {
   Hujjat? objectEski;
   Amaliyot? objectAmaliyot;
 
-  late TextEditingController miqdorController;
+  late TextEditingController raqamController;
   late TextEditingController izohController;
   Key formKeySelectBolim = const Key('select_bolim');
   Key formKeySelectKontakt = const Key('select_kontakt');
@@ -47,6 +45,7 @@ class HujjatIchiCont with Controller {
     } else {
       objectEski = Hujjat.fromJson(object.toJson());
     }
+    raqamController = TextEditingController(text: object.raqami.toString());
     izohController = TextEditingController(text: object.izoh);
     formValidator[formKeySelectBolim] = FormAlert.just();
     formValidator[formKeySelectKontakt] = FormAlert.just();
@@ -60,18 +59,16 @@ class HujjatIchiCont with Controller {
   }
 
   Future<void> save(context) async {
-    if(object.vaqt == 0){
-      formValidator[formKeySelectDate]!.type = FormAlertType.danger;
-      formValidator[formKeySelectDate]!.text = "Tanlang";
-      setState((){
-        formValidator[formKeySelectDate];
-      });
-    }
-
-    if (formKey.currentState!.validate() && object.vaqt !=0) {
+    print('save');
+    if (formKey.currentState!.validate()) {
+      print('validate');
       showLoading(text: "Saqlanmoqda");
+      object.raqami = int.tryParse(raqamController.text) ?? 0;
       object.izoh = izohController.text;
+      object.vaqt = DateTime.now().millisecondsSinceEpoch;
+      object.vaqtS = object.vaqt;
       if (widget.yangimi) {
+        object.tr = await Hujjat.service!.newId(object.turi);
         object.insert();
       } else if (!widget.infomi) {
         object.update(objectEski!, object);
@@ -152,7 +149,6 @@ class HujjatIchiCont with Controller {
       ),
     );
   }
-
 
   Future<void> sanaTanlash(BuildContext context) async {
     final now = DateTime.now();

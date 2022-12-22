@@ -2,9 +2,20 @@ import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 
-class MahChiqim {
-  static Map<int, MahChiqim> obyektlar = {};
-  static MahChiqimService? service;
+class MahBuyurtma {
+  
+  insert() async {
+    obyektlar.add(this);
+    await service!.replace(toJson());
+  }
+
+  delete() async {
+    await service!.deleteId(trHujjat, tr);
+    obyektlar.remove(this);
+  }
+
+  static Set<MahBuyurtma> obyektlar = {};
+  static MahBuyurtmaService? service;
 
   int trHujjat = 0;
   int tr = 0;
@@ -17,22 +28,22 @@ class MahChiqim {
   int vaqtS = 0;
   int vaqt = 0;
   num miqdori = 0;
-  num tannarxi = 0;
-  num sotnarxi = 0;
-  num sotnarxiReal = 0;
+  num narxi = 0;
+  int trChiqHujjat = 0;
+  int trKirHujjat = 0;
   String nomi = '';
   String kodi = "";
   String izoh = "";
 
-  Mahsulot get mahsulot => Mahsulot.obyektlar[trMah] ?? Mahsulot.obyektlar[0]!;
+  Mahsulot get mahsulot => Mahsulot.obyektlar[trMah]!;
   Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
   DateTime get vaqtSDT => DateTime.fromMillisecondsSinceEpoch(vaqtS);
   
-  MahChiqim();
+  MahBuyurtma();
 
-  MahChiqim.fromJson(Map<String, dynamic> json) {
+  MahBuyurtma.fromJson(Map<String, dynamic> json) {
     trHujjat = int.parse(json['trHujjat'].toString());
     tr = int.parse(json['tr'].toString());
     turi = int.parse(json['turi'].toString());
@@ -44,9 +55,9 @@ class MahChiqim {
     vaqtS = int.parse(json['vaqtS'].toString());
     vaqt = int.parse(json['vaqt'].toString());
     miqdori = num.parse(json['miqdori'].toString());
-    tannarxi = num.parse(json['tannarxi'].toString());
-    sotnarxi = num.parse(json['sotnarxi'].toString());
-    sotnarxiReal = num.parse(json['sotnarxiReal'].toString());
+    narxi = num.parse(json['narxi'].toString());
+    trChiqHujjat = int.parse(json['trChiqHujjat'].toString());
+    trKirHujjat = int.parse(json['trKirHujjat'].toString());
     nomi = json['nomi'];
     kodi = json['kodi'];
     izoh = json['izoh'];
@@ -64,9 +75,9 @@ class MahChiqim {
         'vaqtS': vaqtS,
         'vaqt': vaqt,
         'miqdori': miqdori,
-        'tannarxi': tannarxi,
-        'sotnarxi': sotnarxi,
-        'sotnarxiReal': sotnarxiReal,
+        'narxi': narxi,
+        'trChiqHujjat': trChiqHujjat,
+        'trKirHujjat': trKirHujjat,
         'nomi': nomi,
         'kodi': kodi,
         'izoh': izoh,
@@ -85,25 +96,23 @@ class MahChiqim {
         'vaqtS': vaqtS,
         'vaqt': vaqt,
         'miqdori': miqdori,
-        'tannarxi': tannarxi,
-        'sotnarxi': sotnarxi,
-        'sotnarxiReal': sotnarxiReal,
+        'narxi': narxi,
         'nomi': nomi,
         'kodi': kodi,
         'izoh': izoh,
       };
 
   @override
-  operator == (other) => other is MahChiqim && other.trHujjat == trHujjat && other.tr == tr;
+  operator == (other) => other is MahBuyurtma && other.trHujjat == trHujjat && other.tr == tr;
 
   @override
   int get hashCode => trHujjat.hashCode ^ tr.hashCode;
 }
 
-class MahChiqimService {
+class MahBuyurtmaService {
   String prefix = '';
-  final String table = "mah_chiqim";
-  MahChiqimService({this.prefix = ''});
+  final String table = "mah_buyurtma";
+  MahBuyurtmaService({this.prefix = ''});
 
   String get tableName => prefix + table;
 
@@ -120,9 +129,9 @@ class MahChiqimService {
       "vaqtS"	INTEGER NOT NULL DEFAULT 0,
       "vaqt"	INTEGER NOT NULL DEFAULT 0,
       "miqdori"	NUMERIC NOT NULL DEFAULT 0,
-      "tannarxi"	NUMERIC NOT NULL DEFAULT 0,
-      "sotnarxi"	NUMERIC NOT NULL DEFAULT 0,
-      "sotnarxiReal"	NUMERIC NOT NULL DEFAULT 0,
+      "narxi"	NUMERIC NOT NULL DEFAULT 0,
+      "trChiqHujjat"	INTEGER NOT NULL DEFAULT 0,
+      "trKirHujjat"	INTEGER NOT NULL DEFAULT 0,
       "nomi"	TEXT NOT NULL DEFAULT '',
       "kodi"	TEXT NOT NULL DEFAULT '',
       "izoh"	TEXT NOT NULL DEFAULT '',

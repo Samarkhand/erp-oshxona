@@ -92,6 +92,12 @@ class MahKirim {
         'kodi': kodi,
         'izoh': izoh,
       };
+
+  @override
+  operator == (other) => other is MahKirim && other.tr == tr;
+
+  @override
+  int get hashCode => tr.hashCode;
 }
 
 class MahKirimService {

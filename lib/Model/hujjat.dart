@@ -86,6 +86,7 @@ class Hujjat {
   String hujjatRaqami = "";
   String izoh = "";
 
+  HujjatTur get turiObj => HujjatTur.obyektlar[turi]!;
   Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
   num get summa => summaNum ??  yaxlitla(summaOl());
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
@@ -95,16 +96,16 @@ class Hujjat {
   Hujjat();
 
   Hujjat.fromJson(Map<String, dynamic> json) {
-    turi = int.parse(json['turi'].toString());
-    tr = int.parse(json['tr'].toString());
+    turi = json['turi'];
+    tr = json['tr'];
     qulf = json['qulf'].toString() == "1" ? true : false;
     yoq = json['yoq'].toString() == "1" ? true : false;
-    sts = int.parse(json['sts'].toString());
-    sana = int.parse(json['sana'].toString());
-    vaqtS = int.parse(json['vaqtS'].toString());
-    vaqt = int.parse(json['vaqt'].toString());
-    trKont = int.parse(json['trKont'].toString());
-    raqami = int.parse(json['raqami'].toString());
+    sts = json['sts'];
+    sana = toSecond(json['sana']);
+    vaqtS = toSecond(json['vaqtS']);
+    vaqt = toSecond(json['vaqt']);
+    trKont = json['trKont'];
+    raqami = json['raqami'];
     hujjatRaqami = json['hujjatRaqami'];
     izoh = json['izoh'];
   }
@@ -115,9 +116,9 @@ class Hujjat {
         'sts': sts,
         'qulf': qulf ? 1 : 0,
         'yoq': yoq ? 1 : 0,
-        'sana': sana,
-        'vaqtS': vaqtS,
-        'vaqt': vaqt,
+        'sana': sana * 1000,
+        'vaqtS': vaqtS * 1000,
+        'vaqt': vaqt * 1000,
         'trKont': trKont,
         'raqami': raqami,
         'hujjatRaqami': hujjatRaqami,
@@ -178,6 +179,12 @@ class Hujjat {
     }
   }
   */
+
+  @override
+  operator == (other) => other is Hujjat && other.turi == turi && other.tr == tr;
+
+  @override
+  int get hashCode => turi.hashCode ^ tr.hashCode;
 }
 
 class HujjatService {
@@ -205,13 +212,13 @@ class HujjatService {
     );
   """;
 
-  Future<Map> select({String? where}) async {
+  Future<Set> select({String? where}) async {
     where = where == null ? "" : " WHERE $where";
-    Map<int, dynamic> map = {};
+    Set map = {};
     await for (final rows
         in db.watch("SELECT * FROM '$tableName' $where", tables: [tableName])) {
       for (final element in rows) {
-        map[element['tr']] = element;
+        map.add(element);
       }
       return map;
     }
@@ -242,23 +249,25 @@ class HujjatService {
         //params: [tableName],
         //fromMap: (map) => {},
         singleResult: true);
-    return int.parse(row['seq'].toString()) + 1;
+    return row['seq'] + 1;
   }
 
   Future<int> insert(Map map) async {
     map['turi'] = (map['turi'] == 0) ? null : map['turi'];
     map['tr'] = (map['tr'] == 0) ? null : map['tr'];
 
-    var insertId = await db.insert(map as Map<String, dynamic>, tableName);
+    var insertId = await db.insert(map as Map<String, dynamic>, "'$tableName'");
     return insertId;
   }
 
   Future<int> newId(int turi) async {
-    Map row = await db.query("SELECT tr FROM '$tableName' WHERE turi = ? ORDER BY tr DESC LIMIT 0, 1",
+    Map? row = await db.query("SELECT MAX(tr) FROM '$tableName' WHERE turi = ?",
         params: [turi],
         //fromMap: (map) => {},
         singleResult: true);
-    return row['tr'] + 1;
+        print(row);
+        //if(row == null) throw Exception("Javob yo'q");
+    return row?['MAX(tr)'] ?? 0 + 1;
   }
 
   Future<int> replace(Map map) async {
