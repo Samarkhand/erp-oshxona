@@ -1,3 +1,4 @@
+import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Library/theme.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class HujjatIchiView extends StatefulWidget {
   HujjatIchiView.yangi(this.turi, {Key? key})
       : yangimi = true,
         infomi = false,
-        hujjat = Hujjat()..turi = turi..sana = today.millisecondsSinceEpoch,
+        hujjat = Hujjat(turi)..turi = turi..sana = today.millisecondsSinceEpoch,
         super(key: key);
   int turi;
   Hujjat hujjat;
@@ -108,7 +109,14 @@ class _HujjatIchiViewState extends State<HujjatIchiView> {
                       padding: EdgeInsets.all(10),
                       child: Text("Hujjat ichi"),
                     ),
-                    onPressed: (){},
+                    onPressed: (){
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => openHujjat(_cont.object)!,
+                          ));
+                    },
                   ),
                   const Spacer(),
                   ElevatedButton(
@@ -273,7 +281,14 @@ class _HujjatIchiViewState extends State<HujjatIchiView> {
                       padding: EdgeInsets.all(10),
                       child: Text("Hujjat ichi"),
                     ),
-                    onPressed: (){},
+                    onPressed: (){
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => openHujjat(_cont.object)!,
+                          ));
+                    },
                   ),
                   const Spacer(),
                   ElevatedButton(

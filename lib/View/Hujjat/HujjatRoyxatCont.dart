@@ -74,6 +74,10 @@ class HujjatRoyxatCont with Controller {
 
   loadFromGlobal(){
     objectList = (widget.turi != null ? Hujjat.olList(widget.turi!) : Hujjat.obyektlar).toList();
-    objectList.sort((a, b) => -a.sana.compareTo(b.sana));
+    objectList.sort((a, b){
+      int cmp = -a.sana.compareTo(b.sana);
+      if (cmp != 0) return cmp;
+      return -a.tr.compareTo(b.tr);
+    });
   }
 }

@@ -93,7 +93,7 @@ class Hujjat {
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
   DateTime get vaqtSDT => DateTime.fromMillisecondsSinceEpoch(vaqtS);
   
-  Hujjat();
+  Hujjat(this.turi);
 
   Hujjat.fromJson(Map<String, dynamic> json) {
     turi = json['turi'];
@@ -101,9 +101,9 @@ class Hujjat {
     qulf = json['qulf'].toString() == "1" ? true : false;
     yoq = json['yoq'].toString() == "1" ? true : false;
     sts = json['sts'];
-    sana = toSecond(json['sana']);
-    vaqtS = toSecond(json['vaqtS']);
-    vaqt = toSecond(json['vaqt']);
+    sana = json['sana'] * 1000;
+    vaqtS = (json['vaqtS']) * 1000;
+    vaqt = (json['vaqt']) * 1000;
     trKont = json['trKont'];
     raqami = json['raqami'];
     hujjatRaqami = json['hujjatRaqami'];
@@ -116,9 +116,9 @@ class Hujjat {
         'sts': sts,
         'qulf': qulf ? 1 : 0,
         'yoq': yoq ? 1 : 0,
-        'sana': sana * 1000,
-        'vaqtS': vaqtS * 1000,
-        'vaqt': vaqt * 1000,
+        'sana': toSecond(sana),
+        'vaqtS': toSecond(vaqtS),
+        'vaqt': toSecond(vaqt),
         'trKont': trKont,
         'raqami': raqami,
         'hujjatRaqami': hujjatRaqami,
@@ -159,9 +159,8 @@ class Hujjat {
     await service!.update(yangi.toJson(), where: " tr='${yangi.tr}'");
   }
 
-  @override
-  String toString(){
-    return tr.toString();
+  Future yangiRaqam() async {
+    raqami = await service!.newRaqam(where: "turi=$turi");
   }
 
   num? summaNum = 0;
@@ -169,6 +168,12 @@ class Hujjat {
     summaNum = 50000;
     return summaNum!;
   }
+
+  @override
+  String toString(){
+    return tr.toString();
+  }
+
   /*
   Future<void> summaHisobla() async {
     summa = 0;
@@ -261,13 +266,12 @@ class HujjatService {
   }
 
   Future<int> newId(int turi) async {
-    Map? row = await db.query("SELECT MAX(tr) FROM '$tableName' WHERE turi = ?",
+    int? tr = await db.query("SELECT MAX(tr) FROM '$tableName' WHERE turi = ?",
         params: [turi],
         //fromMap: (map) => {},
         singleResult: true);
-        print(row);
         //if(row == null) throw Exception("Javob yo'q");
-    return row?['MAX(tr)'] ?? 0 + 1;
+    return (tr ?? 0) + 1;
   }
 
   Future<int> replace(Map map) async {
@@ -310,5 +314,16 @@ class HujjatService {
     //await db.query(sql);
     //await db.update(map as Map<String, dynamic>, tableName, keys: []);
   }
+
+  Future<int> newRaqam({String? where}) async {
+    where = where == null ? "" : " WHERE $where";
+    int? tr = await db.query("SELECT MAX(raqami) FROM '$tableName' $where ORDER BY tr DESC LIMIT 0, 1",
+        //params: [turi],
+        //fromMap: (map) => {},
+        singleResult: true);
+        //if(row == null) throw Exception("Javob yo'q");
+    return (tr ?? 0) + 1;
+  }
+
 }
 

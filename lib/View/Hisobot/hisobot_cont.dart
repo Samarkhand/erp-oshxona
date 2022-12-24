@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Library/global.dart' as global;
-import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/View/Hisobot/hisobot_view.dart';
 import 'package:erp_oshxona/Model/aMahsulot.dart';
 import 'package:erp_oshxona/Model/aOrder.dart';

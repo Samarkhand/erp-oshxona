@@ -6,7 +6,7 @@ class MahBuyurtma {
   
   insert() async {
     obyektlar.add(this);
-    await service!.replace(toJson());
+    await service!.insert(toJson());
   }
 
   delete() async {
@@ -111,13 +111,13 @@ class MahBuyurtma {
 
 class MahBuyurtmaService {
   String prefix = '';
-  final String table = "mah_buyurtma";
+  final String tableName = "mah_buyurtma";
   MahBuyurtmaService({this.prefix = ''});
 
-  String get tableName => prefix + table;
+  String get table => "'$prefix$tableName'";
 
   String get createTable => """
-    CREATE TABLE "$tableName" (
+    CREATE TABLE "$table" (
       "trHujjat"	INTEGER NOT NULL DEFAULT 0,
       "tr"	INTEGER NOT NULL DEFAULT 0,
       "turi"	INTEGER NOT NULL DEFAULT 0,
@@ -161,12 +161,12 @@ class MahBuyurtmaService {
   }
 
   Future<void> delete({String? where}) async {
-    where ??= " WHERE $where";
-    await db.query("DELETE FROM `$table` $where");
+    where = where == null ? "" : " WHERE $where";
+    await db.query("DELETE FROM $table $where");
   }
 
   Future<void> deleteId(int hujjatId, int id, {String? where}) async {
-    where ??= " trHujjat = $hujjatId AND tr='$id'";
+    where = where ?? " trHujjat = $hujjatId AND tr='$id'";
     await delete(where: where);
   }
 
@@ -188,14 +188,15 @@ class MahBuyurtmaService {
   }
 
   Future<int> newId(int hujjatId) async {
-    Map row = await db.query("SELECT tr FROM $table WHERE trHujjat = ? ORDER BY tr DESC LIMIT 0, 1",
+    int? tr = await db.query("SELECT MAX(tr) FROM $table WHERE trHujjat = ?",
         params: [hujjatId],
         //fromMap: (map) => {},
         singleResult: true);
-    return row['tr'] + 1;
+        print(tr);
+    return (tr ?? 0) + 1;
   }
 
-  Future<int> replace(Map map) async {
+  Future replace(Map map) async {
     map['trHujjat'] = (map['trHujjat'] == 0) ? null : map.remove('trHujjat');
     map['tr'] = (map['tr'] == 0) ? null : map.remove('tr');
 
@@ -214,8 +215,7 @@ class MahBuyurtmaService {
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
   }
 
   Future<void> update(Map map, {String? where}) async {

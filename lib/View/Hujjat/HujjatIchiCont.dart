@@ -1,3 +1,4 @@
+import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/amaliyot.dart';
 import 'package:erp_oshxona/Model/hisob.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class HujjatIchiCont with Controller {
     object = widget.hujjat;
     if (widget.yangimi) {
       object.turi = widget.turi;
+      await object.yangiRaqam();
     } else {
       objectEski = Hujjat.fromJson(object.toJson());
     }
@@ -82,6 +84,11 @@ class HujjatIchiCont with Controller {
       ));
       hideLoading();
       Navigator.pop(context);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => openHujjat(object)!,
+          ));
     }
   }
 

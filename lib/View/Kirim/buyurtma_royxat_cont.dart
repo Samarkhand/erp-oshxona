@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
@@ -18,7 +20,7 @@ class BuyurtmaRoyxatCont with Controller {
   late DateTime sanaD;
   late DateTime sanaG;
 
-  List<Mahsulot> homAshyoList = [];
+  List<Mahsulot> mahsulotList = [];
   Set<MahBuyurtma> buyurtmaList = {};
 
   Map<int, TextEditingController> buyurtmaCont = {};
@@ -73,8 +75,14 @@ class BuyurtmaRoyxatCont with Controller {
   }
 
   loadFromGlobal(){
-    objectList = KBolim.obyektlar.values.toList();
-    objectList.sort((a, b) => -b.tartib.compareTo(a.tartib));
+    buyurtmaList = MahBuyurtma.obyektlar.where((element) => element.trHujjat == hujjat.tr).toSet();
+    buyurtmaList = SplayTreeSet.from(
+      buyurtmaList,
+      // Comparison function not necessary here, but shown for demonstrative purposes 
+      (a, b) => -a.tr.compareTo(b.tr), 
+    );
+    mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == MTuri.homAshyo.tr).toList();
+    mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
   }
   
   Future<void> sanaTanlashD(BuildContext context, StateSetter setState) async {
@@ -115,8 +123,12 @@ class BuyurtmaRoyxatCont with Controller {
     if(buyurtmaList.contains(buyurtma)){
       return;
     }
+    buyurtma.sana = hujjat.sana;
+    buyurtma.vaqt = DateTime.now().millisecondsSinceEpoch;
+    buyurtma.vaqtS = buyurtma.vaqt;
+    buyurtma.tr = await MahBuyurtma.service!.newId(buyurtma.trHujjat);
     buyurtmaList.add(buyurtma);
-    //buyurtmaCont[buyurtma.trMahTarkib] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
+    buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
     setState(() => buyurtmaList);
     await buyurtma.insert();
   }
@@ -130,7 +142,7 @@ class BuyurtmaRoyxatCont with Controller {
   mahIzlash(String value){
     loadFromGlobal();
     setState(() {
-      homAshyoList = homAshyoList
+      mahsulotList = mahsulotList
           .where((element) =>
               element.nomi.toLowerCase().contains(value.toLowerCase()))
           .toList();

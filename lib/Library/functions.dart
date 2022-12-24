@@ -1,7 +1,9 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/sozlash.dart';
+import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/View/Auth/kirish_view.dart';
+import 'package:erp_oshxona/View/Kirim/buyurtma_royxat_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -226,6 +228,42 @@ getView() {
     Sozlash.box.put("sdkVaqt", DateTime.now().millisecondsSinceEpoch);
   }
   return viewKorsat;
+}
+
+Widget? openHujjat(Hujjat object){
+  Widget? view;
+  if(HujjatTur.kirim.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.kirimFil.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.qaytibOlish.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.qaytibBerish.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.zarar.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.kirimIch.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.chiqimIch.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.chiqimFil.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.buyurtma.tr == object.turi){
+    //HujjatIchiView(object);
+    view = BuyurtmaRoyxatView(object);
+  }
+  else if(HujjatTur.chiqim.tr == object.turi){
+    view = BuyurtmaRoyxatView(object);
+  }
+  return view;
 }
 
 String twoDigits(int n) {
