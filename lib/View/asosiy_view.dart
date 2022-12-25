@@ -6,7 +6,7 @@ import 'package:erp_oshxona/Library/rest_api.dart';
 import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
-import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/View/Auth/pincode_view.dart';
 import 'package:erp_oshxona/View/Auth/registratsiya_view.dart';
@@ -15,15 +15,12 @@ import 'package:erp_oshxona/View/Mahsulot/MahRoyxatView.dart';
 import 'package:erp_oshxona/View/Sistem/exportimport_view.dart';
 import 'package:erp_oshxona/View/Sistem/aloqa_view.dart';
 import 'package:erp_oshxona/View/Auth/kirish_view.dart';
-import 'package:erp_oshxona/View/Bolimlar/ABolimRoyxatView.dart';
 import 'package:erp_oshxona/View/Hisobot/hisobot_view.dart';
 import 'package:erp_oshxona/View/Sistem/qollanma_view.dart';
 import 'package:erp_oshxona/View/Sistem/sozlash_view.dart';
 import 'package:erp_oshxona/View/asosiy_cont.dart';
-import 'package:erp_oshxona/View/Hisob/HisobRoyxatView.dart';
 import 'package:erp_oshxona/View/Bolimlar/KBolimRoyxatView.dart';
 import 'package:erp_oshxona/View/Kont/KontRoyxatView.dart';
-import 'package:erp_oshxona/Model/aBolim.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class AsosiyView extends StatefulWidget {

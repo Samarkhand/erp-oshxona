@@ -1,6 +1,23 @@
 import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/turi.dart';
+
+enum StsMahbuyurtmaTr{ochiq, jonatilgan, qabulQilingan}
+
+class StsMahbuyurtma extends Tur{
+  StsMahbuyurtma(super.tr, super.nomi);
+
+  static Map<StsMahbuyurtmaTr, StsMahbuyurtma> obyektlar = {
+    StsMahbuyurtmaTr.ochiq : ochiq,
+    StsMahbuyurtmaTr.jonatilgan : jonatilgan,
+    StsMahbuyurtmaTr.qabulQilingan : qabulQilingan,
+  };
+
+  static StsMahbuyurtma ochiq = StsMahbuyurtma(StsMahbuyurtmaTr.ochiq.index, "Ochiq");
+  static StsMahbuyurtma jonatilgan = StsMahbuyurtma(StsMahbuyurtmaTr.jonatilgan.index, "Ochiq");
+  static StsMahbuyurtma qabulQilingan = StsMahbuyurtma(StsMahbuyurtmaTr.qabulQilingan.index, "Ochiq");
+}
 
 class MahBuyurtma {
   
@@ -192,7 +209,6 @@ class MahBuyurtmaService {
         params: [hujjatId],
         //fromMap: (map) => {},
         singleResult: true);
-        print(tr);
     return (tr ?? 0) + 1;
   }
 

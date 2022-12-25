@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:erp_oshxona/Library/global.dart';
-import 'package:erp_oshxona/Library/theme.dart';
 import 'package:erp_oshxona/View/Hujjat/HujjatRoyxatCont.dart';
 import 'package:erp_oshxona/View/Hujjat/HujjatIchiView.dart';
-import 'package:erp_oshxona/View/Sistem/qollanma_view.dart';
 import 'package:erp_oshxona/Model/aBolim.dart';
-import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:select_dialog/select_dialog.dart';
@@ -31,7 +28,7 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(context, title: widget.turi?.nomi ?? "Hujjatlar" ),
+      appBar: _appBar(context, title: "${widget.turi?.nomi ?? "Hujjatlar"} hujjatlar reystri" ),
       body: SafeArea(
         child: _cont.isLoading
             ? Center(
@@ -84,7 +81,7 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
                                 BorderRadius.circular(10.0)), //this right here
                         child: HujjatIchiView.yangi(widget.turi!.tr)),
                       );
-                      _cont.loadFromGlobal();
+                      await _cont.loadFromGlobal();
                       /*
                       var value = await Navigator.push(
                         context,

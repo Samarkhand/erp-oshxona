@@ -1,49 +1,8 @@
 import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/kont.dart';
-import 'package:erp_oshxona/Model/system/turi.dart';
 
-class HujjatTur extends Tur {
-  static HujjatTur kirim = HujjatTur(1, "Kirim");
-  static HujjatTur kirimFil = HujjatTur(2, "Filialdan Kirim"); 
-  static HujjatTur qaytibOlish = HujjatTur(3, "Qaytib olish");
-  static HujjatTur qaytibBerish = HujjatTur(4, "Qaytib berish");
-  static HujjatTur zarar = HujjatTur(5, "Qoldiqdan o'chirish");
-  static HujjatTur kirimIch = HujjatTur(6, "Ishlab chiqarildi");
-  static HujjatTur chiqimIch = HujjatTur(7, "Ishlab chiqarish uchun harajat");
-  static HujjatTur chiqimFil = HujjatTur(8, "Filialdan Kirim");
-  static HujjatTur chiqim = HujjatTur(9, "Chiqim");
-  static HujjatTur buyurtma = HujjatTur(11, "Buyurtma");
-
-  static final Map<int, HujjatTur> obyektlar = {
-    kirim.tr: kirim,
-    kirimFil.tr: kirimFil,
-    qaytibOlish.tr: qaytibOlish,
-    qaytibBerish.tr: qaytibBerish,
-    zarar.tr: zarar,
-    kirimIch.tr: kirimIch,
-    chiqimIch.tr: chiqimIch,
-    chiqimFil.tr: chiqimFil,
-    chiqim.tr: chiqim,
-    buyurtma.tr: buyurtma,
-  };
-
-  HujjatTur(super.tr, super.nomi);
-
-  get olHujjatlar => Hujjat.obyektlar.where((element) => element.turi == tr).toList();
-}
-
-class HujjatSts extends Tur {
-  static HujjatSts faol = HujjatSts(1, "Faol");
-  static HujjatSts bajarilgan = HujjatSts(2, "Bajarilgan");
-
-  static final Map<int, HujjatSts> obyektlar = {
-    faol.tr: faol,
-    bajarilgan.tr: bajarilgan,
-  };
-
-  HujjatSts(super.tr, super.nomi);
-}
+import 'hujjat_davomi.dart';
 
 class Hujjat {
   static HujjatService? service;
@@ -88,6 +47,7 @@ class Hujjat {
 
   HujjatTur get turiObj => HujjatTur.obyektlar[turi]!;
   Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
+  HujjatSts get status => HujjatSts.obyektlar[turi]![sts]!;
   num get summa => summaNum ??  yaxlitla(summaOl());
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
@@ -146,8 +106,8 @@ class Hujjat {
   }
 
   Future<void> delete() async {
-    await service!.deleteId(turi, tr);
     obyektlar.remove(this);
+    await service!.deleteId(turi, tr);
   }
 
   Future<void> insert() async {
@@ -239,12 +199,12 @@ class HujjatService {
   }
 
   Future<void> delete({String? where}) async {
-    where ??= " WHERE $where";
+    where = where == null ? "" : " WHERE $where";
     await db.query("DELETE FROM '$tableName' $where");
   }
 
   Future<void> deleteId(int turi, int id, {String? where}) async {
-    where ??= " turi = $turi AND tr='$id'";
+    where = where == null ? " turi = $turi AND tr='$id'" : where;
     await delete(where: where);
   }
 

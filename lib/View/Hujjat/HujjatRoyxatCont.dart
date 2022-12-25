@@ -37,7 +37,7 @@ class HujjatRoyxatCont with Controller {
       duration: Duration(seconds: 5),
     ));
   }
-  
+
   Future<void> sanaTanlashD(BuildContext context, StateSetter setState) async {
     final now = DateTime.now();
     final DateTime? picked = await showDatePicker(
@@ -50,6 +50,7 @@ class HujjatRoyxatCont with Controller {
       setState(() => sanaD = picked);
     }
   }
+
   Future<void> sanaTanlashG(BuildContext context, StateSetter setState) async {
     final now = DateTime.now();
     final DateTime? picked = await showDatePicker(
@@ -65,19 +66,26 @@ class HujjatRoyxatCont with Controller {
 
   Future<void> loadItems() async {
     var add = widget.turi != null ? " turi=${widget.turi!.tr} AND " : "";
-    await Hujjat.service!.select(where: "$add sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)} ORDER BY sana DESC, tr DESC").then((values) { 
+    await Hujjat.service!
+        .select(
+            where:
+                "$add sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)} ORDER BY sana DESC, tr DESC")
+        .then((values) {
       for (var value in values) {
         Hujjat.obyektlar.add(Hujjat.fromJson(value));
       }
     });
   }
 
-  loadFromGlobal(){
-    objectList = (widget.turi != null ? Hujjat.olList(widget.turi!) : Hujjat.obyektlar).toList();
-    objectList.sort((a, b){
+  loadFromGlobal() {
+    objectList =
+        (widget.turi != null ? Hujjat.olList(widget.turi!) : Hujjat.obyektlar)
+            .toList();
+    objectList.sort((a, b) {
       int cmp = -a.sana.compareTo(b.sana);
       if (cmp != 0) return cmp;
       return -a.tr.compareTo(b.tr);
     });
+    setState(() => objectList);
   }
 }

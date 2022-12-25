@@ -16,6 +16,7 @@ import 'package:erp_oshxona/View/Auth/qulf_view.dart';
 import 'package:erp_oshxona/View/Auth/registratsiya_view.dart';
 import 'package:erp_oshxona/Model/static/qulf.dart';
 import 'package:erp_oshxona/View/asosiy_view.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 int toSecond(int millisecond) {

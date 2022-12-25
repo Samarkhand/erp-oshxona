@@ -3,6 +3,7 @@ import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 import 'package:erp_oshxona/View/Hujjat/HujjatIchiView.dart';
 import 'package:flutter/material.dart';
@@ -32,22 +33,23 @@ class HujjatCard extends StatelessWidget {
             child: HujjatIchiView(object)),
           );*/
           Widget? view = openHujjat(object);
-          if(view == null) return;
+          if (view == null) return;
           Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => view,
               ));
         },
-        onTap: (() {
-          showDialog(
+        onTap: (() async {
+          await showDialog(
             context: context,
             builder: (context) => Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(10.0)), //this right here
-            child: HujjatIchiView(object)),
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(10.0)), //this right here
+                child: HujjatIchiView(object)),
           );
+          await doAfterDelete();
         }),
         borderRadius: BorderRadius.circular(10.0),
         child: Padding(
@@ -62,17 +64,17 @@ class HujjatCard extends StatelessWidget {
                     Wrap(children: [
                       //Icon(HujjatTur.obyektlar[object.turi]!.icon, size: 16),
                       Text(
-                        "${object.raqami}-",
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        HujjatTur.obyektlar[object.turi]!.nomi,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        "${object.raqami}-${HujjatTur.obyektlar[object.turi]!.nomi}",
+                        style: MyTheme.h6.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(width: 7.0),
-                      object.trKont == 0 ? SizedBox() : Text(
-                        Kont.obyektlar[object.trKont]!.nomi,
-                      ),
+                      statusBadge(object.status),
+                      const SizedBox(width: 7.0),
+                      object.trKont == 0
+                          ? const SizedBox()
+                          : Text(
+                              Kont.obyektlar[object.trKont]!.nomi,
+                            ),
                     ]),
                     object.trKont == 0
                         ? const SizedBox()
@@ -121,4 +123,17 @@ class HujjatCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget statusBadge(HujjatSts status) {
+  return Material(
+    color: status.ranggi,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+      child: Text(
+      status.nomi,
+      style: const TextStyle(color: Colors.white),
+    ),),
+  );
 }

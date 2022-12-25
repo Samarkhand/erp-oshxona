@@ -61,9 +61,7 @@ class HujjatIchiCont with Controller {
   }
 
   Future<void> save(context) async {
-    print('save');
     if (formKey.currentState!.validate()) {
-      print('validate');
       showLoading(text: "Saqlanmoqda");
       object.raqami = int.tryParse(raqamController.text) ?? 0;
       object.izoh = izohController.text;
@@ -84,11 +82,13 @@ class HujjatIchiCont with Controller {
       ));
       hideLoading();
       Navigator.pop(context);
-      Navigator.push(
+      if(widget.yangimi){
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => openHujjat(object)!,
           ));
+      }
     }
   }
 
