@@ -64,7 +64,7 @@ class _QulfViewState extends State<QulfView> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 0, horizontal: 10),
                       child:
-                          Image.asset("assets/logo_finmaster.png", width: 100),
+                          Image.asset("assets/logo_inware.png", width: 100),
                     ),
                   ],
                 ),

@@ -29,49 +29,54 @@ class _KirishViewState extends State<KirishView> {
   Widget _body(context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
-      child: Form(
-        key: _cont.formKey,
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-              child: Image.asset("assets/logo_finmaster.png", width: 200),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-              child: Text("Kirish", style: MyTheme.h2),
-            ),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    IntlPhoneField(
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        label: const Text("Telefon"),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        //prefixIcon: const Icon(Icons.phone),
-                      ),
-                      initialCountryCode: 'UZ',
-                      autofocus: true,
-                      onChanged: (phone) {
-                        //logConsole(phone.completeNumber);
-                      },
-                      onCountryChanged: (country) {
-                        //logConsole('Country changed to: ' + country.name);
-                      },
-                      onSaved: (value) {
-                        if (value != null) {
-                          _cont.telephone = value;
-                        }
-                      },
-                    ),
-                    /*TextFormField(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400.0),
+          child: Form(
+            key: _cont.formKey,
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: Image.asset("assets/logo_inware.png", width: 200),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+                  child: Text("Kirish", style: MyTheme.h2),
+                ),
+                Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        IntlPhoneField(
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            label: const Text("Telefon"),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            //prefixIcon: const Icon(Icons.phone),
+                          ),
+                          initialCountryCode: 'UZ',
+                          autofocus: true,
+                          onChanged: (phone) {
+                            //logConsole(phone.completeNumber);
+                          },
+                          onCountryChanged: (country) {
+                            //logConsole('Country changed to: ' + country.name);
+                          },
+                          onSaved: (value) {
+                            if (value != null) {
+                              _cont.telephone = value;
+                            }
+                          },
+                        ),
+                        /*TextFormField(
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                           label: const Text("Telefon"),
@@ -85,72 +90,73 @@ class _KirishViewState extends State<KirishView> {
                         _cont.telephone = value;
                       },
                     ),*/
-                    const SizedBox(
-                      height: oraliqPadding,
-                    ),
-                    TextFormField(
-                      keyboardType: TextInputType.text,
-                      obscureText: !showPassword,
-                      decoration: InputDecoration(
-                        label: const Text("Parol"),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            if (showPassword) {
-                              showPassword = false;
-                            } else {
-                              showPassword = true;
-                            }
-                            setState(() {});
+                        const SizedBox(
+                          height: oraliqPadding,
+                        ),
+                        TextFormField(
+                          keyboardType: TextInputType.text,
+                          obscureText: !showPassword,
+                          decoration: InputDecoration(
+                            label: const Text("Parol"),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                if (showPassword) {
+                                  showPassword = false;
+                                } else {
+                                  showPassword = true;
+                                }
+                                setState(() {});
+                              },
+                              icon: showPassword
+                                  ? const Icon(Icons.remove_red_eye)
+                                  : const Icon(Icons.visibility_off),
+                            ),
+                          ),
+                          validator: (value) => _cont.validate(value,
+                              required: true, nomi: 'Parolni kiriting'),
+                          onSaved: (value) {
+                            _cont.password = value;
                           },
-                          icon: showPassword
-                              ? const Icon(Icons.remove_red_eye)
-                              : const Icon(Icons.visibility_off),
                         ),
-                      ),
-                      validator: (value) => _cont.validate(value,
-                          required: true, nomi: 'Parolni kiriting'),
-                      onSaved: (value) {
-                        _cont.password = value;
-                      },
-                    ),
-                    const SizedBox(
-                      height: oraliqPadding,
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(10.0),
-                      child: ElevatedButton(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 30.0),
-                          child: Text("Kirish".toUpperCase()),
+                        const SizedBox(
+                          height: oraliqPadding,
                         ),
-                        onPressed: () async {
-                          await _cont.save(context);
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: TextButton(
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 10.0),
-                          child: Text("Ro'yxatdan o'tish"),
+                        Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(10.0),
+                          child: ElevatedButton(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 30.0),
+                              child: Text("Kirish".toUpperCase()),
+                            ),
+                            onPressed: () async {
+                              await _cont.save(context);
+                            },
+                          ),
                         ),
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegistratsiyaView(),
-                              ));
-                        },
-                      ),
-                    ),
-                    /*Padding(
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: TextButton(
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              child: Text("Ro'yxatdan o'tish"),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegistratsiyaView(),
+                                  ));
+                            },
+                          ),
+                        ),
+                        /*Padding(
                       padding: const EdgeInsets.all(5.0),
                       child: TextButton(
                         child: const Padding(
@@ -167,16 +173,14 @@ class _KirishViewState extends State<KirishView> {
                         },
                       ),
                     ),*/
-                  ],
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 60),
+              ],
             ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-              child: Image.asset("assets/from_inware.png", width: 100),
-            ),
-          ],
+          ),
         ),
       ),
     );
