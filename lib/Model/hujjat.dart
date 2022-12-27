@@ -30,7 +30,7 @@ class Hujjat {
   static List<Hujjat> get chiqimlar => obyektlar.where((element) => element.turi == HujjatTur.chiqim.tr).toList();
   static List<Hujjat> get buyurtmalar => obyektlar.where((element) => element.turi == HujjatTur.buyurtma.tr).toList();
   static List<Hujjat> olList(HujjatTur turi) => obyektlar.where((element) => element.turi == turi.tr).toList();
-  static Hujjat ol(HujjatTur turi, int tr) => obyektlar.firstWhere((element) => element.turi == turi.tr && element.tr == tr);
+  static Hujjat? ol(HujjatTur turi, int tr) => obyektlar.firstWhere((element) => element.turi == turi.tr && element.tr == tr);
 
   int turi = 0;
   int tr = 0;
@@ -41,14 +41,16 @@ class Hujjat {
   int vaqtS = 0;
   int vaqt = 0;
   int trKont = 0;
+  int trHujjat = 0;
   int raqami = 0;
   String hujjatRaqami = "";
   String izoh = "";
 
   HujjatTur get turiObj => HujjatTur.obyektlar[turi]!;
-  Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
   HujjatSts get status => HujjatSts.obyektlar[turi]![sts]!;
   num get summa => summaNum ??  yaxlitla(summaOl());
+  Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
+  Hujjat? get hujjat => trHujjat == 0 ? null : Hujjat.ol(turiObj, trHujjat);
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
   DateTime get vaqtSDT => DateTime.fromMillisecondsSinceEpoch(vaqtS);
@@ -65,6 +67,7 @@ class Hujjat {
     vaqtS = (json['vaqtS']) * 1000;
     vaqt = (json['vaqt']) * 1000;
     trKont = json['trKont'];
+    trHujjat = json['trHujjat'];
     raqami = json['raqami'];
     hujjatRaqami = json['hujjatRaqami'];
     izoh = json['izoh'];
@@ -80,30 +83,11 @@ class Hujjat {
         'vaqtS': toSecond(vaqtS),
         'vaqt': toSecond(vaqt),
         'trKont': trKont,
+        'trHujjat': trHujjat,
         'raqami': raqami,
         'hujjatRaqami': hujjatRaqami,
         'izoh': izoh,
       };
-
-  Future<Map<String, dynamic>> toPost() async {
-    /*var chiqimlarList = await HujjatService.getAll(
-        filter: Filter(where: "WHERE turi='${this.turi}' AND tr='${this.tr}'"));*/
-    List<Map> chiqimlar = [];/*
-    await chiqimlarList.forEach((obj) async {
-      await chiqimlar.add(await obj.toPost());
-    });*/
-    return <String, dynamic>{
-      'turi': turi,
-      'tr': tr,
-      'sts': sts,
-      'qulf': qulf ? 1 : 0,
-      'trKont': trKont,
-      'sana': sana.toString().substring(0, 10),
-      'hujjatRaqami': hujjatRaqami,
-      'izoh': "$izoh ($tr-савдо)",
-      'chiqimlar': [] + chiqimlar,
-    };
-  }
 
   Future<void> delete() async {
     obyektlar.remove(this);
@@ -170,6 +154,7 @@ class HujjatService {
       "vaqtS"	INTEGER NOT NULL DEFAULT 0,
       "vaqt"	INTEGER NOT NULL DEFAULT 0,
       "trKont"	INTEGER NOT NULL DEFAULT 0,
+      "trHujjat"	INTEGER NOT NULL DEFAULT 0,
       "raqami"	INTEGER NOT NULL DEFAULT 0,
       "hujjatRaqami"	TEXT NOT NULL DEFAULT '',
       "izoh"	TEXT NOT NULL DEFAULT '',

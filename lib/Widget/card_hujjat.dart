@@ -22,7 +22,7 @@ class HujjatCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: InkWell(
-        onDoubleTap: () {
+        onDoubleTap: () async {
           /*
           showDialog(
             context: context,
@@ -34,11 +34,12 @@ class HujjatCard extends StatelessWidget {
           );*/
           Widget? view = openHujjat(object);
           if (view == null) return;
-          Navigator.push(
+          await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => view,
               ));
+          await doAfterDelete();
         },
         onTap: (() async {
           await showDialog(

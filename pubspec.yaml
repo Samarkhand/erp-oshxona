@@ -43,6 +43,7 @@ dependencies:
   # https://pub.dev/packages/unicons/example
   flutter_barcode_scanner: ^2.0.0 # barcode scanner
   flutter_svg: ^1.1.6
+  process_run: ^0.12.3+2
 
 dev_dependencies:
   flutter_test:

@@ -12,20 +12,21 @@ import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InwareServer {
-  static const String url = "https://inware.uz/svc/finmaster";
-  static const String accountUrl = "https://inware.uz/cabinet";
-  static const String siteUrl = "https://finmaster.uz";
+  static String url = "https://s2.inware.uz";
+  static const String accountUrl = "https://s2.inware.uz";
+  static const String siteUrl = "https://inware.uz";
 
-  static const String urlReg = '$url/?a=service/reg';
-  static const String urlKir = '$url/?a=service/kir';
-  static const String urlChiq = '$url/?a=service/chiq';
-  static const String urlGetAuthKey = '$url/?a=service/getAuthKey';
-  static const String urlGetPaymentKey = "$url/?a=service/getAuthKey&payment=1";
-  static const String urlGetInfo = '$url/?a=service/info';
-  static const String urlTarmoqTek =
+  static final String urlReg = '$url/?a=service/reg';
+  static final String urlKir = '$url/?a=service/kir';
+  static final String urlChiq = '$url/?a=service/chiq';
+  static final String urlGetAuthKey = '$url/?a=service/getAuthKey';
+  static final String urlGetPaymentKey = "$url/?a=service/getAuthKey&payment=1";
+  static final String urlGetInfo = '$url/?a=service/info';
+  static final String urlTarmoqTek =
       '$url/?a=service/checkBot&group=1&channel=1';
-  static const String urlDeviceReg = '$url/?a=service/deviceReg';
-  static const String urlSorovJavob = "$url/?a=service/sorovnoma";
+  static final String urlDeviceReg = '$url/?a=service/deviceReg';
+  static final String urlSorovJavob = "$url/?a=service/sorovnoma";
+  static final String urlBuyurtma = "$url/?a=service/order";
   static const String linkGetAuth = '$accountUrl/?authKey=';
   static const String linkOferta = '$siteUrl/ommaviyTak.php';
   static const String linkYangiliklar = 'https://t.me/finmasterapp';
@@ -37,6 +38,7 @@ class InwareServer {
   static const String linkBotAzo = 'https://t.me/$telegramBot?start=';
   static const String linkGooglePlay =
       'https://play.google.com/store/apps/details?id=uz.inware.erp_oshxona';
+
 
   static azoBoldimiBotga(BuildContext context) async {
     if (!Sozlash.tanishmi) {
@@ -55,7 +57,7 @@ class InwareServer {
       ));
       return;
     }
-    const url = InwareServer.urlTarmoqTek;
+    var url = InwareServer.urlTarmoqTek;
     Map<String, String> headers = {"Auth": Sozlash.token};
     Response reply = await apiGet(url, headers: headers);
     logConsole("GET URL: $url");
@@ -125,7 +127,7 @@ class InwareServer {
       ));
       return;
     }
-    const url = InwareServer.urlGetAuthKey;
+    var url = InwareServer.urlGetAuthKey;
     Map<String, String> headers = {"Auth": Sozlash.token};
     Response reply = await apiGet(url, headers: headers);
     logConsole("GET URL: $url");
@@ -171,7 +173,7 @@ class InwareServer {
     }
     var deviceInfo = await Global.deviceInfo();
 
-    const url = InwareServer.urlChiq;
+    var url = InwareServer.urlChiq;
     Map<String, String> headers = {"Auth": Sozlash.token};
     Response reply = await apiPost(url, jsonMap: deviceInfo, headers: headers);
     logConsole("URL: $url");
@@ -223,7 +225,7 @@ class InwareServer {
       ));
       return;
     }
-    const url = InwareServer.urlGetAuthKey;
+    var url = InwareServer.urlGetAuthKey;
     Map<String, String> headers = {"Auth": Sozlash.token};
     Response reply = await apiGet(url, headers: headers);
     logConsole("GET URL: $url");
@@ -275,7 +277,7 @@ class InwareServer {
       ));
       return;
     }
-    const url = InwareServer.urlGetPaymentKey;
+    var url = InwareServer.urlGetPaymentKey;
     Map<String, String> headers = {"Auth": Sozlash.token};
     Response reply = await apiGet(url, headers: headers);
     logConsole("GET URL: $url");
@@ -321,7 +323,7 @@ class InwareServer {
       }
       return;
     }
-    const url = InwareServer.urlGetInfo;
+    var url = InwareServer.urlGetInfo;
     Map<String, String>? headers;
     Map<dynamic, dynamic> bodyMap = {};
 
@@ -421,7 +423,7 @@ class InwareServer {
     if (connectivityResult == ConnectivityResult.none) {
       return;
     }
-    const url = InwareServer.urlDeviceReg;
+    var url = InwareServer.urlDeviceReg;
     var deviceInfo = await Global.deviceInfo();
     Response reply = await apiPost(url, jsonMap: deviceInfo);
     logConsole("GET URL: $url");
@@ -454,7 +456,7 @@ class InwareServer {
       "javob": "SMS habarnoma qo'shsak yaxshi bo'lar edi"
     };
 
-    const url = InwareServer.urlChiq;
+    var url = InwareServer.urlChiq;
     Map<String, String> headers = {"Auth": Sozlash.token};
     Response reply = await apiPost(url, jsonMap: body, headers: headers);
     logConsole("URL: $url");

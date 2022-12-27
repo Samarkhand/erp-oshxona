@@ -175,7 +175,7 @@ class _RegistratsiyaViewState extends State<RegistratsiyaView> {
                                 child: Text("Ro'yxatdan o'tish".toUpperCase()),
                               ),
                               onPressed: () {
-                                _cont.save(context);
+                                //_cont.save(context);
                               },
                             ),
                           ),

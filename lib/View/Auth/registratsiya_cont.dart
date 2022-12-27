@@ -67,7 +67,7 @@ class RegistratsiyaCont with Controller {
       var deviceInfo = await Global.deviceInfo();
       userdetails.addAll(deviceInfo);
 
-      const url = InwareServer.urlReg;
+      var url = InwareServer.urlReg;
       Response reply = await apiPost(url, jsonMap: userdetails);
       logConsole("POST URL: $url");
       logConsole("REQUEST body: $userdetails");

@@ -67,7 +67,9 @@ class HujjatSts extends Tur {
   /// Buyurtma uchun
   static HujjatSts jonatilganBrtm = HujjatSts(1, "Jo'natilgan", ranggi: Colors.green.shade800);
   /// Buyurtma uchun
-  static HujjatSts tugallanganBrtm = HujjatSts(2, "Tugallangan", ranggi: Colors.blue.shade800);
+  static HujjatSts tasdiqKutBrtm = HujjatSts(2, "Tasdiqni kutmoqda", ranggi: Colors.red.shade800);
+  /// Buyurtma uchun
+  static HujjatSts tugallanganBrtm = HujjatSts(3, "Tugallangan", ranggi: Colors.blue.shade800);
 
   /// ishlab chiqarish partiyasi uchun
   static HujjatSts homAshyoPrt = HujjatSts(1, "Masalliqlar tanlanmoqda", ranggi:  Colors.orange.shade800);

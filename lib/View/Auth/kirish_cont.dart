@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:erp_oshxona/Library/functions.dart';
@@ -10,6 +11,7 @@ import 'package:erp_oshxona/View/Auth/kirish_view.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 import 'package:http/http.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:process_run/shell.dart';
 
 class KirishCont with Controller {
   late KirishView widget;
@@ -44,15 +46,17 @@ class KirishCont with Controller {
       return;
     }
     if (formKey.currentState!.validate()) {
+      showLoading(text: "Qurilma o'rganilmoqda");
+      Map<String, dynamic> deviceInfo = await Global.deviceInfo();
+
       showLoading(text: "Login Parol tekshirilmoqda");
       (formKey.currentState!.save());
       Map<String, dynamic> userdetails = {};
-      userdetails["tel"] = telephone?.completeNumber;
-      userdetails["parol"] = password;
-      var deviceInfo = await Global.deviceInfo();
+      userdetails["login"] = telephone?.completeNumber;
+      userdetails["password"] = password;
       userdetails.addAll(deviceInfo);
 
-      const url = InwareServer.urlKir;
+      var url = InwareServer.urlKir;
       Response reply = await apiPost(url, jsonMap: userdetails);
       logConsole("POST URL: $url");
       logConsole("REQUEST body: $userdetails");

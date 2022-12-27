@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:process_run/shell.dart';
 
 final sumFormat = NumberFormat.currency(
   locale: "am", // ru, am
@@ -18,7 +19,8 @@ final DateFormat dateTimeFormat = DateFormat('dd.MM.yyyy H:m');
 final DateFormat hourMinuteFormat = DateFormat('H:m');
 
 DateTime get now => DateTime.now();
-DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+DateTime today =
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 /*
 final String formatted = formatter.format(now);
 */
@@ -37,14 +39,14 @@ class Global {
       ..faylNomi = 'base-2',
   };
 
-  static const String jwtKey = "u#IK3@fyCV~9N4Fjrk6XviOoLGdh2*D801aQxIK\$kjHAB@hUtQCaST3F";
+  static const String jwtKey =
+      "u#IK3@fyCV~9N4Fjrk6XviOoLGdh2*D801aQxIK\$kjHAB@hUtQCaST3F";
   static const String licenseSalt = "5bPxTd~D92hLJniA";
 
   static List<TextInputFormatter> doubleRegEx = [
     FilteringTextInputFormatter.allow(RegExp(r'[+-]?([0-9]*[.])?[0-9]+'))
   ];
 
-  
   static Future<Map<String, dynamic>> deviceInfo() async {
     var deviceInfo = DeviceInfoPlugin();
 
@@ -76,8 +78,7 @@ class Global {
         'os_version': data.systemVersion,
         'isPhysicalDevice': data.isPhysicalDevice,
       };
-    } 
-    else if(Platform.isAndroid) {
+    } else if (Platform.isAndroid) {
       AndroidDeviceInfo build = await deviceInfo.androidInfo;
       //build.androidId; // unique ID on Android
       /*return <String, dynamic>{
@@ -119,24 +120,42 @@ class Global {
         'os_version': build.version.release,
         'isPhysicalDevice': build.isPhysicalDevice,
       };
-    }
-    else if(Platform.isWindows) {
-      WindowsDeviceInfo build = await deviceInfo.windowsInfo;
-      return <String, dynamic>{
-        'device_id': "1",
-        'brand': build.computerName,
-        'model': 'PC',
-        'os_type': "Windows",
-        'os': "10",
-        'os_version': "10",
-        'isPhysicalDevice': "1",
-      };
-    }
-    else {
+    } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      var shell = Shell();
+
+      var deviceData = await shell.run('''
+wmic diskdrive get model
+wmic diskdrive get serialnumber
+
+wmic cpu get Name
+wmic cpu get ProcessorId
+
+wmic csproduct get Vendor
+wmic csproduct get Name 
+wmic csproduct get UUID
+wmic csproduct get IdentifyingNumber''');
+
+      /*
+        for(var res in result){
+          ret[res.outLines.elementAt(0)] = res.outLines.elementAt(2);
+        }*/
+
+      Map<String, dynamic> ret = {};
+      ret['hddModel'] = deviceData[0].outLines.elementAt(2);
+      ret['hddSerial'] = deviceData[1].outLines.elementAt(2);
+
+      ret['cpuModel'] = deviceData[2].outLines.elementAt(2);
+      ret['cpuId'] = deviceData[3].outLines.elementAt(2);
+
+      ret['csName'] =
+          "${deviceData[4].outLines.elementAt(2)} ${deviceData[5].outLines.elementAt(2)}";
+      ret['csId'] = deviceData[6].outLines.elementAt(2);
+      ret['csIn'] = deviceData[7].outLines.elementAt(2);
+      return ret;
+    } else {
       return {};
     }
   }
-
 }
 
 class Database {

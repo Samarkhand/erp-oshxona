@@ -1,4 +1,11 @@
 Concept:
+    - Buyurtma
+        - jo'natish knopkasi @done
+        - yangilash knopkasi @done
+        - ichiga hujjat statusi @done
+        - sarlavhasi @done
+        - tugallangan buyurtma ko'rinishi
+        - yangilash algoritmi
     - Qoldiq
         - royxat @done
         - mah ichi @done
@@ -9,12 +16,12 @@ Concept:
         - Delete shart bilan: agar qoldig'i yoki bu oy davomida kirim, chiqim bo'lmagan bo'lsagina o'chirilsin
     - MBolim, MOlchov, MBrend crud #MAN
     - Hujjat
-        - Model.
-        - ro'yxati
+        - Model. @done
+        - ro'yxati @done
     - kirim
-        - Model
-        - ro'yxati
-    - savdo
+        - Model @done
+        - ro'yxati 
+    - savdo 
         - Model
         - ro'yxati
     - Himoya

@@ -1,5 +1,7 @@
 import 'package:erp_oshxona/Library/db/db.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/kont.dart';
+import 'package:erp_oshxona/Model/mah_buyurtma.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 
 class MahKirim {
@@ -50,6 +52,27 @@ class MahKirim {
     nomi = json['nomi'];
     kodi = json['kodi'];
     izoh = json['izoh'];
+  }
+
+  MahKirim.fromBrtm(MahBuyurtma brtm) {
+    int now = DateTime.now().millisecondsSinceEpoch;
+    tr = brtm.tr;
+    turi = HujjatTur.kirimFil.tr;
+    //trHujjat = brtm.trHujjat;
+    //qulf = true;
+    //yoq = false;
+    sana = brtm.sana;
+    vaqtS = now;
+    vaqt = now;
+    trMah = trMah;
+    miqdori = brtm.miqdori;
+    tannarxi = brtm.narxi;
+    tannarxiReal = brtm.narxi;
+    sotnarxi = brtm.narxi;
+    trKont = brtm.trKont;
+    nomi = brtm.nomi;
+    kodi = brtm.kodi;
+    izoh = brtm.izoh;
   }
 
   Map<String, dynamic> toJson() => {

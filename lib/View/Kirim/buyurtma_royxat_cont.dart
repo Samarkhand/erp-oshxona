@@ -1,8 +1,12 @@
-import 'dart:collection';
-
+import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:erp_oshxona/Library/functions.dart';
+import 'package:erp_oshxona/Library/rest_api.dart';
+import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/View/Kirim/buyurtma_royxat_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
@@ -10,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
+import 'package:http/http.dart';
 
 class BuyurtmaRoyxatCont with Controller {
   late BuyurtmaRoyxatView widget;
@@ -21,7 +26,7 @@ class BuyurtmaRoyxatCont with Controller {
   late DateTime sanaG;
 
   List<Mahsulot> mahsulotList = [];
-  Set<MahBuyurtma> buyurtmaList = {};
+  List<MahBuyurtma> buyurtmaList = [];
 
   Map<int, TextEditingController> buyurtmaCont = {};
 
@@ -75,9 +80,8 @@ class BuyurtmaRoyxatCont with Controller {
   }
 
   loadFromGlobal(){
-    buyurtmaList = MahBuyurtma.obyektlar.where((element) => element.trHujjat == hujjat.tr).toSet();
-    buyurtmaList = SplayTreeSet.from(
-      buyurtmaList,
+    buyurtmaList = MahBuyurtma.obyektlar.where((element) => element.trHujjat == hujjat.tr).toList();
+    buyurtmaList.sort(
       // Comparison function not necessary here, but shown for demonstrative purposes 
       (a, b) => -a.tr.compareTo(b.tr), 
     );
@@ -108,6 +112,163 @@ class BuyurtmaRoyxatCont with Controller {
     if (picked != null && picked != sanaG) {
       setState(() => sanaG = picked);
     }
+  }
+
+  buyurtmaJonatish() async {
+    showLoading(text: "Buyurtma jo'natilmoqda");
+    if (await (Connectivity().checkConnectivity()) == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Internetga ulaning"),
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.amberAccent,
+      ));
+      hideLoading();
+      return;
+    }
+    var url = InwareServer.urlBuyurtma;
+    Map<String, String> headers = {"Auth": Sozlash.token};
+    Map body = _brtmJonatganiMalumot();
+    Response? reply = await apiPost(url, headers: headers, jsonMap: body);
+    logConsole("GET URL: $url");
+    logConsole("REQUEST head: $headers");
+    logConsole("REQUEST body: $body");
+    logConsole("RESPONSE head: ${reply.headers}");
+    logConsole("RESPONSE body: ${reply.body}");
+    Map<dynamic, dynamic>? result = jsonDecode(reply.body);
+
+    if (reply.statusCode == 200 && result != null) {
+      setState((){ 
+        hujjat.qulf = true;
+        hujjat.sts = HujjatSts.jonatilganBrtm.tr;
+      });
+    }
+    if (result?['alert'] != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(result!['alert']['title']),
+        duration: const Duration(seconds: 5),
+        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
+      ));
+    }
+    else if (result == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Serverdan (${reply.statusCode}) hato javob keldi"),
+        duration: const Duration(seconds: 2),
+        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
+      ));
+    }
+    hideLoading();
+  }
+
+  buyurtmaTekshirish() async {
+    showLoading(text: "Buyurtma tekshirilmoqda");
+    if (await (Connectivity().checkConnectivity()) == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Internetga ulaning"),
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.amberAccent,
+      ));
+      hideLoading();
+      return;
+    }
+    var url = "${InwareServer.urlBuyurtma}&checkStatus=${hujjat.tr}";
+    Map<String, String> headers = {"Auth": Sozlash.token};
+    Map body = _brtmJonatganiMalumot();
+    Response? reply = await apiPost(url, headers: headers, jsonMap: body);
+    logConsole("GET URL: $url");
+    logConsole("REQUEST head: $headers");
+    logConsole("REQUEST body: $body");
+    logConsole("RESPONSE head: ${reply.headers}");
+    logConsole("RESPONSE body: ${reply.body}");
+    Map<dynamic, dynamic>? result = jsonDecode(reply.body);
+
+    if (reply.statusCode == 200 && result != null) {
+      setState((){
+        hujjat.qulf = result['hujjat']['qulf'] == 1;
+        hujjat.sts = result['hujjat']['sts'];
+      });
+      if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
+        // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
+        if(hujjat.trHujjat != 0){
+          Hujjat kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat)!;
+          for(Map buyurtmaData in result['mahsulotlar']){
+            var brtm = buyurtmaList.firstWhere((element) => element.tr == int.parse(buyurtmaData['tr'].toString()), orElse: () => MahBuyurtma.fromJson(buyurtmaData as Map<String, dynamic>));
+            if(brtm.yoq) continue;
+            var kirim = MahKirim.fromBrtm(brtm)..trHujjat=kirimHujjat.tr;
+            await MahKirim.service!.insert(kirim.toJson());
+          }
+        }
+      }
+    }
+    if (result?['alert'] != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(result!['alert']['title']),
+        duration: const Duration(seconds: 5),
+        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
+      ));
+    }
+    else if (result == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Serverdan (${reply.statusCode}) hato javob keldi"),
+        duration: const Duration(seconds: 2),
+        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
+      ));
+    }
+    hideLoading();
+  }
+
+  buyurtmaTugallash() async {
+    showLoading(text: "Buyurtma tugallanmoqda");
+    if (await (Connectivity().checkConnectivity()) == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Internetga ulaning"),
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.amberAccent,
+      ));
+      hideLoading();
+      return;
+    }
+    var url = "${InwareServer.urlBuyurtma}&complete=${hujjat.tr}";
+    Map<String, String> headers = {"Auth": Sozlash.token};
+    Response? reply = await apiGet(url, headers: headers);
+    logConsole("GET URL: $url");
+    logConsole("REQUEST head: $headers");
+    logConsole("RESPONSE head: ${reply.headers}");
+    logConsole("RESPONSE body: ${reply.body}");
+    Map<dynamic, dynamic>? result = jsonDecode(reply.body);
+
+    if (reply.statusCode == 200 && result != null) {
+      setState((){
+        hujjat.qulf = result['hujjat']['qulf'] == 1;
+        hujjat.sts = result['hujjat']['sts'];
+      });
+      if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
+        // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
+        Hujjat? kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat);
+        if(kirimHujjat != null){
+          for(Map buyurtmaData in result['mahsulotlar']){
+            var brtm = buyurtmaList.firstWhere((element) => element.tr == int.parse(buyurtmaData['tr'].toString()), orElse: () => MahBuyurtma.fromJson(buyurtmaData as Map<String, dynamic>));
+            if(brtm.yoq) continue;
+            var kirim = MahKirim.fromBrtm(brtm);
+            await MahKirim.service!.insert(kirim.toJson());
+          }
+        }
+      }
+    }
+    if (result?['alert'] != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(result!['alert']['title']),
+        duration: const Duration(seconds: 5),
+        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
+      ));
+    }
+    else if (result == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Serverdan (${reply.statusCode}) hato javob keldi"),
+        duration: const Duration(seconds: 2),
+        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
+      ));
+    }
+    hideLoading();
   }
 
   addToList(Mahsulot buyurtma) async {
@@ -147,5 +308,12 @@ class BuyurtmaRoyxatCont with Controller {
               element.nomi.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
+  }
+
+  Map _brtmJonatganiMalumot(){
+    return {
+      'hujjat': hujjat.toJson(),
+      'mahsulotlar': buyurtmaList.map((e) => e.toJson()).toList(),
+    };
   }
 }

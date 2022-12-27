@@ -1,5 +1,4 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
-import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
 import 'package:erp_oshxona/View/Kirim/buyurtma_royxat_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
@@ -57,7 +56,6 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
         runAlignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          _cont.hujjat.qulf ? const Icon(Icons.lock) : const SizedBox(),
           Text("${widget.hujjat.turiObj.nomi} ${widget.hujjat.raqami} "),
           Text("${dateFormat.format(widget.hujjat.sanaDT)} ", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
           statusBadge(_cont.hujjat.status),
@@ -71,7 +69,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cont.hujjat.sts != HujjatSts.ochilgan.tr ? const SizedBox() : Expanded(
+          Expanded(
             flex: 4,
             child: Card(
               shape: RoundedRectangleBorder(
@@ -99,7 +97,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _cont.hujjat.qulf ? _qulfHujjatIchiRoyxati() : _hujjatIchiRoyxati(),
+                  children: _tarkiblarRoyxati(),
                 ),
               ),
             ),
@@ -156,7 +154,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
     ];
   }
 
-  List<Widget> _hujjatIchiRoyxati() {
+  List<Widget> _tarkiblarRoyxati() {
     List<Widget> royxat = [];
     int n = 0;
     royxat.add(Padding(
@@ -168,7 +166,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
       royxat.add(
         Material(
           child: InkWell(
-            onTap: () async {/*
+            onTap: () async {
               //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
               String? value = await inputDialog(context,
                   object.miqdori.toStringAsFixed(object.mahsulot.kasr));
@@ -179,7 +177,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                 MahBuyurtma.service!.update({'miqdori': object.miqdori},
                     where:
                         "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
-              }*/
+              }
             },
             child: Padding(
               padding: const EdgeInsets.all(5),
@@ -202,74 +200,8 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                             border: const OutlineInputBorder(),
                             suffixText: " ${object.mahsulot.mOlchov.nomi}",
                           ),
-                          onChanged: (value) {
-                            if(value == '') value = '0';
-                            if (object.miqdori != num.tryParse(value)) {
-                              setState(() {
-                                object.miqdori = num.tryParse(value) ?? 0;
-                              });
-                              MahBuyurtma.service!.update({'miqdori': object.miqdori},
-                                  where:
-                                      "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
-                            }
-                          },
                         ),
                       ),
-                      const SizedBox(width: 20),
-                      OutlinedButton(
-                        onPressed: () => _cont.remove(object),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Icon(Icons.delete, color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    royxat.add(const SizedBox(height: 60));
-    return [
-      Expanded(
-          child: ListView(
-        children: royxat,
-      )),
-    ];
-  }
-
-  List<Widget> _qulfHujjatIchiRoyxati() {
-    List<Widget> royxat = [];
-    int n = 0;
-    royxat.add(Padding(
-      padding: const EdgeInsets.all(10),
-      child: Text("Ro'yxat", style: MyTheme.h5),
-    ));
-    for (var object in _cont.buyurtmaList) {
-      n++;
-      royxat.add(
-        Material(
-          child: InkWell(
-            child: Padding(
-              padding: const EdgeInsets.all(5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      const Icon(Icons.lock),
-                      Text("$n. ${object.mahsulot.nomi}"),
-                    ],
-                  ),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text("${object.miqdori.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}"),
-                      
                       const SizedBox(width: 20),
                       OutlinedButton(
                         onPressed: () => _cont.remove(object),
@@ -297,26 +229,10 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
   }
 
   List<Widget>? _buildActions() {
-    if(_cont.hujjat.sts == HujjatSts.ochilgan.tr){
-      return <Widget>[
-        IconButton(onPressed: () => _cont.buyurtmaJonatish(), icon: const Icon(Icons.send)),
-      ];
-    }
-    else if(_cont.hujjat.sts == HujjatSts.jonatilganBrtm.tr) {
-      return <Widget>[
-        IconButton(onPressed: () => _cont.buyurtmaTekshirish(), icon: const Icon(Icons.refresh)),
-      ];
-    }
-    else if(_cont.hujjat.sts == HujjatSts.tasdiqKutBrtm.tr) {
-      return <Widget>[
-        IconButton(onPressed: () => _cont.buyurtmaTekshirish(), icon: const Icon(Icons.refresh)),
-        IconButton(onPressed: () => _cont.buyurtmaTugallash(), icon: const Icon(Icons.check)),
-        IconButton(onPressed: () => _cont.buyurtmaTugallash(), icon: const Icon(Icons.close)),
-      ];
-    }
-    else {
-      return null;
-    }
+    return <Widget>[
+      IconButton(onPressed: (){}, icon: const Icon(Icons.refresh)),
+      IconButton(onPressed: (){}, icon: const Icon(Icons.send)),
+    ];
   }
 
   _delete(BuildContext context, KBolim element) {
