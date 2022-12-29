@@ -40,7 +40,7 @@ class Global {
   };
 
   static const String jwtKey =
-      "u#IK3@fyCV~9N4Fjrk6XviOoLGdh2*D801aQxIK\$kjHAB@hUtQCaST3F";
+      "K3Ep1xbsNw@TJCd}8%O6ZagWAL0HRYQ52X\$Sn#97\$5M6C~0IK~a3nm5%lag1AXBA";
   static const String licenseSalt = "5bPxTd~D92hLJniA";
 
   static List<TextInputFormatter> doubleRegEx = [

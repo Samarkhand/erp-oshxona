@@ -137,10 +137,16 @@ class BuyurtmaRoyxatCont with Controller {
     Map<dynamic, dynamic>? result = jsonDecode(reply.body);
 
     if (reply.statusCode == 200 && result != null) {
+      final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
       setState((){ 
         hujjat.qulf = true;
         hujjat.sts = HujjatSts.jonatilganBrtm.tr;
       });
+      Hujjat.service!.update({
+        'qulf': hujjat.qulf ? 1 : 0,
+        'sts': hujjat.sts,
+        'vaqtS': vaqts,
+      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
     }
     if (result?['alert'] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -182,10 +188,16 @@ class BuyurtmaRoyxatCont with Controller {
     Map<dynamic, dynamic>? result = jsonDecode(reply.body);
 
     if (reply.statusCode == 200 && result != null) {
+      final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
       setState((){
         hujjat.qulf = result['hujjat']['qulf'] == 1;
         hujjat.sts = result['hujjat']['sts'];
       });
+      Hujjat.service!.update({
+        'qulf': hujjat.qulf ? 1 : 0,
+        'sts': hujjat.sts,
+        'vaqtS': vaqts,
+      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
       if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
         // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
         if(hujjat.trHujjat != 0){
@@ -237,10 +249,16 @@ class BuyurtmaRoyxatCont with Controller {
     Map<dynamic, dynamic>? result = jsonDecode(reply.body);
 
     if (reply.statusCode == 200 && result != null) {
+      final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
       setState((){
         hujjat.qulf = result['hujjat']['qulf'] == 1;
         hujjat.sts = result['hujjat']['sts'];
       });
+      Hujjat.service!.update({
+        'qulf': hujjat.qulf ? 1 : 0,
+        'sts': hujjat.sts,
+        'vaqtS': vaqts,
+      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
       if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
         // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
         Hujjat? kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat);

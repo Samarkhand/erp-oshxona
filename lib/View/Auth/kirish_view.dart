@@ -49,47 +49,27 @@ class _KirishViewState extends State<KirishView> {
                 ),
                 Card(
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0)),
+                      borderRadius: BorderRadius.circular(20.0)),
                   child: Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
-                        IntlPhoneField(
-                          keyboardType: TextInputType.phone,
+                        TextFormField(
+                          keyboardType: TextInputType.text,
                           decoration: InputDecoration(
-                            label: const Text("Telefon"),
+                            label: const Text("Login"),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8)),
-                            //prefixIcon: const Icon(Icons.phone),
+                            prefixIcon: const Icon(Icons.person),
                           ),
-                          initialCountryCode: 'UZ',
                           autofocus: true,
                           onChanged: (phone) {
                             //logConsole(phone.completeNumber);
                           },
-                          onCountryChanged: (country) {
-                            //logConsole('Country changed to: ' + country.name);
-                          },
                           onSaved: (value) {
-                            if (value != null) {
-                              _cont.telephone = value;
-                            }
+                            _cont.telephone = value!;
                           },
                         ),
-                        /*TextFormField(
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                          label: const Text("Telefon"),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          prefixIcon: const Icon(Icons.person)),
-                      autofocus: true,
-                      validator: (value) => _cont.validate(value,
-                          required: true, nomi: 'Telefon raqamni kiriting'),
-                      onSaved: (value) {
-                        _cont.telephone = value;
-                      },
-                    ),*/
                         const SizedBox(
                           height: oraliqPadding,
                         ),
@@ -118,7 +98,7 @@ class _KirishViewState extends State<KirishView> {
                           validator: (value) => _cont.validate(value,
                               required: true, nomi: 'Parolni kiriting'),
                           onSaved: (value) {
-                            _cont.password = value;
+                            _cont.password = value!;
                           },
                         ),
                         const SizedBox(
@@ -138,41 +118,6 @@ class _KirishViewState extends State<KirishView> {
                             },
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: TextButton(
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 10.0),
-                              child: Text("Ro'yxatdan o'tish"),
-                            ),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const RegistratsiyaView(),
-                                  ));
-                            },
-                          ),
-                        ),
-                        /*Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: TextButton(
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 10.0),
-                          child: Text("Parolni unutdim"),
-                        ),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text("Tez orada qo'shiladi..."),
-                            duration: Duration(seconds: 5),
-                            backgroundColor: Colors.blueAccent,
-                          ));
-                        },
-                      ),
-                    ),*/
                       ],
                     ),
                   ),

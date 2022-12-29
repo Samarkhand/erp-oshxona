@@ -1,25 +1,24 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
-import 'package:erp_oshxona/Model/mah_buyurtma.dart';
-import 'package:erp_oshxona/View/Kirim/buyurtma_royxat_cont.dart';
+import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
-import 'package:erp_oshxona/View/Bolimlar/KBolimIchiView.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 
-class BuyurtmaRoyxatView extends StatefulWidget {
-  const BuyurtmaRoyxatView(this.hujjat, {Key? key}) : super(key: key);
+class ChiqimRoyxatView extends StatefulWidget {
+  const ChiqimRoyxatView(this.hujjat, {Key? key}) : super(key: key);
 
   final Hujjat hujjat;
 
   @override
-  State<BuyurtmaRoyxatView> createState() => _BuyurtmaRoyxatViewState();
+  State<ChiqimRoyxatView> createState() => _ChiqimRoyxatViewState();
 }
 
-class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
-  final BuyurtmaRoyxatCont _cont = BuyurtmaRoyxatCont();
+class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
+  final ChiqimRoyxatCont _cont = ChiqimRoyxatCont();
   bool yuklanmoqda = false;
   bool _isSearching = false;
   final TextEditingController _searchQueryController = TextEditingController();
@@ -161,7 +160,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
       padding: const EdgeInsets.all(10),
       child: Text("Ro'yxat", style: MyTheme.h5),
     ));
-    for (var object in _cont.buyurtmaList) {
+    for (var object in _cont.tarkibList) {
       n++;
       royxat.add(
         Material(
@@ -174,7 +173,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                 setState(() {
                   object.miqdori = num.tryParse(value) ?? 0;
                 });
-                MahBuyurtma.service!.update({'miqdori': object.miqdori},
+                MahChiqim.service!.update({'miqdori': object.miqdori},
                     where:
                         "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
               }
@@ -191,7 +190,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                       SizedBox(
                         width: 100,
                         child: TextField(
-                          controller: _cont.buyurtmaCont[object.tr],
+                          controller: _cont.tarkibCont[object.tr],
                           textAlign: TextAlign.end,
                           decoration: InputDecoration(
                             isDense: true,
@@ -200,6 +199,17 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                             border: const OutlineInputBorder(),
                             suffixText: " ${object.mahsulot.mOlchov.nomi}",
                           ),
+                          onChanged: (value) {
+                            if(value == '') value = '0';
+                            if (object.miqdori != num.tryParse(value)) {
+                              setState(() {
+                                object.miqdori = num.tryParse(value) ?? 0;
+                              });
+                              MahChiqim.service!.update({'miqdori': object.miqdori},
+                                  where:
+                                      "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
+                            }
+                          },
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -230,8 +240,7 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
 
   List<Widget>? _buildActions() {
     return <Widget>[
-      IconButton(onPressed: (){}, icon: const Icon(Icons.refresh)),
-      IconButton(onPressed: (){}, icon: const Icon(Icons.send)),
+      IconButton(onPressed: () => _cont.qulfla(), icon: const Icon(Icons.lock)),
     ];
   }
 

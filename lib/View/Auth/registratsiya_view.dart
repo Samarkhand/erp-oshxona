@@ -54,9 +54,9 @@ class _RegistratsiyaViewState extends State<RegistratsiyaView> {
                   ),
                   Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0)),
+                        borderRadius: BorderRadius.circular(20.0)),
                     child: Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
                           TextFormField(

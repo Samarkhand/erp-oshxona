@@ -1,9 +1,21 @@
 import 'package:erp_oshxona/Library/db/db.dart';
+import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 
 class MahChiqim {
-  static Map<int, MahChiqim> obyektlar = {};
+
+  insert() async {
+    obyektlar.add(this);
+    await service!.insert(toJson());
+  }
+
+  delete() async {
+    await service!.deleteId(trHujjat, tr);
+    obyektlar.remove(this);
+  }
+
+  static Set<MahChiqim> obyektlar = {};
   static MahChiqimService? service;
 
   int trHujjat = 0;
@@ -24,7 +36,7 @@ class MahChiqim {
   String kodi = "";
   String izoh = "";
 
-  Mahsulot get mahsulot => Mahsulot.obyektlar[trMah] ?? Mahsulot.obyektlar[0]!;
+  Mahsulot get mahsulot => Mahsulot.obyektlar[trMah]!;
   Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
@@ -40,9 +52,9 @@ class MahChiqim {
     yoq = json['yoq'].toString() == "1" ? true : false;
     trKont = int.parse(json['trKont'].toString());
     trMah = int.parse(json['trMah'].toString());
-    sana = int.parse(json['sana'].toString());
-    vaqtS = int.parse(json['vaqtS'].toString());
-    vaqt = int.parse(json['vaqt'].toString());
+    sana = int.parse(json['sana'].toString()) * 1000;
+    vaqtS = int.parse(json['vaqtS'].toString()) * 1000;
+    vaqt = int.parse(json['vaqt'].toString()) * 1000;
     miqdori = num.parse(json['miqdori'].toString());
     tannarxi = num.parse(json['tannarxi'].toString());
     sotnarxi = num.parse(json['sotnarxi'].toString());
@@ -60,30 +72,9 @@ class MahChiqim {
         'qulf': qulf ? 1 : 0,
         'trKont': trKont,
         'trMah': trMah,
-        'sana': sana,
-        'vaqtS': vaqtS,
-        'vaqt': vaqt,
-        'miqdori': miqdori,
-        'tannarxi': tannarxi,
-        'sotnarxi': sotnarxi,
-        'sotnarxiReal': sotnarxiReal,
-        'nomi': nomi,
-        'kodi': kodi,
-        'izoh': izoh,
-      };
-
-  // for web-service
-  Map<String, dynamic> toPost() => {
-        'trHujjat': trHujjat,
-        'turi': turi,
-        'tr': tr,
-        'yoq': yoq ? 1 : 0,
-        'qulf': qulf ? 1 : 0,
-        'trKont': trKont,
-        'trMah': trMah,
-        'sana': sana,
-        'vaqtS': vaqtS,
-        'vaqt': vaqt,
+        'sana': toSecond(sana),
+        'vaqtS': toSecond(vaqtS),
+        'vaqt': toSecond(vaqt),
         'miqdori': miqdori,
         'tannarxi': tannarxi,
         'sotnarxi': sotnarxi,
@@ -102,10 +93,10 @@ class MahChiqim {
 
 class MahChiqimService {
   String prefix = '';
-  final String table = "mah_chiqim";
+  final String tableName = "mah_chiqim";
   MahChiqimService({this.prefix = ''});
 
-  String get tableName => prefix + table;
+  String get table => "'$prefix$tableName'";
 
   String get createTable => """
     CREATE TABLE "$tableName" (
@@ -152,12 +143,12 @@ class MahChiqimService {
   }
 
   Future<void> delete({String? where}) async {
-    where ??= " WHERE $where";
-    await db.query("DELETE FROM `$table` $where");
+    where = where == null ? "" : " WHERE $where";
+    await db.query("DELETE FROM $table $where");
   }
 
   Future<void> deleteId(int hujjatId, int id, {String? where}) async {
-    where ??= " trHujjat = $hujjatId AND tr='$id'";
+    where = where ?? " trHujjat = $hujjatId AND tr='$id'";
     await delete(where: where);
   }
 
@@ -179,14 +170,14 @@ class MahChiqimService {
   }
 
   Future<int> newId(int hujjatId) async {
-    Map row = await db.query("SELECT tr FROM $table WHERE trHujjat = ? ORDER BY tr DESC LIMIT 0, 1",
+    int? tr = await db.query("SELECT MAX(tr) FROM $table WHERE trHujjat = ?",
         params: [hujjatId],
         //fromMap: (map) => {},
         singleResult: true);
-    return row['tr'] + 1;
+    return (tr ?? 0) + 1;
   }
 
-  Future<int> replace(Map map) async {
+  Future replace(Map map) async {
     map['trHujjat'] = (map['trHujjat'] == 0) ? null : map.remove('trHujjat');
     map['tr'] = (map['tr'] == 0) ? null : map.remove('tr');
 
@@ -205,8 +196,7 @@ class MahChiqimService {
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
   }
 
   Future<void> update(Map map, {String? where}) async {

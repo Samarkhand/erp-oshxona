@@ -63,9 +63,9 @@ class Hujjat {
     qulf = json['qulf'].toString() == "1" ? true : false;
     yoq = json['yoq'].toString() == "1" ? true : false;
     sts = json['sts'];
-    sana = json['sana'] * 1000;
-    vaqtS = (json['vaqtS']) * 1000;
-    vaqt = (json['vaqt']) * 1000;
+    sana = int.parse(json['sana'].toString()) * 1000;
+    vaqtS = int.parse(json['vaqtS'].toString()) * 1000;
+    vaqt = int.parse(json['vaqt'].toString()) * 1000;
     trKont = json['trKont'];
     trHujjat = json['trHujjat'];
     raqami = json['raqami'];

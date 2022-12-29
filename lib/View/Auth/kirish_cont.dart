@@ -16,8 +16,8 @@ import 'package:process_run/shell.dart';
 class KirishCont with Controller {
   late KirishView widget;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  PhoneNumber? telephone;
-  String? password;
+  String telephone = '';
+  String password = '';
 
   Future<void> init(widget, Function setState,
       {required BuildContext context}) async {
@@ -52,7 +52,7 @@ class KirishCont with Controller {
       showLoading(text: "Login Parol tekshirilmoqda");
       (formKey.currentState!.save());
       Map<String, dynamic> userdetails = {};
-      userdetails["login"] = telephone?.completeNumber;
+      userdetails["login"] = telephone;
       userdetails["password"] = password;
       userdetails.addAll(deviceInfo);
 
@@ -103,9 +103,7 @@ class KirishCont with Controller {
         // user data
         await Sozlash.box.put("tr", int.parse(result['user']['id'].toString()));
         await Sozlash.box.put("ism", result['user']['ism']);
-        await Sozlash.box.put("tel", telephone!.completeNumber);
-        await Sozlash.box.put("davKod", telephone!.countryISOCode);
-        await Sozlash.box.put("telKod", telephone!.countryCode);
+        await Sozlash.box.put("tel", telephone);
         // pin code
         await Sozlash.box.put("pinCode", "");
         await Sozlash.box.put("pinCodeBormi", false);

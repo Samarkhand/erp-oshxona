@@ -2,17 +2,18 @@ import 'dart:collection';
 
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
-import 'package:erp_oshxona/Model/mah_buyurtma.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
+import 'package:erp_oshxona/Model/mah_chiqim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
-import 'package:erp_oshxona/View/Kirim/buyurtma_royxat_view.dart';
+import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 
-class BuyurtmaRoyxatCont with Controller {
-  late BuyurtmaRoyxatView widget;
+class ChiqimRoyxatCont with Controller {
+  late ChiqimRoyxatView widget;
   List objectList = [];
 
   late final Hujjat hujjat;
@@ -21,9 +22,9 @@ class BuyurtmaRoyxatCont with Controller {
   late DateTime sanaG;
 
   List<Mahsulot> mahsulotList = [];
-  Set<MahBuyurtma> buyurtmaList = {};
+  Set<MahChiqim> tarkibList = {};
 
-  Map<int, TextEditingController> buyurtmaCont = {};
+  Map<int, TextEditingController> tarkibCont = {};
 
   Future<void> init(widget, Function setState,
       {required BuildContext context}) async {
@@ -42,16 +43,17 @@ class BuyurtmaRoyxatCont with Controller {
 
   Future<void> delete(KBolim element) async {
     bool kontBormi = false;
-    (await Kont.service!.select(where: " bolim='${element.tr}' LIMIT 0, 1")).forEach((key, value) {
+    (await Kont.service!.select(where: " bolim='${element.tr}' LIMIT 0, 1"))
+        .forEach((key, value) {
       kontBormi = true;
     });
-    
-    if(kontBormi) {
+
+    if (kontBormi) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("O'chirish mumkin emas. Oldin ishlatilgan"),
         duration: Duration(seconds: 5),
       ));
-    } else{
+    } else {
       await KBolim.service!.deleteId(element.tr);
       KBolim.obyektlar.remove(element.tr);
       setState(() {
@@ -63,28 +65,35 @@ class BuyurtmaRoyxatCont with Controller {
       ));
     }
   }
-  
+
   Future<void> loadItems() async {
-    await MahBuyurtma.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
+    await MahChiqim.service!
+        .select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC")
+        .then((values) {
       for (var value in values) {
-        var buyurtma = MahBuyurtma.fromJson(value);
-        MahBuyurtma.obyektlar.add(buyurtma);
-        buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
+        var tarkib = MahChiqim.fromJson(value);
+        MahChiqim.obyektlar.add(tarkib);
+        tarkibCont[tarkib.tr] = TextEditingController(
+            text: tarkib.miqdori.toStringAsFixed(tarkib.mahsulot.kasr));
       }
     });
   }
 
-  loadFromGlobal(){
-    buyurtmaList = MahBuyurtma.obyektlar.where((element) => element.trHujjat == hujjat.tr).toSet();
-    buyurtmaList = SplayTreeSet.from(
-      buyurtmaList,
-      // Comparison function not necessary here, but shown for demonstrative purposes 
-      (a, b) => -a.tr.compareTo(b.tr), 
+  loadFromGlobal() {
+    tarkibList = MahChiqim.obyektlar
+        .where((element) => element.trHujjat == hujjat.tr)
+        .toSet();
+    tarkibList = SplayTreeSet.from(
+      tarkibList,
+      // Comparison function not necessary here, but shown for demonstrative purposes
+      (a, b) => -a.tr.compareTo(b.tr),
     );
-    mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == MTuri.homAshyo.tr).toList();
+    mahsulotList = Mahsulot.obyektlar.values
+        .where((element) => element.turi == MTuri.homAshyo.tr)
+        .toList();
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
   }
-  
+
   Future<void> sanaTanlashD(BuildContext context, StateSetter setState) async {
     final now = DateTime.now();
     final DateTime? picked = await showDatePicker(
@@ -97,6 +106,7 @@ class BuyurtmaRoyxatCont with Controller {
       setState(() => sanaD = picked);
     }
   }
+
   Future<void> sanaTanlashG(BuildContext context, StateSetter setState) async {
     final now = DateTime.now();
     final DateTime? picked = await showDatePicker(
@@ -110,36 +120,40 @@ class BuyurtmaRoyxatCont with Controller {
     }
   }
 
-  addToList(Mahsulot buyurtma) async {
+  addToList(Mahsulot tarkib) async {
     String? value = await inputDialog(context, "");
-    if(value != null){
+    if (value != null) {
       num miqdori = num.tryParse(value) ?? 0;
-      add(buyurtma, miqdori: miqdori);
+      add(tarkib, miqdori: miqdori);
     }
   }
 
   add(Mahsulot mah, {num miqdori = 1}) async {
-    var buyurtma = MahBuyurtma()..trHujjat=hujjat.tr ..trMah=mah.tr ..miqdori=miqdori;
-    if(buyurtmaList.contains(buyurtma)){
+    var tarkib = MahChiqim()
+      ..trHujjat = hujjat.tr
+      ..trMah = mah.tr
+      ..miqdori = miqdori;
+    if (tarkibList.contains(tarkib)) {
       return;
     }
-    buyurtma.sana = hujjat.sana;
-    buyurtma.vaqt = DateTime.now().millisecondsSinceEpoch;
-    buyurtma.vaqtS = buyurtma.vaqt;
-    buyurtma.tr = await MahBuyurtma.service!.newId(buyurtma.trHujjat);
-    buyurtmaList.add(buyurtma);
-    buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
-    setState(() => buyurtmaList);
-    await buyurtma.insert();
+    tarkib.sana = hujjat.sana;
+    tarkib.vaqt = DateTime.now().millisecondsSinceEpoch;
+    tarkib.vaqtS = tarkib.vaqt;
+    tarkib.tr = await MahChiqim.service!.newId(tarkib.trHujjat);
+    tarkibList.add(tarkib);
+    tarkibCont[tarkib.tr] = TextEditingController(
+        text: tarkib.miqdori.toStringAsFixed(tarkib.mahsulot.kasr));
+    setState(() => tarkibList);
+    await tarkib.insert();
   }
 
-  remove(MahBuyurtma buyurtma) async {
-    buyurtmaList.remove(buyurtma);
-    setState(() => buyurtmaList);
-    buyurtma.delete();
+  remove(MahChiqim tarkib) async {
+    tarkibList.remove(tarkib);
+    setState(() => tarkibList);
+    tarkib.delete();
   }
 
-  mahIzlash(String value){
+  mahIzlash(String value) {
     loadFromGlobal();
     setState(() {
       mahsulotList = mahsulotList
@@ -147,5 +161,23 @@ class BuyurtmaRoyxatCont with Controller {
               element.nomi.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
+  }
+
+  qulfla() {
+    final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
+    hujjat.qulf = true;
+    hujjat.sts = HujjatSts.tugallangan.tr;
+    Hujjat.service!.update({
+      'qulf': hujjat.qulf ? 1 : 0,
+      'sts': hujjat.sts,
+      'vaqtS': vaqts,
+    }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
+    for(var mah in tarkibList){
+      MahChiqim.service!.update({
+        'qulf': hujjat.qulf ? 1 : 0,
+        'vaqtS': vaqts,
+      }, where: "trHujjat='${hujjat.tr}' AND tr='${mah.tr}'");
+    }
+    setState(() => hujjat);
   }
 }

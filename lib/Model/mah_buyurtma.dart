@@ -1,4 +1,5 @@
 import 'package:erp_oshxona/Library/db/db.dart';
+import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/Model/system/turi.dart';
@@ -68,9 +69,9 @@ class MahBuyurtma {
     yoq = json['yoq'].toString() == "1" ? true : false;
     trKont = int.parse(json['trKont'].toString());
     trMah = int.parse(json['trMah'].toString());
-    sana = int.parse(json['sana'].toString());
-    vaqtS = int.parse(json['vaqtS'].toString());
-    vaqt = int.parse(json['vaqt'].toString());
+    sana = int.parse(json['sana'].toString()) * 1000;
+    vaqtS = int.parse(json['vaqtS'].toString()) * 1000;
+    vaqt = int.parse(json['vaqt'].toString()) * 1000;
     miqdori = num.parse(json['miqdori'].toString());
     narxi = num.parse(json['narxi'].toString());
     trChiqHujjat = int.parse(json['trChiqHujjat'].toString());
@@ -88,32 +89,13 @@ class MahBuyurtma {
         'qulf': qulf ? 1 : 0,
         'trKont': trKont,
         'trMah': trMah,
-        'sana': sana,
-        'vaqtS': vaqtS,
-        'vaqt': vaqt,
+        'sana': toSecond(sana),
+        'vaqtS': toSecond(vaqtS),
+        'vaqt': toSecond(vaqt),
         'miqdori': miqdori,
         'narxi': narxi,
         'trChiqHujjat': trChiqHujjat,
         'trKirHujjat': trKirHujjat,
-        'nomi': nomi,
-        'kodi': kodi,
-        'izoh': izoh,
-      };
-
-  // for web-service
-  Map<String, dynamic> toPost() => {
-        'trHujjat': trHujjat,
-        'turi': turi,
-        'tr': tr,
-        'yoq': yoq ? 1 : 0,
-        'qulf': qulf ? 1 : 0,
-        'trKont': trKont,
-        'trMah': trMah,
-        'sana': sana,
-        'vaqtS': vaqtS,
-        'vaqt': vaqt,
-        'miqdori': miqdori,
-        'narxi': narxi,
         'nomi': nomi,
         'kodi': kodi,
         'izoh': izoh,
