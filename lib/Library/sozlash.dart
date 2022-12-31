@@ -13,8 +13,10 @@ class Sozlash {
   static bool get blokmi => box.get("blokmi", defaultValue: false);
   static int get blokSabab => box.get("blok_sabab", defaultValue: 0);
   // User
+  static String get server => box.get("server", defaultValue: '');
   static int get tr => box.get("tr", defaultValue: 0);
   static String get ism => box.get("ism", defaultValue: "");
+  static String get login => box.get("login", defaultValue: '');
   static String get davKod => box.get("davKod", defaultValue: 'UZ');
   static String get telKod => box.get("telKod", defaultValue: '');
   static String get tel => box.get("tel", defaultValue: '');
@@ -87,11 +89,13 @@ class Sozlash {
     await box.put("litVaqtDan", 0);
     await box.put("litVaqtGac", 0);
     // user data
+    await box.put("server", "");
     await box.put("tr", 0);
     await box.put("ism", "Yangi");
     await box.put("davKod", "UZ");
     await box.put("telKod", "+998");
     await box.put("tel", "+998001000000");
+    await box.put("login", "");
     await box.put("token", null);
     await box.put("pinCode", null);
     await box.put("pinCodeBormi", false);

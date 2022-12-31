@@ -103,7 +103,7 @@ class MahQoldiq {
         'vaqt_ozg': vaqtS,
       };
 
-  Future<void> ozaytir({num miqdor = 1.0}) async {
+  Future<void> ozaytir([num miqdor = 1.0]) async {
     await MahQoldiq.service!.update(
       {
         "qoldi": qoldi - miqdor,
@@ -118,7 +118,7 @@ class MahQoldiq {
     );
   }
 
-  Future<void> kopaytir({num miqdor = 1.0}) async {
+  Future<void> kopaytir([num miqdor = 1.0]) async {
     await MahQoldiq.service!.update(
       {
         "qoldi": qoldi + miqdor,
@@ -138,7 +138,7 @@ class MahQoldiqService extends CrudService {
   @override
   MahQoldiqService({super.prefix = ''}) : super("mah_qoldiq");
 
-  String get tableName => prefix + table;
+  String get tableName => "'$prefix$table'";
 
   String get createTable => """
 CREATE TABLE "$tableName" (
@@ -165,7 +165,7 @@ CREATE TABLE "$tableName" (
     where = where == null ? "" : " WHERE $where";
     Map<int, dynamic> map = {};
     await for (final rows
-        in db.watch("SELECT * FROM '$tableName' $where", tables: [tableName])) {
+        in db.watch("SELECT * FROM $tableName $where", tables: [tableName])) {
       for (final element in rows) {
         map[element['tr']] = element;
       }

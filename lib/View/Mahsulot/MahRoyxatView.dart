@@ -168,7 +168,7 @@ class _MahRoyxatViewState extends State<MahRoyxatView> {
       ),
       title: Text(obj.nomi),
       subtitle: objQoldiq != null && objQoldiq.qoldi != 0
-          ? Text("${objQoldiq.qoldi} ${obj.mOlchov.nomi}")
+          ? Text("${objQoldiq.qoldi.toStringAsFixed(objQoldiq.mahsulot!.kasr)} ${obj.mOlchov.nomi}")
           : Text("0 ${obj.mOlchov.nomi}",
               style: const TextStyle(color: Colors.redAccent)),
       trailing:

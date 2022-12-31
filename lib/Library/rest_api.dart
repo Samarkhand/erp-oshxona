@@ -12,22 +12,21 @@ import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InwareServer {
-  static String url = "https://s2.inware.uz";
-  static const String accountUrl = "https://s2.inware.uz";
+  static String accountUrl = Sozlash.server;
   static const String siteUrl = "https://inware.uz";
 
-  static final String urlReg = '$url/?a=service/reg';
-  static final String urlKir = '$url/?a=service/kir';
-  static final String urlChiq = '$url/?a=service/chiq';
-  static final String urlGetAuthKey = '$url/?a=service/getAuthKey';
-  static final String urlGetPaymentKey = "$url/?a=service/getAuthKey&payment=1";
-  static final String urlGetInfo = '$url/?a=service/info';
+  static final String urlReg = '${Sozlash.server}/?a=service/reg';
+  static final String urlKir = '${Sozlash.server}/?a=service/kir';
+  static final String urlChiq = '${Sozlash.server}/?a=service/chiq';
+  static final String urlGetAuthKey = '${Sozlash.server}/?a=service/getAuthKey';
+  static final String urlGetPaymentKey = "${Sozlash.server}/?a=service/getAuthKey&payment=1";
+  static final String urlGetInfo = '${Sozlash.server}/?a=service/info';
   static final String urlTarmoqTek =
-      '$url/?a=service/checkBot&group=1&channel=1';
-  static final String urlDeviceReg = '$url/?a=service/deviceReg';
-  static final String urlSorovJavob = "$url/?a=service/sorovnoma";
-  static final String urlBuyurtma = "$url/?a=service/order";
-  static const String linkGetAuth = '$accountUrl/?authKey=';
+      '${Sozlash.server}/?a=service/checkBot&group=1&channel=1';
+  static final String urlDeviceReg = '${Sozlash.server}/?a=service/deviceReg';
+  static final String urlSorovJavob = "${Sozlash.server}/?a=service/sorovnoma";
+  static final String urlBuyurtma = "${Sozlash.server}/?a=service/order";
+  static final String linkGetAuth = '$accountUrl/?authKey=';
   static const String linkOferta = '$siteUrl/ommaviyTak.php';
   static const String linkYangiliklar = 'https://t.me/finmasterapp';
   static const String linkTelegramMuallif = 'inware_admin';

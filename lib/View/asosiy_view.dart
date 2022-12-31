@@ -122,63 +122,42 @@ class _AsosiyViewState extends State<AsosiyView>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Sozlash.tanishmi
-                      ? const ListTile(
-                          leading: CircleAvatar(
-                            child: Icon(Icons.person),
-                          ),
-                          /*trailing: IconButton(
-                            icon: const Icon(Icons.dark_mode),
-                            onPressed: () {},
-                          ),*/
-                        )
-                      : const SizedBox(),
-                  !Sozlash.tanishmi
-                      ? const SizedBox(height: 40.0)
-                      : const SizedBox(),
-                  Sozlash.tanishmi
-                      ? ListTile(
-                          title: Text(Sozlash.ism,
-                              style: const TextStyle(color: Colors.white)),
-                          subtitle: Text(Sozlash.tel,
-                              style: const TextStyle(color: Colors.white60)),
-                          onLongPress: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const KirishView(),
-                                ));
-                          },
-                        )
-                      : ListTile(
-                          leading: const Icon(Icons.login, color: Colors.white),
-                          title: const Text("Royxatdan o'tish",
-                              style: TextStyle(color: Colors.white)),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const RegistratsiyaView(),
-                                ));
-                          },
+                  ListTile(
+                    leading: const CircleAvatar(
+                      child: Icon(Icons.person),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.dark_mode),
+                      onPressed: (){},
+                    ),
+                  ),
+                  ListTile(
+                    title: Text(Sozlash.ism,
+                        style: const TextStyle(color: Colors.white)),
+                    subtitle: Text(Sozlash.tel,
+                        style: const TextStyle(color: Colors.white60)),
+                    onLongPress: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const KirishView(),
+                          ));
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Wrap(
+                      children: [
+                        const Icon(Icons.lock_clock,
+                            color: Color(0x99FFFFFF), size: 17.5),
+                        Text(
+                          " Ilova ${dateFormat.format(DateTime.fromMillisecondsSinceEpoch(toMilliSecond(Sozlash.litVaqtGac)))}gacha faol",
+                          style: const TextStyle(
+                              color: Color(0x99FFFFFF), fontSize: 13.5),
                         ),
-                  (!Sozlash.tanishmi)
-                      ? const SizedBox()
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Wrap(
-                            children: [
-                              const Icon(Icons.lock_clock,
-                                  color: Color(0x99FFFFFF), size: 17.5),
-                              Text(
-                                " Ilova ${dateFormat.format(DateTime.fromMillisecondsSinceEpoch(toMilliSecond(Sozlash.litVaqtGac)))}gacha faol",
-                                style: const TextStyle(
-                                    color: Color(0x99FFFFFF), fontSize: 13.5),
-                              ),
-                            ],
-                          ),
-                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -282,8 +261,8 @@ class _AsosiyViewState extends State<AsosiyView>
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MBolimRoyxatView(
-                          turi: MTuri.mahsulot),
+                      builder: (context) =>
+                          MBolimRoyxatView(turi: MTuri.mahsulot),
                     ));
               },
             ),
@@ -295,7 +274,8 @@ class _AsosiyViewState extends State<AsosiyView>
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HujjatRoyxatView(turi: HujjatTur.kirim),
+                      builder: (context) =>
+                          HujjatRoyxatView(turi: HujjatTur.kirim),
                     ));
               },
             ),
@@ -307,7 +287,8 @@ class _AsosiyViewState extends State<AsosiyView>
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HujjatRoyxatView(turi: HujjatTur.chiqim),
+                      builder: (context) =>
+                          HujjatRoyxatView(turi: HujjatTur.chiqim),
                     ));
               },
             ),
@@ -409,26 +390,18 @@ class _AsosiyViewState extends State<AsosiyView>
       crossAxisSpacing: 10,
       crossAxisCount: 6,
       children: [
-        viewButton(
-          "Taomlar",
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MahRoyxatView(turi: MTuri.mahsulot)));
-          },
-          icon: SvgPicture.asset("assets/sf_icons/box-full.svg", width: 50)
-        ),
-        viewButton(
-          "Masalliqlar",
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MahRoyxatView(turi: MTuri.homAshyo)));
-          },
-          icon: SvgPicture.asset("assets/sf_icons/box-full.svg", width: 50)
-        ),
+        viewButton("Taomlar", onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MahRoyxatView(turi: MTuri.mahsulot)));
+        }, icon: SvgPicture.asset("assets/sf_icons/box-full.svg", width: 50)),
+        viewButton("Masalliqlar", onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MahRoyxatView(turi: MTuri.homAshyo)));
+        }, icon: SvgPicture.asset("assets/sf_icons/box-full.svg", width: 50)),
         viewButton(
           "Taom tarqatish",
           onTap: () {},
@@ -439,7 +412,8 @@ class _AsosiyViewState extends State<AsosiyView>
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.kirimIch),
+                  builder: (context) =>
+                      HujjatRoyxatView(turi: HujjatTur.kirimIch),
                 ));
           },
         ),
@@ -450,7 +424,8 @@ class _AsosiyViewState extends State<AsosiyView>
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.chiqim),
+                  builder: (context) =>
+                      HujjatRoyxatView(turi: HujjatTur.chiqim),
                 ));
           },
         ),
@@ -472,7 +447,8 @@ class _AsosiyViewState extends State<AsosiyView>
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.chiqimFil),
+                  builder: (context) =>
+                      HujjatRoyxatView(turi: HujjatTur.chiqimFil),
                 ));
           },
         ),
@@ -482,7 +458,8 @@ class _AsosiyViewState extends State<AsosiyView>
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.buyurtma),
+                  builder: (context) =>
+                      HujjatRoyxatView(turi: HujjatTur.buyurtma),
                 ));
           },
         ),
@@ -492,7 +469,8 @@ class _AsosiyViewState extends State<AsosiyView>
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.qaytibBerish),
+                  builder: (context) =>
+                      HujjatRoyxatView(turi: HujjatTur.qaytibBerish),
                 ));
           },
         ),
@@ -502,7 +480,8 @@ class _AsosiyViewState extends State<AsosiyView>
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HujjatRoyxatView(turi: HujjatTur.qaytibOlish),
+                  builder: (context) =>
+                      HujjatRoyxatView(turi: HujjatTur.qaytibOlish),
                 ));
           },
         ),

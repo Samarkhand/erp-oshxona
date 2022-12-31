@@ -4,6 +4,7 @@ import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
@@ -89,7 +90,7 @@ class ChiqimRoyxatCont with Controller {
       (a, b) => -a.tr.compareTo(b.tr),
     );
     mahsulotList = Mahsulot.obyektlar.values
-        .where((element) => element.turi == MTuri.homAshyo.tr)
+        .where((element) => element.turi == MTuri.homAshyo.tr && element.mQoldiq != null && element.mQoldiq!.qoldi != 0)
         .toList();
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
   }
@@ -157,8 +158,10 @@ class ChiqimRoyxatCont with Controller {
     loadFromGlobal();
     setState(() {
       mahsulotList = mahsulotList
-          .where((element) =>
-              element.nomi.toLowerCase().contains(value.toLowerCase()))
+          .where((element) => element.turi == MTuri.homAshyo.tr &&
+              element.nomi.toLowerCase().contains(value.toLowerCase()) &&
+              element.mQoldiq != null
+            )
           .toList();
     });
   }
@@ -173,6 +176,8 @@ class ChiqimRoyxatCont with Controller {
       'vaqtS': vaqts,
     }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
     for(var mah in tarkibList){
+      MahQoldiq qoldiq = MahQoldiq.obyektlar[mah.trMah]!;
+      qoldiq.ozaytir(mah.miqdori);
       MahChiqim.service!.update({
         'qulf': hujjat.qulf ? 1 : 0,
         'vaqtS': vaqts,

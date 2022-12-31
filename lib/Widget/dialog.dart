@@ -53,3 +53,24 @@ Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onC
       });
     return qiymat;
   }
+
+  Future<void>? deleteDialog(BuildContext context, {Function()? yes, Function()? cancel}) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('O`chirilsinmi?'),
+        content: const Text(
+            'O`chirmoqchi bo`lgan elementingizni qayta tiklab bo`lmaydi'),
+        actions: [
+          TextButton(
+            onPressed: yes,
+            child: const Text('BEKOR', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: cancel,
+            child: const Text('O`CHIRILSIN'),
+          ),
+        ],
+      ),
+    );
+  }
