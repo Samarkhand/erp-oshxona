@@ -63,12 +63,18 @@ Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onC
             'O`chirmoqchi bo`lgan elementingizni qayta tiklab bo`lmaydi'),
         actions: [
           TextButton(
-            onPressed: yes,
-            child: const Text('BEKOR', style: TextStyle(color: Colors.grey)),
+            onPressed: (){
+              yes != null ? yes() : null;
+              Navigator.pop(context);
+            },
+            child: const Text('O`CHIRILSIN'),
           ),
           TextButton(
-            onPressed: cancel,
-            child: const Text('O`CHIRILSIN'),
+            onPressed: (){
+              cancel != null ? cancel() : null;
+              Navigator.pop(context);
+            },
+            child: const Text('BEKOR', style: TextStyle(color: Colors.grey)),
           ),
         ],
       ),

@@ -15,6 +15,7 @@ class Sozlash {
   // User
   static String get server => box.get("server", defaultValue: '');
   static int get tr => box.get("tr", defaultValue: 0);
+  static int get toifa => box.get("type", defaultValue: 0);
   static String get ism => box.get("ism", defaultValue: "");
   static String get login => box.get("login", defaultValue: '');
   static String get davKod => box.get("davKod", defaultValue: 'UZ');
@@ -35,7 +36,7 @@ class Sozlash {
   static String get pinCode => box.get("pinCode", defaultValue: "");
   /// pinCodeBormi
   static bool get pinCodeBormi => box.get("pinCodeBormi", defaultValue: false);
-  ///Litsenziya
+  /// Litsenziya
   static String get litsenziya => box.get("litsenziya", defaultValue: "");
   static int get litVaqtDan => box.get("litVaqtDan", defaultValue: 0);
   static int get litVaqtGac => box.get("litVaqtGac", defaultValue: 0);

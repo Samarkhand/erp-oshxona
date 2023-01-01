@@ -184,45 +184,32 @@ logConsole(Object? data) {
 Future writeLog() async {}
 
 getView() {
-  return const AsosiyView();
-  // ignore: dead_code
+  // return const KirishView();
   late Widget viewKorsat;
+
   // sana o'zgargan bo'lsa
   if (DateTime.now().millisecondsSinceEpoch < Sozlash.sdkVaqt) {
     viewKorsat = QulfView(QulfSabab.sanaOzgargan);
   }
-  // tanish bo'lmasa va kirgan vaqtidan 24 soat o'tmagan bo'lsa
-  else if (!Sozlash.tanishmi &&
-      (Sozlash.kirVaqt + 24 * 60 * 60 * 1000) >
-          DateTime.now().millisecondsSinceEpoch) {
-    viewKorsat = const AsosiyView();
-  }
-  // ro'yxatdan o'tsin
+  // tanishmas bo'lsa logindan o'tsin
   else if (!Sozlash.tanishmi) {
-    viewKorsat = const RegistratsiyaView();
-  }
-  // tanish bo'lmasa va kirgan vaqtidan 24 soat o'tmagan bo'lsa
-  else if (DateTime.now().millisecondsSinceEpoch >
-          toMilliSecond(Sozlash.litVaqtGac) &&
-      !Sozlash.tarmoqAzosimi &&
-      Sozlash.tanishmi) {
-    viewKorsat = QulfView(QulfSabab.tarmoqAzoBol);
-  }
+    viewKorsat = const KirishView();
+  }/*
   // litsenziya vaqti tugagan bo'lsa va tanish bo'lsa
   else if (Sozlash.tanishmi &&
       DateTime.now().millisecondsSinceEpoch >
           toMilliSecond(Sozlash.litVaqtGac)) {
     viewKorsat = QulfView(QulfSabab.tolovQiling);
-  }
+  }*/
   // boshqa sabab bilan bloklanganmi
   else if (Sozlash.blokmi) {
     viewKorsat = QulfView(QulfSabab.obyektlar[Sozlash.blokSabab]!);
   }
-  // ro'yxatdan o'tgan bo'lsa
+  // tanish bo'lsa
   else if (Sozlash.tanishmi) {
     viewKorsat = const AsosiyView();
   }
-  // ro'yxatdan o'tsin
+  // logindan o'tsin
   else {
     viewKorsat = const KirishView();
   }

@@ -15,18 +15,18 @@ class InwareServer {
   static String accountUrl = Sozlash.server;
   static const String siteUrl = "https://inware.uz";
 
-  static final String urlReg = '${Sozlash.server}/?a=service/reg';
-  static final String urlKir = '${Sozlash.server}/?a=service/kir';
-  static final String urlChiq = '${Sozlash.server}/?a=service/chiq';
-  static final String urlGetAuthKey = '${Sozlash.server}/?a=service/getAuthKey';
-  static final String urlGetPaymentKey = "${Sozlash.server}/?a=service/getAuthKey&payment=1";
-  static final String urlGetInfo = '${Sozlash.server}/?a=service/info';
-  static final String urlTarmoqTek =
+  static String get urlReg => '${Sozlash.server}/?a=service/reg';
+  static String get urlKir => '${Sozlash.server}/?a=service/auth';
+  static String get urlChiq => '${Sozlash.server}/?a=service/logout';
+  static String get urlGetAuthKey => '${Sozlash.server}/?a=service/getAuthKey';
+  static String get urlGetPaymentKey => "${Sozlash.server}/?a=service/getAuthKey&payment=1";
+  static String get urlGetInfo => '${Sozlash.server}/?a=service/info';
+  static String get urlTarmoqTek =>
       '${Sozlash.server}/?a=service/checkBot&group=1&channel=1';
-  static final String urlDeviceReg = '${Sozlash.server}/?a=service/deviceReg';
-  static final String urlSorovJavob = "${Sozlash.server}/?a=service/sorovnoma";
-  static final String urlBuyurtma = "${Sozlash.server}/?a=service/order";
-  static final String linkGetAuth = '$accountUrl/?authKey=';
+  static String get urlDeviceReg => '${Sozlash.server}/?a=service/deviceReg';
+  static String get urlSorovJavob => "${Sozlash.server}/?a=service/sorovnoma";
+  static String get urlBuyurtma => "${Sozlash.server}/?a=service/order";
+  static String get linkGetAuth => '$accountUrl/?authKey=';
   static const String linkOferta = '$siteUrl/ommaviyTak.php';
   static const String linkYangiliklar = 'https://t.me/finmasterapp';
   static const String linkTelegramMuallif = 'inware_admin';

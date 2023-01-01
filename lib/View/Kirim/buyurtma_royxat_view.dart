@@ -217,7 +217,8 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                       ),
                       const SizedBox(width: 20),
                       OutlinedButton(
-                        onPressed: () => _cont.remove(object),
+                        onPressed: () => deleteDialog(context,
+                            yes: () => _cont.remove(object)),
                         child: const Padding(
                           padding: EdgeInsets.all(5),
                           child: Icon(Icons.delete, color: Colors.red),
@@ -272,7 +273,8 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
                       
                       const SizedBox(width: 20),
                       OutlinedButton(
-                        onPressed: () => _cont.remove(object),
+                        onPressed: () => deleteDialog(context,
+                            yes: () => _cont.remove(object)),
                         child: const Padding(
                           padding: EdgeInsets.all(5),
                           child: Icon(Icons.delete, color: Colors.red),
@@ -299,19 +301,19 @@ class _BuyurtmaRoyxatViewState extends State<BuyurtmaRoyxatView> {
   List<Widget>? _buildActions() {
     if(_cont.hujjat.sts == HujjatSts.ochilgan.tr){
       return <Widget>[
-        IconButton(onPressed: () => _cont.buyurtmaJonatish(), icon: const Icon(Icons.send)),
+        IconButton(onPressed: () => _cont.buyurtmaJonatish(), icon: const Icon(Icons.send), tooltip: "Buyurtma jo'natish"),
       ];
     }
     else if(_cont.hujjat.sts == HujjatSts.jonatilganBrtm.tr) {
       return <Widget>[
-        IconButton(onPressed: () => _cont.buyurtmaTekshirish(), icon: const Icon(Icons.refresh)),
+        IconButton(onPressed: () => _cont.buyurtmaTekshirish(), icon: const Icon(Icons.refresh), tooltip: "Tekshirish"),
       ];
     }
     else if(_cont.hujjat.sts == HujjatSts.tasdiqKutBrtm.tr) {
       return <Widget>[
-        IconButton(onPressed: () => _cont.buyurtmaTekshirish(), icon: const Icon(Icons.refresh)),
-        IconButton(onPressed: () => _cont.buyurtmaTugallash(), icon: const Icon(Icons.check)),
-        IconButton(onPressed: () => _cont.buyurtmaTugallash(), icon: const Icon(Icons.close)),
+        IconButton(onPressed: () => _cont.buyurtmaTekshirish(), icon: const Icon(Icons.refresh), tooltip: "Tekshirish"),
+        IconButton(onPressed: () => _cont.buyurtmaTugallash(), icon: const Icon(Icons.check), tooltip: "Qabul qilish"),
+        IconButton(onPressed: () => _cont.buyurtmaTugallash(), icon: const Icon(Icons.close), tooltip: "Qaytarib yuborish"),
       ];
     }
     else {

@@ -1,8 +1,6 @@
 import 'package:erp_oshxona/Library/theme.dart';
-import 'package:erp_oshxona/View/Auth/registratsiya_view.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/View/Auth/kirish_cont.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 
 class KirishView extends StatefulWidget {
   const KirishView({Key? key}) : super(key: key);
@@ -55,20 +53,52 @@ class _KirishViewState extends State<KirishView> {
                     child: Column(
                       children: [
                         TextFormField(
+                          keyboardType: TextInputType.url,
+                          initialValue: _cont.server,
+                          decoration: InputDecoration(
+                            label: const Text("Server manzili"),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            prefixIcon: const Icon(Icons.vpn_lock),
+                            prefixText: "https://",
+                            suffixIcon: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.check),
+                            ),
+                          ),
+                          autofocus: true,
+                          onSaved: (value) {
+                            _cont.server = "https://${value!}";
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Maydonni to'ldiring";
+                            }
+                            _cont.server = "https://$value";
+                            Uri? server = Uri.tryParse(_cont.server);
+                            if (server == null) {
+                              return "Manzil xato, qayta kiriting";
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: oraliqPadding,
+                        ),
+                        TextFormField(
                           keyboardType: TextInputType.text,
+                          initialValue: _cont.login,
                           decoration: InputDecoration(
                             label: const Text("Login"),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             prefixIcon: const Icon(Icons.person),
                           ),
-                          autofocus: true,
-                          onChanged: (phone) {
-                            //logConsole(phone.completeNumber);
-                          },
                           onSaved: (value) {
-                            _cont.telephone = value!;
+                            _cont.login = value!;
                           },
+                          validator: (value) => _cont.validate(value,
+                              required: true, nomi: 'Loginni kiriting'),
                         ),
                         const SizedBox(
                           height: oraliqPadding,

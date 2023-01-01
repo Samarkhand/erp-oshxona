@@ -10,13 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:erp_oshxona/View/Auth/kirish_view.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 import 'package:http/http.dart';
-import 'package:intl_phone_field/phone_number.dart';
-import 'package:process_run/shell.dart';
 
 class KirishCont with Controller {
   late KirishView widget;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  String telephone = '';
+  String server = '';
+  String login = '';
   String password = '';
 
   Future<void> init(widget, Function setState,
@@ -32,7 +31,10 @@ class KirishCont with Controller {
     //WidgetsBinding.instance.addPostFrameCallback((_) async {});
   }
 
-  Future<void> loadView() async {}
+  Future<void> loadView() async {
+    server = Sozlash.server.replaceFirst("https://", "");
+    login = Sozlash.login;
+  }
 
   Future<void> save(context) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -52,10 +54,11 @@ class KirishCont with Controller {
       showLoading(text: "Login Parol tekshirilmoqda");
       (formKey.currentState!.save());
       Map<String, dynamic> userdetails = {};
-      userdetails["login"] = telephone;
+      userdetails["login"] = login;
       userdetails["password"] = password;
       userdetails.addAll(deviceInfo);
 
+      await Sozlash.box.put("server", server);
       var url = InwareServer.urlKir;
       Response reply = await apiPost(url, jsonMap: userdetails);
       logConsole("POST URL: $url");
@@ -75,7 +78,7 @@ class KirishCont with Controller {
           hideLoading();
           return;
         }
-
+/*
         try {
           result['license'] = checkLicense(
               result['license'],
@@ -92,18 +95,22 @@ class KirishCont with Controller {
           return;
         }
 
+        // license data
+        await Sozlash.box.put("litsenziya", result['license']);
+        await Sozlash.box.put("litVaqtDan", int.parse(result['lic_vaqt_dan']));
+        await Sozlash.box.put("litVaqtGac", int.parse(result['lic_vaqt_gac']));*/
+        // user data
         await Sozlash.box.put("tanishmi", true);
         await Sozlash.box.put("token", result['token']);
         await Sozlash.box.put("regVaqt", DateTime.now().millisecondsSinceEpoch);
         await Sozlash.box.put("autVaqt", DateTime.now().millisecondsSinceEpoch);
-        // license data
-        await Sozlash.box.put("litsenziya", result['license']);
-        await Sozlash.box.put("litVaqtDan", int.parse(result['lic_vaqt_dan']));
-        await Sozlash.box.put("litVaqtGac", int.parse(result['lic_vaqt_gac']));
         // user data
+        // Tepada berildi // await Sozlash.box.put("server", server);
         await Sozlash.box.put("tr", int.parse(result['user']['id'].toString()));
-        await Sozlash.box.put("ism", result['user']['ism']);
-        await Sozlash.box.put("tel", telephone);
+        await Sozlash.box.put("toifa", int.parse(result['user']['type'].toString()));
+        await Sozlash.box.put("ism", result['user']['name']);
+        await Sozlash.box.put("tel", result['user']['phone']);
+        await Sozlash.box.put("login", login);
         // pin code
         await Sozlash.box.put("pinCode", "");
         await Sozlash.box.put("pinCodeBormi", false);

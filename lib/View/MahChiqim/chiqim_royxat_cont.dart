@@ -166,23 +166,46 @@ class ChiqimRoyxatCont with Controller {
     });
   }
 
-  qulfla() {
+  qulfla() async {
+    showLoading(text: "Qulflanmoqda");
     final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
     hujjat.qulf = true;
     hujjat.sts = HujjatSts.tugallangan.tr;
-    Hujjat.service!.update({
+    await Hujjat.service!.update({
       'qulf': hujjat.qulf ? 1 : 0,
       'sts': hujjat.sts,
       'vaqtS': vaqts,
     }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
     for(var mah in tarkibList){
       MahQoldiq qoldiq = MahQoldiq.obyektlar[mah.trMah]!;
-      qoldiq.ozaytir(mah.miqdori);
-      MahChiqim.service!.update({
+      await qoldiq.ozaytir(mah.miqdori);
+      await MahChiqim.service!.update({
         'qulf': hujjat.qulf ? 1 : 0,
         'vaqtS': vaqts,
       }, where: "trHujjat='${hujjat.tr}' AND tr='${mah.tr}'");
     }
-    setState(() => hujjat);
+    //setState(() => hujjat);
+    hideLoading();
+  }
+
+  qulfOch() async {
+    showLoading(text: "Qulfdan ochilmoqda");
+    final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
+    hujjat.qulf = false;
+    hujjat.sts = HujjatSts.ochilgan.tr;
+    await Hujjat.service!.update({
+      'qulf': hujjat.qulf ? 1 : 0,
+      'sts': hujjat.sts,
+      'vaqtS': vaqts,
+    }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
+    for(var mah in tarkibList){
+      MahQoldiq qoldiq = MahQoldiq.obyektlar[mah.trMah]!;
+      await qoldiq.kopaytir(mah.miqdori);
+      await MahChiqim.service!.update({
+        'qulf': hujjat.qulf ? 1 : 0,
+        'vaqtS': vaqts,
+      }, where: "trHujjat='${hujjat.tr}' AND tr='${mah.tr}'");
+    }
+    hideLoading();
   }
 }

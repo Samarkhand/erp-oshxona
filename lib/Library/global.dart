@@ -136,9 +136,9 @@ wmic csproduct get UUID
 wmic csproduct get IdentifyingNumber''');
 
       /*
-        for(var res in result){
-          ret[res.outLines.elementAt(0)] = res.outLines.elementAt(2);
-        }*/
+      for(ProcessResult res in deviceData){
+        res.outLines.elementAt(2) = res.outLines.elementAt(2);
+      }*/
 
       Map<String, dynamic> ret = {};
       ret['hddModel'] = deviceData[0].outLines.elementAt(2);

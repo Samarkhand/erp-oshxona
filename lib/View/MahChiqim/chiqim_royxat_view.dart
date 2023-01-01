@@ -6,7 +6,6 @@ import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
-import 'package:erp_oshxona/Model/kBolim.dart';
 
 class ChiqimRoyxatView extends StatefulWidget {
   const ChiqimRoyxatView(this.hujjat, {Key? key}) : super(key: key);
@@ -20,8 +19,6 @@ class ChiqimRoyxatView extends StatefulWidget {
 class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
   final ChiqimRoyxatCont _cont = ChiqimRoyxatCont();
   bool yuklanmoqda = false;
-  bool _isSearching = false;
-  final TextEditingController _searchQueryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -69,41 +66,47 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 4,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _mahlarRoyxati(),
+        children: (!_cont.hujjat.qulf
+                ? <Widget>[
+                    Expanded(
+                      flex: 4,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: _mahlarRoyxati(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                  ]
+                : <Widget>[]) +
+            <Widget>[
+              Expanded(
+                flex: 6,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _cont.hujjat.qulf
+                          ? _qulfHujjatIchiRoyxati()
+                          : _tarkiblarRoyxati(),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            flex: 6,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _cont.hujjat.qulf ? _qulfHujjatIchiRoyxati() : _tarkiblarRoyxati(),
-                ),
-              ),
-            ),
-          ),
-        ],
+            ],
       ),
     );
   }
@@ -227,7 +230,8 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
                       ),
                       const SizedBox(width: 20),
                       OutlinedButton(
-                        onPressed: () => _cont.remove(object),
+                        onPressed: () => deleteDialog(context,
+                            yes: () => _cont.remove(object)),
                         child: const Padding(
                           padding: EdgeInsets.all(5),
                           child: Icon(Icons.delete, color: Colors.red),
@@ -278,11 +282,12 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Text("${object.miqdori.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}"),
-                      
+                      Text(
+                          "${object.miqdori.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}"),
                       const SizedBox(width: 20),
                       OutlinedButton(
-                        onPressed: () => _cont.remove(object),
+                        onPressed: () => deleteDialog(context,
+                            yes: () => _cont.remove(object)),
                         child: const Padding(
                           padding: EdgeInsets.all(5),
                           child: Icon(Icons.delete, color: Colors.red),
@@ -307,35 +312,12 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
   }
 
   List<Widget>? _buildActions() {
-    return <Widget>[
-      IconButton(onPressed: () => _cont.qulfla(), icon: const Icon(Icons.lock)),
+    return _cont.hujjat.qulf ? <Widget>[
+      IconButton(onPressed: () => _cont.qulfOch(), icon: const Icon(Icons.lock_open), tooltip: "Qulfdan ochish"),
+    ] : 
+    <Widget>[
+      IconButton(onPressed: () => _cont.qulfla(), icon: const Icon(Icons.lock), tooltip: "Qulflash"),
     ];
-  }
-
-  _delete(BuildContext context, KBolim element) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('O`chirilsinmi?'),
-        content: const Text(
-            'O`chirmoqchi bo`lgan elementingizni qayta tiklab bo`lmaydi'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('BEKOR', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              _cont.showLoading();
-              await _cont.delete(element);
-              _cont.hideLoading();
-            },
-            child: const Text('O`CHIRILSIN'),
-          ),
-        ],
-      ),
-    );
   }
 
   /* ================= */

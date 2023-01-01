@@ -1,7 +1,15 @@
 Concept:
+    - Himoya
+        - login-parol kirish @done
+        - logout
+        - device PC register
+    - Hujjat
+        - info tartibla
+        - Model. @done
+        - ro'yxati @done
     - Chiqim
-        - O'chirish ha yo'q
-        - qulfdan ochish
+        - O'chirish ha yo'q @done
+        - qulfdan ochish @done
     - Buyurtma
         - Test
         - jo'natish knopkasi @done
@@ -19,15 +27,6 @@ Concept:
         - mah crud #MAN
         - Delete shart bilan: agar qoldig'i yoki bu oy davomida kirim, chiqim bo'lmagan bo'lsagina o'chirilsin
     - MBolim, MOlchov, MBrend crud #MAN
-    - Hujjat
-        - Model. @done
-        - ro'yxati @done
     - kirim
         - Model @done
         - ro'yxati 
-    - savdo 
-        - Model
-        - ro'yxati
-    - Himoya
-        - login-parol kirish
-        - device PC register

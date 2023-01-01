@@ -325,17 +325,6 @@ class _SozlashViewState extends State<SozlashView> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(7),
-                    child: Row(
-                      children: [
-                        const Text("Litsenziya: ",
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold)),
-                        Text(Sozlash.litsenziya.substring(0, 12)),
-                      ],
-                    ),
-                  ),
-                  Padding(
                     padding: const EdgeInsets.only(top: 7, left: 7),
                     child: Row(
                       children: [
