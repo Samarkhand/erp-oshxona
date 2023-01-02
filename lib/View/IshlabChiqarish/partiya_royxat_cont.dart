@@ -1,13 +1,14 @@
+import 'package:erp_oshxona/Model/hujjat_partiya.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/partiya_royxat_view.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Library/global.dart';
-import 'package:erp_oshxona/View/Hujjat/HujjatRoyxatView.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 
-class HujjatRoyxatCont with Controller {
-  late HujjatRoyxatView widget;
-  List objectList = [];
+class HujjatPartiyaRoyxatCont with Controller {
+  late HujjatPartiyaRoyxatView widget;
+  List<HujjatPartiya> objectList = [];
   late DateTime sanaD;
   late DateTime sanaG;
 
@@ -65,22 +66,29 @@ class HujjatRoyxatCont with Controller {
   }
 
   Future<void> loadItems() async {
-    var add = widget.turi != null ? " turi=${widget.turi!.tr} AND " : "";
+    var add = widget.turi != null ? " turi=${widget.turi} AND " : "";
     await Hujjat.service!
         .select(
             where:
-                "$add sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)} ORDER BY sana DESC, tr DESC")
+                "$add sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)}")
         .then((values) {
       for (var value in values) {
         Hujjat.obyektlar.add(Hujjat.fromJson(value));
       }
     });
+    await HujjatPartiya.service!
+        .select(
+            where:
+                " sana>=${toSecond(sanaD.millisecondsSinceEpoch)} AND sana<=${toSecond(sanaG.millisecondsSinceEpoch)}")
+        .then((values) {
+      for (var value in values) {
+        HujjatPartiya.obyektlar.add(HujjatPartiya.fromJson(value));
+      }
+    });
   }
 
   loadFromGlobal() {
-    objectList =
-        (widget.turi != null ? Hujjat.olList(widget.turi!) : Hujjat.obyektlar)
-            .toList();
+    objectList = HujjatPartiya.obyektlar.toList();
     objectList.sort((a, b) {
       int cmp = -a.sana.compareTo(b.sana);
       if (cmp != 0) return cmp;

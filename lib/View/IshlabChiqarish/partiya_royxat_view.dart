@@ -1,24 +1,29 @@
+import 'package:erp_oshxona/Library/theme.dart';
+import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/hujjat_partiya.dart';
+import 'package:erp_oshxona/Model/system/controller.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/partiya_ichi_view.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/partiya_royxat_cont.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
-import 'package:erp_oshxona/View/Hujjat/HujjatRoyxatCont.dart';
-import 'package:erp_oshxona/View/Hujjat/HujjatIchiView.dart';
 import 'package:erp_oshxona/Model/aBolim.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-class HujjatRoyxatView extends StatefulWidget {
-  const HujjatRoyxatView({Key? key, this.turi}) : super(key: key);
+class HujjatPartiyaRoyxatView extends StatefulWidget {
+  HujjatPartiyaRoyxatView({Key? key}) : super(key: key);
 
-  final HujjatTur? turi;
+  final int turi = HujjatTur.kirimIch.tr;
 
   @override
-  State<HujjatRoyxatView> createState() => _HujjatRoyxatViewState();
+  State<HujjatPartiyaRoyxatView> createState() => _HujjatPartiyaRoyxatViewState();
 }
 
-class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
-  final HujjatRoyxatCont _cont = HujjatRoyxatCont();
+class _HujjatPartiyaRoyxatViewState extends State<HujjatPartiyaRoyxatView> {
+  final HujjatPartiyaRoyxatCont _cont = HujjatPartiyaRoyxatCont();
   bool yuklanmoqda = false;
 
   int tanBolim = 0;
@@ -28,7 +33,7 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(context, title: "${widget.turi?.nomi ?? "Hujjatlar"} hujjatlar reystri" ),
+      appBar: _appBar(context, title: HujjatTur.kirimIch.nomi),
       body: SafeArea(
         child: _cont.isLoading
             ? Center(
@@ -78,8 +83,8 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
                         builder: (context) => Dialog(
                         shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(10.0)), //this right here
-                        child: HujjatIchiView.yangi(widget.turi!.tr)),
+                                BorderRadius.circular(10.0)),
+                        child: HujjatPartiyaIchiView.yangi(widget.turi)),
                       );
                       await _cont.loadFromGlobal();
                       /*
@@ -107,7 +112,7 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
                 return const SizedBox(height: 60);
               }
               return HujjatCard(
-                _cont.objectList[index],
+                _cont.objectList[index].hujjat,
                 cont: _cont,
                 doAfterDelete: _cont.loadFromGlobal,
               );
@@ -184,5 +189,114 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
   void initState() {
     _cont.init(widget, setState, context: super.context);
     super.initState();
+  }
+}
+
+
+class HujjatPartiyaCard extends StatelessWidget {
+  HujjatPartiyaCard(this.partiya,
+      {Key? key, required this.cont, required this.doAfterDelete})
+      : hujjat = partiya.hujjat, super(key: key);
+  final HujjatPartiya partiya;
+  final Hujjat hujjat;
+  final Controller cont;
+  final Function doAfterDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      child: InkWell(
+        onDoubleTap: () async {
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IchKirimRoyxatView(partiya),
+              ));
+          await doAfterDelete();
+        },
+        onTap: (() async {
+          await showDialog(
+            context: context,
+            builder: (context) => Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(10.0)),
+                child: HujjatPartiyaIchiView(hujjat)),
+          );
+          await doAfterDelete();
+        }),
+        borderRadius: BorderRadius.circular(10.0),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Wrap(children: [
+                      //Icon(HujjatTur.obyektlar[hujjat.turi]!.icon, size: 16),
+                      Text(
+                        "${hujjat.raqami}-${HujjatTur.obyektlar[hujjat.turi]!.nomi}",
+                        style: MyTheme.h6.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(width: 7.0),
+                      statusBadge(hujjat.status),
+                      const SizedBox(width: 7.0),
+                      hujjat.trKont == 0
+                          ? const SizedBox()
+                          : Text(
+                              Kont.obyektlar[hujjat.trKont]!.nomi,
+                            ),
+                    ]),
+                    hujjat.trKont == 0
+                        ? const SizedBox()
+                        : Row(children: [
+                            const Icon(Icons.person, size: 16),
+                            Text(
+                              Kont.obyektlar[hujjat.kont]!.nomi,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ]),
+                    Text(
+                      hujjat.izoh,
+                      style: const TextStyle(fontStyle: FontStyle.italic),
+                      maxLines: 2,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Wrap(children: [
+                      Text(
+                        dateFormat.format(hujjat.sanaDT),
+                        style: MyTheme.small.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        hourMinuteFormat.format(hujjat.vaqtDT),
+                        style: MyTheme.small.copyWith(
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ]),
+                    Text(sumFormat.format(hujjat.summa)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

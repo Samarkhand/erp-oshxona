@@ -1,4 +1,5 @@
 import 'package:erp_oshxona/View/Bolimlar/MBolimRoyxatView.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/partiya_royxat_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:erp_oshxona/Library/functions.dart';
@@ -412,8 +413,7 @@ class _AsosiyViewState extends State<AsosiyView>
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      HujjatRoyxatView(turi: HujjatTur.kirimIch),
+                  builder: (context) => HujjatPartiyaRoyxatView(),
                 ));
           },
         ),

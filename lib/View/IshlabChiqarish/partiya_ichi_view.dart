@@ -1,50 +1,55 @@
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Library/theme.dart';
+import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/kont.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/partiya_ichi_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:erp_oshxona/Library/global.dart';
-import 'package:erp_oshxona/View/Hujjat/HujjatIchiCont.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/system/form.dart';
 
-class HujjatIchiView extends StatefulWidget {
-  HujjatIchiView(this.hujjat, {Key? key})
+class HujjatPartiyaIchiView extends StatefulWidget {
+  HujjatPartiyaIchiView(this.hujjat, {Key? key})
       : infomi = true,
         yangimi = false,
         turi = 0,
+        partiya = HujjatPartiya.ol(hujjat.tr)!,
         super(key: key) {
     turi = hujjat.turi;
   }
-  HujjatIchiView.tahrir(this.hujjat, {Key? key})
+  HujjatPartiyaIchiView.tahrir(this.hujjat, {Key? key})
       : yangimi = false,
         infomi = false,
         turi = 0,
+        partiya = HujjatPartiya.ol(hujjat.tr)!,
         super(key: key) {
     turi = hujjat.turi;
   }
-  HujjatIchiView.yangi(this.turi, {Key? key})
+  HujjatPartiyaIchiView.yangi(this.turi, {Key? key})
       : yangimi = true,
         infomi = false,
         hujjat = Hujjat(turi)
           ..turi = turi
           ..sana = today.millisecondsSinceEpoch,
+        partiya = HujjatPartiya(),
         super(key: key);
   int turi;
   Hujjat hujjat;
+  HujjatPartiya partiya;
   bool yangimi;
   bool infomi;
 
   @override
-  State<HujjatIchiView> createState() => _HujjatIchiViewState();
+  State<HujjatPartiyaIchiView> createState() => _HujjatPartiyaIchiViewState();
 }
 
-class _HujjatIchiViewState extends State<HujjatIchiView> {
-  final HujjatIchiCont _cont = HujjatIchiCont();
+class _HujjatPartiyaIchiViewState extends State<HujjatPartiyaIchiView> {
+  final HujjatPartiyaIchiCont _cont = HujjatPartiyaIchiCont();
   bool yuklanmoqda = false;
 
   String _title = "";
@@ -453,6 +458,7 @@ class _HujjatIchiViewState extends State<HujjatIchiView> {
 
   @override
   void initState() {
+    logConsole(widget.turi);
     if (widget.yangimi) {
       _title = "Yangi ${HujjatTur.obyektlar[widget.turi]!.nomi}";
     } else if (widget.infomi) {

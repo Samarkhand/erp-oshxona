@@ -1,18 +1,20 @@
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/amaliyot.dart';
 import 'package:erp_oshxona/Model/hisob.dart';
+import 'package:erp_oshxona/Model/hujjat_partiya.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/partiya_ichi_view.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
-import 'package:erp_oshxona/View/Hujjat/HujjatIchiView.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/form.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 
-class HujjatIchiCont with Controller {
-  late HujjatIchiView widget;
+class HujjatPartiyaIchiCont with Controller {
+  late HujjatPartiyaIchiView widget;
   late Hujjat object;
+  late HujjatPartiya partiya;
   Hujjat? objectEski;
   Amaliyot? objectAmaliyot;
 
@@ -41,9 +43,13 @@ class HujjatIchiCont with Controller {
     showLoading(text: "Yuklanmoqda...");
     //Hujjat.obyektlar = await Hujjat.service!.getAll();
     object = widget.hujjat;
+    partiya = widget.partiya;
     if (widget.yangimi) {
       object.turi = widget.turi;
+      object.tr = await Hujjat.service!.newId(object.turi);
       await object.yangiRaqam();
+      partiya.tr = object.tr;
+      partiya.trHujjat = object.tr;
     } else {
       objectEski = Hujjat.fromJson(object.toJson());
     }
@@ -68,7 +74,6 @@ class HujjatIchiCont with Controller {
       object.vaqt = DateTime.now().millisecondsSinceEpoch;
       object.vaqtS = object.vaqt;
       if (widget.yangimi) {
-        object.tr = await Hujjat.service!.newId(object.turi);
         object.insert();
       } else if (!widget.infomi) {
         object.update(objectEski!, object);

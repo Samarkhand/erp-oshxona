@@ -1,4 +1,5 @@
 import 'package:erp_oshxona/Library/db/db.dart';
+import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 
@@ -13,8 +14,10 @@ class HujjatPartiya {
   int trChiqim = 0;
   int trKirim = 0;
   int trHujjat = 0;
+  int sana = 0;
 
-  Hujjat? get hujjat => trHujjat == 0 ? null : Hujjat.ol(HujjatTur.kirimIch, trHujjat);
+  Hujjat get hujjat => Hujjat.ol(HujjatTur.kirimIch, trHujjat)!;
+  DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   
   HujjatPartiya();
 
@@ -25,6 +28,7 @@ class HujjatPartiya {
     trChiqim = int.parse(json['trChiqim'].toString());
     trKirim = int.parse(json['trKirim'].toString());
     trHujjat = int.parse(json['trHujjat'].toString());
+    sana = int.parse(json['sana'].toString()) * 1000;
   }
 
   Map<String, dynamic> toJson() => {
@@ -34,11 +38,12 @@ class HujjatPartiya {
         'trChiqim': trChiqim,
         'trKirim': trKirim,
         'trHujjat': trHujjat,
+        'sana': toSecond(sana),
       };
 
   Future<void> delete() async {
     obyektlar.remove(this);
-    await service!.deleteId(turi, tr);
+    await service!.deleteId(tr);
   }
 
   Future<void> insert() async {
@@ -84,17 +89,17 @@ class HujjatPartiyaService {
   final String table = "hujjat_partiya";
   HujjatPartiyaService({this.prefix = ''});
 
-  String get tableName => "'$prefix$table'";
+  String get tableName => "$prefix$table";
 
   String get createTable => """
     CREATE TABLE $tableName (
-      "turi"	INTEGER NOT NULL DEFAULT 0,
       "tr"	INTEGER NOT NULL DEFAULT 0,
+      "turi"	INTEGER NOT NULL DEFAULT 0,
       `trMahal` INTEGER NOT NULL DEFAULT 0,
       `trKirim` INTEGER NOT NULL DEFAULT 0,
       `trChiqim` INTEGER NOT NULL DEFAULT 0,
       `trHujjat` INTEGER NOT NULL DEFAULT 0,
-      PRIMARY KEY("turi", "tr")
+      PRIMARY KEY("tr")
     );
   """;
 
@@ -111,9 +116,9 @@ class HujjatPartiyaService {
     return map;
   }
 
-  Future<Map> selectId(int turi, int id, {String? where}) async {
-    Map row = await db.query("SELECT * FROM '$tableName' WHERE turi = ? AND tr = ?",
-        params: [turi, id],
+  Future<Map> selectId(int id, {String? where}) async {
+    Map row = await db.query("SELECT * FROM '$tableName' WHERE tr = ?",
+        params: [id],
         //fromMap: (map) => {},
         singleResult: true);
     return row;
@@ -124,8 +129,8 @@ class HujjatPartiyaService {
     await db.query("DELETE FROM '$tableName' $where");
   }
 
-  Future<void> deleteId(int turi, int id, {String? where}) async {
-    where = where == null ? " turi = $turi AND tr='$id'" : where;
+  Future<void> deleteId(int id, {String? where}) async {
+    where = where == null ? " tr='$id'" : where;
     await delete(where: where);
   }
 
@@ -146,9 +151,9 @@ class HujjatPartiyaService {
     return insertId;
   }
 
-  Future<int> newId(int turi) async {
-    int? tr = await db.query("SELECT MAX(tr) FROM '$tableName' WHERE turi = ?",
-        params: [turi],
+  Future<int> newId() async {
+    int? tr = await db.query("SELECT MAX(tr) FROM '$tableName'",
+        //params: [turi],
         //fromMap: (map) => {},
         singleResult: true);
         //if(row == null) throw Exception("Javob yo'q");
@@ -156,7 +161,6 @@ class HujjatPartiyaService {
   }
 
   Future<int> replace(Map map) async {
-    map['turi'] = (map['turi'] == 0) ? null : map.remove('turi');
     map['tr'] = (map['tr'] == 0) ? null : map.remove('tr');
 
     var cols = '';

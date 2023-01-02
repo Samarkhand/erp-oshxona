@@ -45,9 +45,10 @@ class HujjatSts extends Tur {
     HujjatTur.zarar.tr: oddiyHujjatSts,
     HujjatTur.chiqim.tr: oddiyHujjatSts,
     HujjatTur.kirimIch.tr: {
-      HujjatSts.homAshyoPrt.tr: homAshyoPrt,
-      HujjatSts.tayyorlashPrt.tr: tayyorlashPrt,
-      HujjatSts.tugallanganPrt.tr: tugallanganPrt,
+      ochilgan.tr: ochilgan,
+      homAshyoPrt.tr: homAshyoPrt,
+      tayyorlashPrt.tr: tayyorlashPrt,
+      tugallanganPrt.tr: tugallanganPrt,
     },
     HujjatTur.buyurtma.tr: {
       ochilgan.tr: ochilgan,
@@ -87,5 +88,5 @@ class HujjatSts extends Tur {
     const STS_TAYYORLANYAPTI = 5; // Tayyorlash tugmasini bosadi, chunki tayyor // ombordan masalliqlar chiqadi, oshxonaga taomlar kiradi
     const STS_TAYYOR = 6; // Tarqatiladi // tarqatishlar kiritiladi. tr_fil oshxonadan taom chiqim bo'ladi, tarqatish tablesiga yozilib boradi
     const STS_QULF = 7; // Statistika ko'radi. Qancha odam yedi, qancha qoldi. Va qulflaydi
-    
+
  */
