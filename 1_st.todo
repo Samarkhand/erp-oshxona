@@ -1,4 +1,13 @@
 Concept:
+    - Api data get
+    - Partiya
+        - taom tanlash oynasi
+        - masalliq boshqarish oynasi
+    - Temalik buttonlar hosil qilish
+        - primary: elevated, text, outlined
+        - secondary
+        - accent
+    - Api data post
     - Himoya
         - login-parol kirish @done
         - logout

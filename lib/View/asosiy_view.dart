@@ -185,9 +185,6 @@ class _AsosiyViewState extends State<AsosiyView>
                     MaterialPageRoute(
                       builder: (context) => const KontRoyxatView(),
                     ));
-                await _cont.songgiAmaliyotYangila();
-                await _cont.songgiAMahsulotYukla();
-                await _cont.songgiAOrderYangila();
               },
             ),
             ListTile(
