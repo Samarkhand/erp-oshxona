@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:erp_oshxona/Library/api_get.dart';
 import 'package:erp_oshxona/Library/sorovnoma.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/functions.dart';
@@ -107,17 +108,17 @@ class AsosiyCont with Controller {
         .map((key, value) => MapEntry(key, Mahsulot.fromJson(value)));
     // load
     showLoading(text: "MCode yuklanmoqda...");
-    (await MCode.service!.select()).forEach((key, value) {
+    (await MCode.service!.select()).forEach((value) {
       var obj = MCode.fromJson(value);
-      MCode.obyektlar[key] = obj;
-      MCode.kodlar[obj.trMah] == null ? [obj] : MCode.kodlar[key]!.add(obj);
+      MCode.obyektlar[obj.code] = obj;
+      MCode.kodlar[obj.trMah] == null ? [obj] : MCode.kodlar[obj.code]!.add(obj);
     });
     // load
     showLoading(text: "MArtikul yuklanmoqda...");
-    (await MArtikul.service!.select()).forEach((key, value) {
+    (await MArtikul.service!.select()).forEach((value) {
       var obj = MArtikul.fromJson(value);
-      MArtikul.obyektlar[key] == null ? [obj] : MArtikul.obyektlar[key]!.add(obj);
-      MArtikul.mahlar[key] == null ? [obj] : MArtikul.mahlar[key]!.add(obj.mahsulot);
+      MArtikul.obyektlar[obj.trMah] == null ? [obj] : MArtikul.obyektlar[obj.trMah]!.add(obj);
+      MArtikul.mahlar[obj.trMah] == null ? [obj] : MArtikul.mahlar[obj.trMah]!.add(obj.mahsulot);
     });
     // load
     showLoading(text: "MahQoldiq yuklanmoqda...");
@@ -151,6 +152,9 @@ class AsosiyCont with Controller {
     });
   }
 
-  static final DateTime today = DateTime.now();
-  static const int sutka = 1000 * 60 * 60 * 24;
+  malumotAlmash() async {
+    showLoading(text: "");
+    await SyncServer.getData(context);
+    hideLoading();
+  }
 }

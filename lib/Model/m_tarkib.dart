@@ -1,6 +1,5 @@
 import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
-import 'package:erp_oshxona/Model/system/crudHelper.dart';
 
 class MTarkib {
   static Map<int, Set<MTarkib>> obyektlar = {};
@@ -37,6 +36,23 @@ class MTarkib {
   }
   
   Map<String, dynamic> toJson() =>
+    {
+      'trMah': trMah,
+      'trMahTarkib': trMahTarkib,
+      'yoq': yoq ? 1 : 0,
+      'vaqtS': vaqtS,
+      'miqdori': miqdori,
+    };
+
+  MTarkib.fromServer(Map<String, dynamic> json){
+    trMah = int.parse(json['trMah'].toString());
+    trMahTarkib = int.parse(json['trMahTarkib'].toString());
+    yoq = (json['yoq'] == 1) ? true : false;
+    vaqtS = int.parse(json['vaqtS'].toString());
+    miqdori = num.parse(json['miqdori'].toString());
+  }
+  
+  Map<String, dynamic> toServer() =>
     {
       'trMah': trMah,
       'trMahTarkib': trMahTarkib,

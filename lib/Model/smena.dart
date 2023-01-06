@@ -28,6 +28,21 @@ class Smena {
         'nomi': nomi,
       };
 
+  Smena.fromServer(Map json)
+      : tr = int.parse(json['tr'].toString()),
+        yoq = (json['yoq'] == 1) ? true : false,
+        vaqtS = int.parse(json['vaqtS'].toString()),
+        vaqt = int.parse(json['vaqt'].toString()),
+        nomi = json['nomi'].toString();
+
+  Map<String, dynamic> toServer() => {
+        'tr': tr,
+        'yoq': yoq ? 1 : 0,
+        'vaqtS': vaqtS,
+        'vaqt': vaqt,
+        'nomi': nomi,
+      };
+
   @override
   String toString() => nomi;
 
@@ -40,18 +55,15 @@ class Smena {
 
 class SmenaService extends CrudService {
   @override
-  SmenaService({super.prefix = ''}) : super("kBolim");
+  SmenaService({super.prefix = ''}) : super("smena");
 
   static String createTable = """
-CREATE TABLE "kBolim" (
+CREATE TABLE "smena" (
 	"tr"	INTEGER DEFAULT 0,
 	"yoq"	INTEGER DEFAULT 0,
-	"active"	INTEGER DEFAULT 0,
-	"tartib"	INTEGER DEFAULT 0,
-	"turi"	INTEGER DEFAULT 0,
+	"vaqtS"	INTEGER DEFAULT 0,
+	"vaqt"	INTEGER DEFAULT 0,
 	"nomi"	TEXT DEFAULT '',
-	"icon"	INTEGER DEFAULT 0,
-	"color"	INTEGER DEFAULT 0,
 	PRIMARY KEY("tr" AUTOINCREMENT)
 );
 """;
@@ -158,8 +170,8 @@ CREATE TABLE "kBolim" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   @override

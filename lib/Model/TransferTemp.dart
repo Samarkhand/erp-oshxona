@@ -150,8 +150,8 @@ CREATE TABLE "transfertemp" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
   
   Future<void> update(Map map, int trHisobdan, int trHisobga, {String? where}) async {

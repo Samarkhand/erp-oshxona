@@ -41,19 +41,13 @@ class MBolim {
 
   MBolim.fromServer(Map<String, dynamic> json)
       : tr = int.parse(json['tr'].toString()),
-        turi = int.parse(json['turi'].toString()),
-        tartib = int.parse(json['tartib'].toString()),
-        vaqtS = int.parse(json['vaqt_ozg'].toString()),
-        nomi = json['nomi'].toString(),
-        rasm = "";
+        vaqtS = int.parse(json['vaqtS'].toString()),
+        nomi = json['nomi'].toString();
 
   Map<String, dynamic> toServer() => {
         'tr': tr,
-        'turi': turi,
-        'tartib': tartib,
         'nomi': nomi,
-        'rasm': rasm,
-        'vaqt_ozg': vaqtS,
+        'vaqtS': vaqtS,
       };
 
   @override
@@ -170,8 +164,8 @@ CREATE TABLE "m_bolim" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   @override

@@ -90,6 +90,11 @@ class _AsosiyViewState extends State<AsosiyView>
               )
             : const SizedBox(),
         IconButton(
+          icon: const Icon(Icons.refresh),
+          tooltip: "Ma'lumot almashish",
+          onPressed: () => _cont.malumotAlmash(),
+        ),
+        IconButton(
           key: keyQollanmaButton,
           icon: const Icon(Icons.question_mark_outlined),
           tooltip: "Sahifa bo'yicha qollanma",

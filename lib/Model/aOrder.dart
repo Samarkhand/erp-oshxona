@@ -321,8 +321,8 @@ CREATE TABLE `aOrder` (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   @override

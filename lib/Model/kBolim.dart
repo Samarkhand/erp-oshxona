@@ -12,6 +12,7 @@ class KBolim {
   bool yoq = false;
   int tartib = 0;
   int turi = 0;
+  int vaqtS = 0;
   String nomi = '';
   IconData icon = const IconData(0);
   Color color = const Color(0xFF000000);
@@ -27,6 +28,7 @@ class KBolim {
         active = (json['active'] == 1) ? true : false,
         tartib = int.parse(json['tartib'].toString()),
         turi = int.parse(json['turi'].toString()),
+        vaqtS = int.parse(json['vaqtS'].toString()),
         nomi = json['nomi'].toString(),
         icon = IconData(int.parse(json['icon'].toString()),
             fontFamily: "MaterialIcons"),
@@ -38,6 +40,7 @@ class KBolim {
         'active': active ? 1 : 0,
         'tartib': tartib,
         'turi': turi,
+        'vaqtS': vaqtS,
         'nomi': nomi,
         'icon': icon.codePoint,
         'color': color.value,
@@ -47,8 +50,9 @@ class KBolim {
       : tr = int.parse(json['tr'].toString()),
         yoq = (json['yoq'] == 1) ? true : false,
         active = (json['active'] == 1) ? true : false,
-        tartib = int.parse(json['tartib'].toString()),
-        turi = int.parse(json['turi'].toString()),
+        //tartib = int.parse(json['tartib'].toString()),
+        //turi = int.parse(json['turi'].toString()),
+        vaqtS = int.parse(json['vaqtS'].toString()),
         nomi = json['nomi'].toString(),
         icon = IconData(int.parse(0.toString()), fontFamily: "MaterialIcons"),
         color = Color(int.parse(0.toString()));
@@ -59,6 +63,7 @@ class KBolim {
         'active': active ? 1 : 0,
         'tartib': tartib,
         'turi': turi,
+        'vaqtS': vaqtS,
         'nomi': nomi,
         'icon': icon.codePoint,
         'color': color.value,
@@ -85,6 +90,7 @@ CREATE TABLE "kBolim" (
 	"active"	INTEGER DEFAULT 0,
 	"tartib"	INTEGER DEFAULT 0,
 	"turi"	INTEGER DEFAULT 0,
+	"vaqtS"	INTEGER DEFAULT 0,
 	"nomi"	TEXT DEFAULT '',
 	"icon"	INTEGER DEFAULT 0,
 	"color"	INTEGER DEFAULT 0,
@@ -194,8 +200,8 @@ CREATE TABLE "kBolim" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   @override

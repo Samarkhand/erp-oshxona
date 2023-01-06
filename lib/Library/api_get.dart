@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:erp_oshxona/Library/functions.dart';
-import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/rest_api.dart';
-import 'package:erp_oshxona/Library/sorovnoma.dart';
 import 'package:erp_oshxona/Library/sozlash.dart';
+import 'package:erp_oshxona/Model/m_artikul.dart';
+import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mahal.dart';
 import 'package:erp_oshxona/Model/smena.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
@@ -21,9 +21,10 @@ import 'package:http/http.dart';
 
 class SyncServer{
   
-  static Future licTekshir(BuildContext context, {bool asosiymi = false}) async {
+  static Future getData(BuildContext context, {bool asosiymi = false}) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Internetga ulaning"),
         duration: Duration(seconds: 5),
@@ -31,7 +32,7 @@ class SyncServer{
       ));
       return;
     }
-    final url = InwareServer.urlGetInfo;
+    final url = "${InwareServer.urlGetInfo}&all=1";
     final Map<String, String> headers = {"Auth": Sozlash.token};
     final Map<dynamic, dynamic> bodyMap = {};
 
@@ -46,7 +47,7 @@ class SyncServer{
     if(reply.statusCode == 200 && result != null){
       if(result['m_olchov'] != null && (result['m_olchov'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['m_olchov']){
-          var object = MOlchov.fromJson(json);
+          var object = MOlchov.fromServer(json);
           MOlchov.service!.replace(object.toJson());
           MOlchov.obyektlar[object.tr] = object;
         }
@@ -54,7 +55,7 @@ class SyncServer{
       //
       if(result['m_bolim'] != null && (result['m_bolim'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['m_bolim']){
-          var object = MBolim.fromJson(json);
+          var object = MBolim.fromServer(json);
           MBolim.service!.replace(object.toJson());
           MBolim.obyektlar[object.tr] = object;
         }
@@ -62,7 +63,7 @@ class SyncServer{
       //
       if(result['m_brend'] != null && (result['m_brend'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['m_brend']){
-          var object = MBrend.fromJson(json);
+          var object = MBrend.fromServer(json);
           MBrend.service!.replace(object.toJson());
           MBrend.obyektlar[object.tr] = object;
         }
@@ -70,23 +71,37 @@ class SyncServer{
       //
       if(result['mahsulot'] != null && (result['mahsulot'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['mahsulot']){
-          var object = Mahsulot.fromJson(json);
+          var object = Mahsulot.fromServer(json);
           Mahsulot.service!.replace(object.toJson());
           Mahsulot.obyektlar[object.tr] = object;
         }
       }
       //
+      if(result['m_tarkib'] != null && (result['m_tarkib'] as List).isNotEmpty){
+        for(Map<String, dynamic> json in result['m_tarkib']){
+          var object = MTarkib.fromServer(json);
+          MTarkib.service!.replace(object.toJson());
+        }
+      }
+      //
+      if(result['m_artikul'] != null && (result['m_artikul'] as List).isNotEmpty){
+        for(Map<String, dynamic> json in result['m_artikul']){
+          var object = MArtikul.fromServer(json);
+          MArtikul.service!.replace(object.toJson());
+        }
+      }
+      //
       if(result['m_code'] != null && (result['m_code'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['m_code']){
-          var object = MCode.fromJson(json);
-          MahQoldiq.service!.replace(object.toJson());
+          var object = MCode.fromServer(json);
+          MCode.service!.replace(object.toJson());
           MCode.obyektlar[object.code] = object;
         }
       }
       //
       if(result['qoldiq'] != null && (result['qoldiq'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['qoldiq']){
-          var object = MahQoldiq.fromJson(json);
+          var object = MahQoldiq.fromServer(json);
           MahQoldiq.service!.replace(object.toJson());
           MahQoldiq.obyektlar[object.tr] = object;
         }
@@ -94,7 +109,7 @@ class SyncServer{
       //
       if(result['mahal'] != null && (result['mahal'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['mahal']){
-          var object = Mahal.fromJson(json);
+          var object = Mahal.fromServer(json);
           Mahal.service!.replace(object.toJson());
           Mahal.obyektlar[object.tr] = object;
         }
@@ -102,7 +117,7 @@ class SyncServer{
       //
       if(result['smena'] != null && (result['smena'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['smena']){
-          var object = Smena.fromJson(json);
+          var object = Smena.fromServer(json);
           Smena.service!.replace(object.toJson());
           Smena.obyektlar[object.tr] = object;
         }
@@ -110,7 +125,7 @@ class SyncServer{
       //
       if(result['kBolim'] != null && (result['kBolim'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['kBolim']){
-          var object = KBolim.fromJson(json);
+          var object = KBolim.fromServer(json);
           KBolim.service!.replace(object.toJson());
           KBolim.obyektlar[object.tr] = object;
         }
@@ -118,7 +133,7 @@ class SyncServer{
       //
       if(result['kont'] != null && (result['kont'] as List).isNotEmpty){
         for(Map<String, dynamic> json in result['kont']){
-          var object = Kont.fromJson(json);
+          var object = Kont.fromServer(json);
           Kont.service!.replace(object.toJson());
           Kont.obyektlar[object.tr] = object;
         }
@@ -126,6 +141,7 @@ class SyncServer{
     }
 
     if (result == null || result['alert'] == null) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("${reply.statusCode} Serverdan hato javob qaytdi"),
         duration: const Duration(seconds: 5),
@@ -133,6 +149,7 @@ class SyncServer{
       ));
     } 
     else if (Sozlash.tanishmi || reply.statusCode != 401) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
             "${reply.statusCode} ${result['alert']['title']}. ${result['alert']['description']}"),

@@ -16,6 +16,7 @@ class Kont {
   num oyboBalans = 0;
   num boshBalans = 0;
   DateTime vaqt = DateTime(2000);
+  DateTime vaqtS = DateTime(2000);
   String davKod = '';
   String telKod = '';
   String tel = '';
@@ -34,6 +35,7 @@ class Kont {
         oyboBalans = num.parse(json['oyboBalans'].toString()),
         boshBalans = num.parse(json['boshBalans'].toString()),
         vaqt = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(json['vaqt'])),
+        vaqtS = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(json['vaqtS'])),
         davKod = json['davKod'].toString(),
         telKod = json['telKod'].toString(),
         tel = json['tel'].toString(),
@@ -49,6 +51,7 @@ class Kont {
         'oyboBalans': oyboBalans,
         'boshBalans': boshBalans,
         'vaqt': toSecond(vaqt.millisecondsSinceEpoch),
+        'vaqtS': toSecond(vaqtS.millisecondsSinceEpoch),
         'davKod': davKod,
         'telKod': telKod,
         'tel': tel,
@@ -59,19 +62,19 @@ class Kont {
   Kont.fromServer(Map<String, dynamic> json)
       :
         tr = int.parse(json['tr'].toString()),
-        yoq = false,
-        active = true,
+        yoq = json['yoq'].toString() == "1",
+        active = json['active'].toString() == '1',
         bolim = int.parse(json['bolim'].toString()),
         balans = num.parse(json['balans'].toString()),
         oyboBalans = num.parse(json['oyboBalans'].toString()),
         boshBalans = num.parse(json['boshBalans'].toString()),
-        vaqt = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(json['vaqt'])),
+        vaqt = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(int.parse(json['vaqt']))),
+        vaqtS = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(json['vaqtS'])),
         davKod = json['davKod'].toString(),
         telKod = json['telKod'].toString(),
         tel = json['tel'].toString(),
-        nomi = "${json['fish']}, ${json['nomi']}",
-        //this.izoh = json['izoh'].toString(),
-        izoh = '';
+        nomi = json['nomi'].toString(),
+        izoh = json['izoh'].toString();
 
   Map<String, dynamic> toServer() => {
         'tr': tr,
@@ -81,6 +84,8 @@ class Kont {
         'balans': balans,
         'oyboBalans': oyboBalans,
         'boshBalans': boshBalans,
+        'vaqt': toSecond(vaqt.millisecondsSinceEpoch),
+        'vaqtS': toSecond(vaqtS.millisecondsSinceEpoch),
         'davKod': davKod,
         'telKod': telKod,
         'tel': tel,
@@ -107,7 +112,6 @@ class KontService extends CrudService {
 CREATE TABLE "kont" (
 	"tr"	INTEGER DEFAULT 0,
 	"yoq"	INTEGER DEFAULT 0,
-	"trShaxs"	INTEGER DEFAULT 0,
 	"active"	INTEGER DEFAULT 0,
 	"bolim"	INTEGER DEFAULT 0,
 	"balans"	NUMERIC DEFAULT 0,
@@ -209,7 +213,9 @@ CREATE TABLE "kont" (
 
   @override
   Future<int> replace(Map map) async {
-    map['tr'] = (map['tr'] == 0) ? null : map['tr'];
+    if(map['tr'] == 0) {
+      map.remove('tr');
+    }
 
     var cols = '';
     var vals = '';
@@ -226,8 +232,8 @@ CREATE TABLE "kont" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   @override

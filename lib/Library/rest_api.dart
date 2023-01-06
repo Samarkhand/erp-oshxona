@@ -20,7 +20,7 @@ class InwareServer {
   static String get urlChiq => '${Sozlash.server}/?a=service/logout';
   static String get urlGetAuthKey => '${Sozlash.server}/?a=service/getAuthKey';
   static String get urlGetPaymentKey => "${Sozlash.server}/?a=service/getAuthKey&payment=1";
-  static String get urlGetInfo => '${Sozlash.server}/?a=service/info';
+  static String get urlGetInfo => '${Sozlash.server}/?a=service/data';
   static String get urlTarmoqTek =>
       '${Sozlash.server}/?a=service/checkBot&group=1&channel=1';
   static String get urlDeviceReg => '${Sozlash.server}/?a=service/deviceReg';

@@ -3,7 +3,7 @@ import 'package:erp_oshxona/Model/system/crudHelper.dart';
 
 class MOlchov {
   static Map<int, MOlchov> obyektlar = {
-    0 : MOlchov()..tr=0..tartib=0..kasr=0..nomi=""..vaqtS=0,
+    //0 : MOlchov()..tr=0..tartib=0..kasr=0..nomi=""..vaqtS=0,
   };
 
   static CrudService? service;
@@ -38,18 +38,14 @@ class MOlchov {
 
   MOlchov.fromServer(Map<String, dynamic> json){
     tr = int.parse(json['tr'].toString());
-    tartib = int.parse(json['tartib'].toString());
-    kasr = num.parse(json['kasr'].toString());
-    vaqtS = int.parse(json['vaqt_ozg'].toString());
+    vaqtS = int.parse(json['vaqtS'].toString());
     nomi = json['nomi'].toString();
   }
   
   Map<String, dynamic> toServer() =>
     {
       'tr': tr,
-      'tartib': tartib,
-      'kasr': kasr,
-      'vaqt_ozg': vaqtS,
+      'vaqtS': vaqtS,
       'nomi': nomi,
     };
 
@@ -167,8 +163,8 @@ CREATE TABLE "m_olchov" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   @override

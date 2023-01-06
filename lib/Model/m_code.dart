@@ -30,14 +30,14 @@ class MCode {
 
   MCode.fromServer(Map<String, dynamic> json){
     code = json['code'].toString();
-    trMah = int.parse(json['tr_mah'].toString());
-    vaqtS = 0;
+    trMah = int.parse(json['trMah'].toString());
+    vaqtS = int.parse(json['vaqtS'].toString());
   }
   
   Map<String, dynamic> toServer() =>
     {
       'code': code,
-      'tr_mah': trMah,
+      'trMah': trMah,
       'vaqtS': vaqtS,
     };
 
@@ -57,13 +57,13 @@ CREATE TABLE "m_code" (
 );
   """;
 
-  Future<Map> select({String? where}) async {
+  Future<List> select({String? where}) async {
     where = where == null ? "" : " WHERE $where";
-    Map<int, dynamic> map = {};
+    List<dynamic> map = [];
     await for (final rows
         in db.watch("SELECT * FROM $table $where", tables: [table])) {
       for (final element in rows) {
-        map[element['tr']] = element;
+        map.add(element);
       }
       return map;
     }
@@ -102,8 +102,6 @@ CREATE TABLE "m_code" (
   }
 
   Future<int> insert(Map map) async {
-    map['tr'] = (map['tr'] == 0) ? null : map['tr'];
-    
     var insertId = await db.insert(map as Map<String, dynamic>, table);
     return insertId;
   }
@@ -117,8 +115,6 @@ CREATE TABLE "m_code" (
   }
 
   Future<int> replace(Map map) async {
-    map['tr'] = (map['tr'] == 0) ? null : map['tr'];
-
     var cols = '';
     var vals = '';
 
@@ -134,8 +130,8 @@ CREATE TABLE "m_code" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   Future<void> update(Map map, {String? where}) async {

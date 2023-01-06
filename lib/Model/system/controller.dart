@@ -6,6 +6,8 @@ import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
+import 'package:erp_oshxona/Model/mahal.dart';
+import 'package:erp_oshxona/Model/smena.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
@@ -70,6 +72,8 @@ class Controller {
     MahKirim.service = MahKirimService(prefix: "${today.year}_${today.month}_");
     MahChiqim.service = MahChiqimService(prefix: "${today.year}_${today.month}_");
     MahBuyurtma.service = MahBuyurtmaService(prefix: "${today.year}_${today.month}_");
+    Mahal.service = MahalService();
+    Smena.service = SmenaService();
     /* *** */
     started = true;
     String dbPath = join(directory.path,  "${Global.databases[Global.database]!.faylNomi}.sqlite");

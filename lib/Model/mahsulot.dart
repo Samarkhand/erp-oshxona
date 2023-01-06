@@ -105,31 +105,45 @@ class Mahsulot {
 
   Mahsulot.fromServer(Map<String, dynamic> json){
     tr = int.parse(json['tr'].toString());
+    yoq = (json['yoq'] == 1) ? true : false;
+    turi = int.parse(json['turi'].toString());
     tartib = int.parse(json['tartib'].toString());
+    tanlangan = (json['tanlangan'] == 1) ? true : false;
     tarozimi = (json['tarozimi'] == 1) ? true : false;
-    minMiqdori = num.parse(json['min_miqdori'].toString());
-    trOlchov = int.parse(json['tr_ob'].toString());
-    trBolim = int.parse(json['tr_turi'].toString());
-    trBrend = int.parse(json['tr_ich'].toString());
-    vaqtS = int.parse(json['vaqt_ozg'].toString());
+    komplektmi = (json['komplektmi'] == 1) ? true : false;
+    trOlchov = int.parse(json['trOlchov'].toString());
+    trBolim = int.parse(json['trBolim'].toString());
+    trBrend = int.parse(json['trBrend'].toString());
+    vaqtS = int.parse(json['vaqtS'].toString());
+    vaqt = int.parse(json['vaqt'].toString());
+    kasr = int.parse(json['kasr'].toString());
+    minMiqdori = num.parse(json['minMiqdori'].toString());
+    // trKotib = int.parse(json['trKotib'].toString());
     nomi = json['nomi'].toString();
-    rasm = json['rasm'].toString();
+    rasm = json['rasm'] ?? "";
     malumot = json['malumot'].toString();
   }
   
   Map<String, dynamic> toServer() =>
     {
       'tr': tr,
+      'yoq': yoq ? 1 : 0,
       'tartib': tartib,
+      'turi': turi,
+      'tanlangan': tanlangan ? 1 : 0,
       'tarozimi': tarozimi ? 1 : 0,
-      'min_miqdori': minMiqdori,
-      'tr_ob': trOlchov,
-      'tr_turi': trBolim,
-      'tr_ich': trBrend,
+      'komplektmi': komplektmi ? 1 : 0,
+      'trOlchov': trOlchov,
+      'trBolim': trBolim,
+      'trBrend': trBrend,
+      'vaqtS': vaqtS,
+      'vaqt': vaqt,
+      'kasr': kasr,
+      'minMiqdori': minMiqdori,
+      'trKotib': trKotib,
       'nomi': nomi,
       'rasm': rasm,
       'malumot': malumot,
-      'vaqt_ozg': vaqtS,
     };
 
   @override
@@ -251,8 +265,8 @@ CREATE TABLE "mahsulot" (
       }
     });
     var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    var res = await db.query(sql);
-    return res.insertId;
+    await db.query(sql);
+    return 0;
   }
 
   @override
