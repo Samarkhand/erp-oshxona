@@ -572,7 +572,7 @@ class _MahIchiViewState extends State<MahIchiView> {
           child: InkWell(
             onTap: () async {
               //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
-              String? value = await inputDialog(context, object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr));
+              String? value = await inputDialog(context, object.miqdori.toStringAsFixed(3));
               if(value != null && object.miqdori != num.tryParse(value)) {
                 setState(() {
                   object.miqdori = num.tryParse(value) ?? 0;
@@ -585,8 +585,7 @@ class _MahIchiViewState extends State<MahIchiView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                      "$n. ${object.mahsulotTarkib.nomi}"),
+                  Text("$n. ${object.mahsulotTarkib.nomi}"),
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
@@ -605,7 +604,7 @@ class _MahIchiViewState extends State<MahIchiView> {
                               )),
                         ),
                       ),*/
-                      Text("${object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr)} ${object.mahsulotTarkib.mOlchov.nomi}"),
+                      Text("${object.miqdori.toStringAsFixed(3)} ${object.mahsulotTarkib.mOlchov.nomi}"),
                       const SizedBox(width: 20),
                       OutlinedButton(
                         onPressed: () => _cont.remove(object),

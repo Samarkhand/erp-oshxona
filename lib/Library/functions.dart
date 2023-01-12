@@ -2,8 +2,10 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/View/Auth/kirish_view.dart';
-import 'package:erp_oshxona/View/Kirim/buyurtma_royxat_view.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
+import 'package:erp_oshxona/View/MahKirim/buyurtma_royxat_view.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -232,6 +234,7 @@ Widget? openHujjat(Hujjat object){
   else if(HujjatTur.zarar.tr == object.turi){
   }
   else if(HujjatTur.kirimIch.tr == object.turi){
+    view = IchKirimRoyxatView(HujjatPartiya.id(object.tr));
   }
   else if(HujjatTur.chiqimIch.tr == object.turi){
   }

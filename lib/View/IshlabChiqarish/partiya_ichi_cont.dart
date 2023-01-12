@@ -73,13 +73,16 @@ class HujjatPartiyaIchiCont with Controller {
       object.izoh = izohController.text;
       object.vaqt = DateTime.now().millisecondsSinceEpoch;
       object.vaqtS = object.vaqt;
+      partiya.sana = object.sana;
       if (widget.yangimi) {
+        object.tr = await Hujjat.service!.insert(object.toJson());
         object.insert();
+        partiya.tr = await HujjatPartiya.service!.insert(partiya.toJson());
+        partiya.trHujjat = object.tr;
+        partiya.insert();
       } else if (!widget.infomi) {
-        object.update(objectEski!, object);
-        /*await Hujjat.service!
-            .update(object.toJson(), where: " tr='${object.tr}'");*/
-        //Hujjat.obyektlar[object.tr] = object;
+        object.update();
+        partiya.update();
       }
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Saqlandi"),

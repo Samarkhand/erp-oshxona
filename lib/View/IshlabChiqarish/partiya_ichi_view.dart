@@ -3,6 +3,7 @@ import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Library/theme.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/kont.dart';
+import 'package:erp_oshxona/Model/mahal.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/partiya_ichi_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
@@ -103,6 +104,8 @@ class _HujjatPartiyaIchiViewState extends State<HujjatPartiyaIchiView> {
               padding: const EdgeInsets.all(20),
               children: [
                 _raqamInput(),
+                const SizedBox(height: oraliqPadding),
+                _mahalInput(),
                 const SizedBox(height: oraliqPadding),
                 _sanaTanla(),
                 const SizedBox(height: oraliqPadding),
@@ -403,6 +406,44 @@ class _HujjatPartiyaIchiViewState extends State<HujjatPartiyaIchiView> {
         FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
       ],
       validator: (value) => _cont.validate(value, required: true),
+    );
+  }
+
+  Widget _mahalInput() {
+    List<DropdownMenuItem<Mahal>> list = [];
+    for(var obj in Mahal.obyektlar.values){
+      list.add(DropdownMenuItem<Mahal>(
+        value: obj,
+        child: Text(obj.nomi),
+      ));
+    }
+    return DropdownButtonFormField<Mahal>(
+      items: list,
+      value: Mahal.obyektlar.values.first,
+      borderRadius: const BorderRadius.all(Radius.circular(10)),
+      isExpanded: true,
+      enableFeedback: true,
+      decoration: InputDecoration(
+        labelText: "Ovqat mahali",
+        border: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        filled: true,
+        fillColor: Theme.of(context).cardColor,
+      ),
+      onChanged: (value) {
+        _cont.partiya.trMahal = value!.tr;
+      }, 
+      validator: (value) {
+        if(value == null){
+          return "Tanlgang";
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _cont.partiya.trMahal = value!.tr;
+      }, 
     );
   }
 

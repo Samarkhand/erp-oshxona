@@ -1,8 +1,8 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:erp_oshxona/Library/api_get.dart';
 import 'package:erp_oshxona/Library/sorovnoma.dart';
+import 'package:erp_oshxona/Model/mahal.dart';
+import 'package:erp_oshxona/Model/smena.dart';
 import 'package:flutter/material.dart';
-import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/m_artikul.dart';
 import 'package:erp_oshxona/Model/m_bolim.dart';
 import 'package:erp_oshxona/Model/m_brend.dart';
@@ -14,7 +14,6 @@ import 'package:erp_oshxona/View/asosiy_view.dart';
 import 'package:erp_oshxona/Model/aMahsulot.dart';
 import 'package:erp_oshxona/Model/aOrder.dart';
 import 'package:erp_oshxona/Model/amaliyot.dart';
-import 'package:erp_oshxona/Model/hisob.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
@@ -107,19 +106,27 @@ class AsosiyCont with Controller {
     Mahsulot.obyektlar = (await Mahsulot.service!.select())
         .map((key, value) => MapEntry(key, Mahsulot.fromJson(value)));
     // load
+    showLoading(text: "Mahal yuklanmoqda...");
+    Mahal.obyektlar = (await Mahal.service!.select())
+        .map((key, value) => MapEntry(key, Mahal.fromJson(value)));
+    // load
+    showLoading(text: "Smena yuklanmoqda...");
+    Smena.obyektlar = (await Smena.service!.select())
+        .map((key, value) => MapEntry(key, Smena.fromJson(value)));
+    // load
     showLoading(text: "MCode yuklanmoqda...");
-    (await MCode.service!.select()).forEach((value) {
+    for (var value in (await MCode.service!.select())) {
       var obj = MCode.fromJson(value);
       MCode.obyektlar[obj.code] = obj;
       MCode.kodlar[obj.trMah] == null ? [obj] : MCode.kodlar[obj.code]!.add(obj);
-    });
+    }
     // load
     showLoading(text: "MArtikul yuklanmoqda...");
-    (await MArtikul.service!.select()).forEach((value) {
+    for (var value in (await MArtikul.service!.select())) {
       var obj = MArtikul.fromJson(value);
       MArtikul.obyektlar[obj.trMah] == null ? [obj] : MArtikul.obyektlar[obj.trMah]!.add(obj);
       MArtikul.mahlar[obj.trMah] == null ? [obj] : MArtikul.mahlar[obj.trMah]!.add(obj.mahsulot);
-    });
+    }
     // load
     showLoading(text: "MahQoldiq yuklanmoqda...");
     MahQoldiq.obyektlar = (await MahQoldiq.service!.select())

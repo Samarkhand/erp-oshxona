@@ -1,7 +1,7 @@
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
-import 'package:erp_oshxona/Model/mah_kirim.dart';
-import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_cont.dart';
+import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,19 +9,20 @@ import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 
-class IchKirimRoyxatView extends StatefulWidget {
-  const IchKirimRoyxatView(this.partiya, {Key? key}) : super(key: key);
+class IchiChiqimRoyxatView extends StatefulWidget {
+  const IchiChiqimRoyxatView(this.partiya, this.barchaTarkib, {Key? key}) : super(key: key);
 
   final HujjatPartiya partiya;
+  final List<Map> barchaTarkib;
 
   @override
-  State<IchKirimRoyxatView> createState() => _IchKirimRoyxatViewState();
+  State<IchiChiqimRoyxatView> createState() => _IchiChiqimRoyxatViewState();
 }
 
-class _IchKirimRoyxatViewState extends State<IchKirimRoyxatView> {
-  final IchKirimRoyxatCont _cont = IchKirimRoyxatCont();
+class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
+  final IchiChiqimRoyxatCont _cont = IchiChiqimRoyxatCont();
   bool yuklanmoqda = false;
-
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -169,7 +170,7 @@ class _IchKirimRoyxatViewState extends State<IchKirimRoyxatView> {
       padding: const EdgeInsets.all(10),
       child: Text("Ro'yxat", style: MyTheme.h5),
     ));
-    for (var object in _cont.kirimList) {
+    for (var object in _cont.chiqimList) {
       n++;
       royxat.add(
         Material(
@@ -182,7 +183,7 @@ class _IchKirimRoyxatViewState extends State<IchKirimRoyxatView> {
                 setState(() {
                   object.miqdori = num.tryParse(value) ?? 0;
                 });
-                MahBuyurtma.service!.update({'miqdori': object.miqdori},
+                MahChiqim.service!.update({'miqdori': object.miqdori},
                     where:
                         "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
               }*/
@@ -199,7 +200,7 @@ class _IchKirimRoyxatViewState extends State<IchKirimRoyxatView> {
                       SizedBox(
                         width: 100,
                         child: TextField(
-                          controller: _cont.miqdorCont[object.tr],
+                          controller: _cont.buyurtmaCont[object.tr],
                           textAlign: TextAlign.end,
                           decoration: InputDecoration(
                             isDense: true,
@@ -214,7 +215,7 @@ class _IchKirimRoyxatViewState extends State<IchKirimRoyxatView> {
                               setState(() {
                                 object.miqdori = num.tryParse(value) ?? 0;
                               });
-                              MahKirim.service!.update({'miqdori': object.miqdori},
+                              MahChiqim.service!.update({'miqdori': object.miqdori},
                                   where:
                                       "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
                             }
@@ -255,7 +256,7 @@ class _IchKirimRoyxatViewState extends State<IchKirimRoyxatView> {
       padding: const EdgeInsets.all(10),
       child: Text("Ro'yxat", style: MyTheme.h5),
     ));
-    for (var object in _cont.kirimList) {
+    for (var object in _cont.chiqimList) {
       n++;
       royxat.add(
         Material(
@@ -311,7 +312,9 @@ class _IchKirimRoyxatViewState extends State<IchKirimRoyxatView> {
       ];
     }
     else {
-      return null;
+      return <Widget>[
+        IconButton(onPressed: () => _cont.tarkibQaytarish(), icon: const Icon(Icons.refresh), tooltip: "Tekshirish"),
+      ];
     }
   }
 

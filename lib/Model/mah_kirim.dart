@@ -3,13 +3,45 @@ import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/turi.dart';
+
+class MahKirimTur extends Tur {
+  static MahKirimTur kirim = MahKirimTur(1, "Kirim", HujjatTur.kirim.tr);
+  static MahKirimTur kirimFil = MahKirimTur(2, "Filialdan Kirim", HujjatTur.kirimFil.tr); 
+  static MahKirimTur qaytibOlish = MahKirimTur(3, "Qaytib olish", HujjatTur.qaytibOlish.tr);
+  static MahKirimTur kirimIch = MahKirimTur(4, "Kirim ichlab chiqarish", HujjatTur.kirimIch.tr);
+
+  static final Map<int, MahKirimTur> obyektlar = {
+    kirim.tr: kirim,
+    kirimFil.tr: kirimFil,
+    qaytibOlish.tr: qaytibOlish,
+    kirimIch.tr: kirimIch,
+  };
+
+  MahKirimTur(super.tr, super.nomi, this.trHujjatTur);
+
+  late int trHujjatTur;
+  HujjatTur get hujjatTur => HujjatTur.obyektlar[trHujjatTur]!;
+
+  get olHujjatlar => MahKirim.obyektlar.values.where((element) => element.turi == tr).toList();
+}
 
 class MahKirim {
+  insert() async {
+    obyektlar[tr] = this;
+    await service!.insert(toJson());
+  }
+
+  delete() async {
+    await service!.deleteId(trHujjat, tr);
+    obyektlar.remove(this);
+  }
+
   static Map<int, MahKirim> obyektlar = {};
   static MahKirimService? service;
 
   int tr = 0;
-  int turi = 0;
+  int turi = MahKirimTur.kirimFil.tr;
   int trHujjat = 0;
   bool qulf = false;
   bool yoq = false;
@@ -34,6 +66,27 @@ class MahKirim {
 
   MahKirim();
 
+  MahKirim.fromBrtm(MahBuyurtma brtm) {
+    int now = DateTime.now().millisecondsSinceEpoch;
+    tr = brtm.tr;
+    turi = MahKirimTur.kirimFil.tr;
+    //trHujjat = brtm.trHujjat;
+    //qulf = true;
+    //yoq = false;
+    sana = brtm.sana;
+    vaqtS = now;
+    vaqt = now;
+    trMah = trMah;
+    miqdori = brtm.miqdori;
+    tannarxi = brtm.narxi;
+    tannarxiReal = brtm.narxi;
+    sotnarxi = brtm.narxi;
+    trKont = brtm.trKont;
+    nomi = brtm.nomi;
+    kodi = brtm.kodi;
+    izoh = brtm.izoh;
+  }
+
   MahKirim.fromJson(Map<String, dynamic> json) {
     tr = int.parse(json['tr'].toString());
     turi = int.parse(json['turi'].toString());
@@ -52,27 +105,6 @@ class MahKirim {
     nomi = json['nomi'];
     kodi = json['kodi'];
     izoh = json['izoh'];
-  }
-
-  MahKirim.fromBrtm(MahBuyurtma brtm) {
-    int now = DateTime.now().millisecondsSinceEpoch;
-    tr = brtm.tr;
-    turi = HujjatTur.kirimFil.tr;
-    //trHujjat = brtm.trHujjat;
-    //qulf = true;
-    //yoq = false;
-    sana = brtm.sana;
-    vaqtS = now;
-    vaqt = now;
-    trMah = trMah;
-    miqdori = brtm.miqdori;
-    tannarxi = brtm.narxi;
-    tannarxiReal = brtm.narxi;
-    sotnarxi = brtm.narxi;
-    trKont = brtm.trKont;
-    nomi = brtm.nomi;
-    kodi = brtm.kodi;
-    izoh = brtm.izoh;
   }
 
   Map<String, dynamic> toJson() => {
@@ -95,8 +127,28 @@ class MahKirim {
         'izoh': izoh,
       };
 
+  MahKirim.fromServer(Map<String, dynamic> json) {
+    tr = int.parse(json['tr'].toString());
+    turi = int.parse(json['turi'].toString());
+    trHujjat = int.parse(json['trHujjat'].toString());
+    qulf = json['qulf'].toString() == "1" ? true : false;
+    yoq = json['yoq'].toString() == "1" ? true : false;
+    sana = int.parse(json['sana'].toString());
+    vaqtS = int.parse(json['vaqtS'].toString());
+    vaqt = int.parse(json['vaqt'].toString());
+    trMah = int.parse(json['trMah'].toString());
+    miqdori = num.parse(json['miqdori'].toString());
+    tannarxi = num.parse(json['tannarxi'].toString());
+    tannarxiReal = num.parse(json['tannarxiReal'].toString());
+    sotnarxi = num.parse(json['sotnarxi'].toString());
+    trKont = int.parse(json['trKont'].toString());
+    nomi = json['nomi'];
+    kodi = json['kodi'];
+    izoh = json['izoh'];
+  }
+
   // for web-service
-  Map<String, dynamic> toPost() => {
+  Map<String, dynamic> toServer() => {
         'trHujjat': trHujjat,
         'turi': turi,
         'tr': tr,
@@ -128,7 +180,7 @@ class MahKirimService {
   final String table = "mah_kirim";
   MahKirimService({this.prefix = ''});
 
-  String get tableName => prefix + table;
+  String get tableName => "'$prefix$table'";
 
   String get createTable => """
     CREATE TABLE "$tableName" (
@@ -157,7 +209,7 @@ class MahKirimService {
     where = where == null ? "" : " WHERE $where";
     Map<int, dynamic> map = {};
     await for (final rows
-        in db.watch("SELECT * FROM '$tableName' $where", tables: [table])) {
+        in db.watch("SELECT * FROM $tableName $where", tables: [tableName])) {
       for (final element in rows) {
         map[element['tr']] = element;
       }
@@ -166,10 +218,10 @@ class MahKirimService {
     return map;
   }
 
-  Future<Map> selectId(int hujjatId, int id, {String? where}) async {
+  Future<Map> selectId(int id, {String? where}) async {
     Map row =
-        await db.query("SELECT * FROM '$tableName' WHERE trHujjat = ? AND tr = ?",
-            params: [hujjatId, id],
+        await db.query("SELECT * FROM $tableName WHERE tr = ?",
+            params: [id],
             //fromMap: (map) => {},
             singleResult: true);
     return row;
@@ -177,42 +229,40 @@ class MahKirimService {
 
   Future<void> delete({String? where}) async {
     where ??= " WHERE $where";
-    await db.query("DELETE FROM '$tableName' $where");
+    await db.query("DELETE FROM $tableName $where");
   }
 
   Future<void> deleteId(int hujjatId, int id, {String? where}) async {
-    where ??= " trHujjat = $hujjatId AND tr='$id'";
+    where ??= " tr='$id'";
     await delete(where: where);
   }
 
   Future<int> count({String? where}) async {
     where = where == null ? "" : " WHERE $where";
-    Map row = await db.query("SELECT COUNT(*) FROM '$tableName'$where",
-        //params: [table],
+    Map row = await db.query("SELECT COUNT(*) FROM $tableName $where",
+        //params: [tableName],
         //fromMap: (map) => {},
         singleResult: true);
     return int.parse(row['seq'].toString()) + 1;
   }
 
   Future<int> insert(Map map) async {
-    map['trHujjat'] = (map['trHujjat'] == 0) ? null : map['trHujjat'];
     map['tr'] = (map['tr'] == 0) ? null : map['tr'];
 
-    var insertId = await db.insert(map as Map<String, dynamic>, table);
+    var insertId = await db.insert(map as Map<String, dynamic>, tableName);
     return insertId;
   }
 
-  Future<int> newId(int hujjatId) async {
-    Map row = await db.query(
-        "SELECT tr FROM '$tableName' WHERE trHujjat = ? ORDER BY tr DESC LIMIT 0, 1",
-        params: [hujjatId],
+  Future<int> newId() async {
+    int? row = await db.query(
+        "SELECT tr FROM $tableName ORDER BY tr DESC LIMIT 0, 1",
+        //params: [hujjatId],
         //fromMap: (map) => {},
         singleResult: true);
-    return row['tr'] + 1;
+    return (row ?? 0) + 1;
   }
 
   Future<int> replace(Map map) async {
-    map['trHujjat'] = (map['trHujjat'] == 0) ? null : map.remove('trHujjat');
     map['tr'] = (map['tr'] == 0) ? null : map.remove('tr');
 
     var cols = '';
@@ -247,8 +297,8 @@ class MahKirimService {
     }
 
     final String sql = "UPDATE '$tableName' SET $updateClause$where";
-    await db.execute(sql, tables: [table], params: params);
+    await db.execute(sql, tables: [tableName], params: params);
     //await db.query(sql);
-    //await db.update(map as Map<String, dynamic>, table, keys: []);
+    //await db.update(map as Map<String, dynamic>, tableName, keys: []);
   }
 }

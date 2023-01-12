@@ -1,42 +1,42 @@
-import 'dart:convert';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:erp_oshxona/Library/functions.dart';
-import 'package:erp_oshxona/Library/rest_api.dart';
-import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
-import 'package:erp_oshxona/Model/mah_buyurtma.dart';
+import 'package:erp_oshxona/Model/hujjat_partiya.dart';
+import 'package:erp_oshxona/Model/m_tarkib.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
-import 'package:http/http.dart';
 
 class IchKirimRoyxatCont with Controller {
   late IchKirimRoyxatView widget;
   List objectList = [];
 
   late final Hujjat hujjat;
+  late final HujjatPartiya partiya;
 
   late DateTime sanaD;
   late DateTime sanaG;
 
   List<Mahsulot> mahsulotList = [];
-  List<MahBuyurtma> buyurtmaList = [];
+  List<MahKirim> kirimList = [];
 
-  Map<int, TextEditingController> buyurtmaCont = {};
+  Map<int, TextEditingController> miqdorCont = {};
 
-  Future<void> init(widget, Function setState,
-      {required BuildContext context}) async {
+  Future<void> init(widget, Function setState, {required BuildContext context}) async {
     this.setState = setState;
     this.widget = widget;
     this.context = context;
 
-    hujjat = widget.hujjat;
+    hujjat = widget.partiya.hujjat;
+    partiya = widget.partiya;
+
     showLoading(text: "Yuklanmoqda...");
     await loadItems();
     await loadFromGlobal();
@@ -70,252 +70,118 @@ class IchKirimRoyxatCont with Controller {
   }
   
   Future<void> loadItems() async {
-    await MahBuyurtma.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
-      for (var value in values) {
-        var buyurtma = MahBuyurtma.fromJson(value);
-        MahBuyurtma.obyektlar.add(buyurtma);
-        buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
+    await MahKirim.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
+      for (var value in values.values) {
+        var kirim = MahKirim.fromJson(value);
+        MahKirim.obyektlar[kirim.tr] = (kirim);
+        miqdorCont[kirim.tr] = TextEditingController(text: kirim.miqdori.toStringAsFixed(kirim.mahsulot.kasr));
       }
     });
   }
 
   loadFromGlobal(){
-    buyurtmaList = MahBuyurtma.obyektlar.where((element) => element.trHujjat == hujjat.tr).toList();
-    buyurtmaList.sort(
+    kirimList = MahKirim.obyektlar.values.where((element) => element.trHujjat == hujjat.tr).toList();
+    kirimList.sort(
       // Comparison function not necessary here, but shown for demonstrative purposes 
       (a, b) => -a.tr.compareTo(b.tr), 
     );
-    mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == MTuri.homAshyo.tr).toList();
+    mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == MTuri.mahsulot.tr).toList();
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
   }
   
-  Future<void> sanaTanlashD(BuildContext context, StateSetter setState) async {
-    final now = DateTime.now();
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: sanaD,
-      firstDate: DateTime(1970),
-      lastDate: DateTime(now.year + 1),
-    );
-    if (picked != null && picked != sanaD) {
-      setState(() => sanaD = picked);
-    }
-  }
-  Future<void> sanaTanlashG(BuildContext context, StateSetter setState) async {
-    final now = DateTime.now();
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: sanaG,
-      firstDate: DateTime(1970),
-      lastDate: DateTime(now.year + 1),
-    );
-    if (picked != null && picked != sanaG) {
-      setState(() => sanaG = picked);
-    }
-  }
-
-  buyurtmaJonatish() async {
-    showLoading(text: "Buyurtma jo'natilmoqda");
-    if (await (Connectivity().checkConnectivity()) == ConnectivityResult.none) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Internetga ulaning"),
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.amberAccent,
-      ));
-      hideLoading();
-      return;
-    }
-    var url = InwareServer.urlBuyurtma;
-    Map<String, String> headers = {"Auth": Sozlash.token};
-    Map body = _brtmJonatganiMalumot();
-    Response? reply = await apiPost(url, headers: headers, jsonMap: body);
-    logConsole("GET URL: $url");
-    logConsole("REQUEST head: $headers");
-    logConsole("REQUEST body: $body");
-    logConsole("RESPONSE head: ${reply.headers}");
-    logConsole("RESPONSE body: ${reply.body}");
-    Map<dynamic, dynamic>? result = jsonDecode(reply.body);
-
-    if (reply.statusCode == 200 && result != null) {
-      final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
-      setState((){ 
-        hujjat.qulf = true;
-        hujjat.sts = HujjatSts.jonatilganBrtm.tr;
-      });
-      Hujjat.service!.update({
-        'qulf': hujjat.qulf ? 1 : 0,
-        'sts': hujjat.sts,
-        'vaqtS': vaqts,
-      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
-    }
-    if (result?['alert'] != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(result!['alert']['title']),
-        duration: const Duration(seconds: 5),
-        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
-      ));
-    }
-    else if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Serverdan (${reply.statusCode}) hato javob keldi"),
-        duration: const Duration(seconds: 2),
-        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
-      ));
-    }
-    hideLoading();
-  }
-
-  buyurtmaTekshirish() async {
-    showLoading(text: "Buyurtma tekshirilmoqda");
-    if (await (Connectivity().checkConnectivity()) == ConnectivityResult.none) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Internetga ulaning"),
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.amberAccent,
-      ));
-      hideLoading();
-      return;
-    }
-    var url = "${InwareServer.urlBuyurtma}&checkStatus=${hujjat.tr}";
-    Map<String, String> headers = {"Auth": Sozlash.token};
-    Map body = _brtmJonatganiMalumot();
-    Response? reply = await apiPost(url, headers: headers, jsonMap: body);
-    logConsole("GET URL: $url");
-    logConsole("REQUEST head: $headers");
-    logConsole("REQUEST body: $body");
-    logConsole("RESPONSE head: ${reply.headers}");
-    logConsole("RESPONSE body: ${reply.body}");
-    Map<dynamic, dynamic>? result = jsonDecode(reply.body);
-
-    if (reply.statusCode == 200 && result != null) {
-      final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
-      setState((){
-        hujjat.qulf = result['hujjat']['qulf'] == 1;
-        hujjat.sts = result['hujjat']['sts'];
-      });
-      Hujjat.service!.update({
-        'qulf': hujjat.qulf ? 1 : 0,
-        'sts': hujjat.sts,
-        'vaqtS': vaqts,
-      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
-      if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
-        // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
-        if(hujjat.trHujjat != 0){
-          Hujjat kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat)!;
-          for(Map buyurtmaData in result['mahsulotlar']){
-            var brtm = buyurtmaList.firstWhere((element) => element.tr == int.parse(buyurtmaData['tr'].toString()), orElse: () => MahBuyurtma.fromJson(buyurtmaData as Map<String, dynamic>));
-            if(brtm.yoq) continue;
-            var kirim = MahKirim.fromBrtm(brtm)..trHujjat=kirimHujjat.tr;
-            await MahKirim.service!.insert(kirim.toJson());
-          }
+  tarkibTuzish() async {
+    showLoading(text: "Tarkib tuzilmoqda...");
+    List<Map>? barchaTarkib = [];
+    for(var obj in kirimList){
+      obj.trMah;
+      var tarkiblar = MTarkib.obyektlar[obj.trMah];
+      if(tarkiblar != null){
+        for(var tarkibMah in tarkiblar){
+          barchaTarkib.add({
+            'mah' : tarkibMah.trMah,
+            'mahTarkib' : tarkibMah.trMahTarkib,
+            'miqdori' : tarkibMah.miqdori,
+            'miqdoriChiq' : tarkibMah.miqdori * obj.miqdori,
+          });
         }
       }
     }
-    if (result?['alert'] != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(result!['alert']['title']),
-        duration: const Duration(seconds: 5),
-        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
-      ));
-    }
-    else if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Serverdan (${reply.statusCode}) hato javob keldi"),
-        duration: const Duration(seconds: 2),
-        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
-      ));
-    }
+    final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
+    //hujjat.qulf = true;
+    hujjat.sts = HujjatSts.homAshyoPrt.tr;
+    Hujjat.service!.update({
+      'qulf': hujjat.qulf ? 1 : 0,
+      'sts': hujjat.sts,
+      'vaqtS': vaqts,
+    }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
+
+    var hujjatKir = Hujjat(HujjatTur.kirimIch.tr);
+    hujjatKir.tr = await Hujjat.service!.newId(hujjatKir.turi);
+    hujjatKir.qulf = true;
+    //hujjatKir.sts = 0;
+    hujjatKir.trHujjat = hujjat.tr;
+    hujjatKir.sana = vaqts;
+    hujjatKir.vaqt = vaqts;
+    hujjatKir.vaqtS = vaqts;
+    await hujjatKir.insert();
+
+    var hujjatChiq = Hujjat.fromJson(hujjatKir.toJson());
+    hujjatChiq.turi = HujjatTur.chiqimIch.tr;
+    hujjatChiq.tr = await Hujjat.service!.newId(hujjatChiq.turi);
+    hujjatChiq.qulf = false;
+    await hujjatChiq.insert();
+
+    partiya.trKirim = hujjatKir.tr;
+    partiya.trChiqim = hujjatChiq.tr;
+    partiya.update();
+
+    // ignore: use_build_context_synchronously
+    await Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => IchiChiqimRoyxatView(partiya, barchaTarkib),
+      ),
+    );
+
     hideLoading();
   }
 
-  buyurtmaTugallash() async {
-    showLoading(text: "Buyurtma tugallanmoqda");
-    if (await (Connectivity().checkConnectivity()) == ConnectivityResult.none) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Internetga ulaning"),
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.amberAccent,
-      ));
-      hideLoading();
-      return;
-    }
-    var url = "${InwareServer.urlBuyurtma}&complete=${hujjat.tr}";
-    Map<String, String> headers = {"Auth": Sozlash.token};
-    Response? reply = await apiGet(url, headers: headers);
-    logConsole("GET URL: $url");
-    logConsole("REQUEST head: $headers");
-    logConsole("RESPONSE head: ${reply.headers}");
-    logConsole("RESPONSE body: ${reply.body}");
-    Map<dynamic, dynamic>? result = jsonDecode(reply.body);
-
-    if (reply.statusCode == 200 && result != null) {
-      final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
-      setState((){
-        hujjat.qulf = result['hujjat']['qulf'] == 1;
-        hujjat.sts = result['hujjat']['sts'];
-      });
-      Hujjat.service!.update({
-        'qulf': hujjat.qulf ? 1 : 0,
-        'sts': hujjat.sts,
-        'vaqtS': vaqts,
-      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
-      if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
-        // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
-        Hujjat? kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat);
-        if(kirimHujjat != null){
-          for(Map buyurtmaData in result['mahsulotlar']){
-            var brtm = buyurtmaList.firstWhere((element) => element.tr == int.parse(buyurtmaData['tr'].toString()), orElse: () => MahBuyurtma.fromJson(buyurtmaData as Map<String, dynamic>));
-            if(brtm.yoq) continue;
-            var kirim = MahKirim.fromBrtm(brtm);
-            await MahKirim.service!.insert(kirim.toJson());
-          }
-        }
-      }
-    }
-    if (result?['alert'] != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(result!['alert']['title']),
-        duration: const Duration(seconds: 5),
-        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
-      ));
-    }
-    else if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Serverdan (${reply.statusCode}) hato javob keldi"),
-        duration: const Duration(seconds: 2),
-        backgroundColor: reply.statusCode == 200 ? null : Colors.redAccent,
-      ));
-    }
+  tarkibQaytarish() async {
+    showLoading(text: "Tarkib tuzilmoqda...");
     hideLoading();
   }
 
-  addToList(Mahsulot buyurtma) async {
+  addToList(Mahsulot kirim) async {
     String? value = await inputDialog(context, "");
     if(value != null){
       num miqdori = num.tryParse(value) ?? 0;
-      add(buyurtma, miqdori: miqdori);
+      add(kirim, miqdori: miqdori);
     }
   }
 
   add(Mahsulot mah, {num miqdori = 1}) async {
-    var buyurtma = MahBuyurtma()..trHujjat=hujjat.tr ..trMah=mah.tr ..miqdori=miqdori;
-    if(buyurtmaList.contains(buyurtma)){
+    var kirim = MahKirim();
+    if(kirimList.contains(kirim)){
       return;
     }
-    buyurtma.sana = hujjat.sana;
-    buyurtma.vaqt = DateTime.now().millisecondsSinceEpoch;
-    buyurtma.vaqtS = buyurtma.vaqt;
-    buyurtma.tr = await MahBuyurtma.service!.newId(buyurtma.trHujjat);
-    buyurtmaList.add(buyurtma);
-    buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
-    setState(() => buyurtmaList);
-    await buyurtma.insert();
+    kirim.turi=MahKirimTur.kirimIch.tr;
+    kirim.tr = await MahKirim.service!.newId();
+    kirim.trHujjat=hujjat.tr; 
+    kirim.trMah=mah.tr; 
+    kirim.miqdori=miqdori;
+    kirim.sana = hujjat.sana;
+    kirim.vaqt = DateTime.now().millisecondsSinceEpoch;
+    kirim.vaqtS = kirim.vaqt;
+    kirimList.add(kirim);
+    miqdorCont[kirim.tr] = TextEditingController(text: kirim.miqdori.toStringAsFixed(kirim.mahsulot.kasr));
+    setState(() => kirimList);
+    await kirim.insert();
   }
 
-  remove(MahBuyurtma buyurtma) async {
-    buyurtmaList.remove(buyurtma);
-    setState(() => buyurtmaList);
-    buyurtma.delete();
+  remove(MahKirim kirim) async {
+    kirimList.remove(kirim);
+    setState(() => kirimList);
+    kirim.delete();
   }
 
   mahIzlash(String value){
@@ -328,10 +194,4 @@ class IchKirimRoyxatCont with Controller {
     });
   }
 
-  Map _brtmJonatganiMalumot(){
-    return {
-      'hujjat': hujjat.toJson(),
-      'mahsulotlar': buyurtmaList.map((e) => e.toJson()).toList(),
-    };
-  }
 }

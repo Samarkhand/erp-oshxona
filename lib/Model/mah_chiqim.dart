@@ -1,7 +1,34 @@
 import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Library/functions.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/turi.dart';
+
+class MahChiqimTur extends Tur {
+  static MahChiqimTur qaytibBerish = MahChiqimTur(1, "Qaytib berish", HujjatTur.qaytibBerish.tr);
+  static MahChiqimTur zarar = MahChiqimTur(2, "Qoldiqdan o'chirish", HujjatTur.zarar.tr);
+  static MahChiqimTur chiqimIch = MahChiqimTur(3, "Ishlab chiqarish uchun harajat", HujjatTur.chiqimIch.tr);
+  static MahChiqimTur chiqimFil = MahChiqimTur(4, "Filialdan Kirim", HujjatTur.chiqimFil.tr);
+  static MahChiqimTur chiqim = MahChiqimTur(5, "Chiqim", HujjatTur.chiqim.tr);
+  static MahChiqimTur tarqatish = MahChiqimTur(6, "Tarqatish", HujjatTur.tarqatish.tr);
+
+  static final Map<int, MahChiqimTur> obyektlar = {
+    qaytibBerish.tr: qaytibBerish,
+    zarar.tr: zarar,
+    chiqimIch.tr: chiqimIch,
+    chiqimFil.tr: chiqimFil,
+    chiqim.tr: chiqim,
+    tarqatish.tr: tarqatish,
+  };
+
+  MahChiqimTur(super.tr, super.nomi, this.trHujjatTur);
+
+  late int trHujjatTur;
+  HujjatTur get hujjatTur => HujjatTur.obyektlar[trHujjatTur]!;
+
+  get olHujjatlar => MahChiqim.obyektlar.where((element) => element.turi == tr).toList();
+}
 
 class MahChiqim {
 

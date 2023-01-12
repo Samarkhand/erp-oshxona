@@ -8,7 +8,7 @@ class HujjatPartiya {
   static final Set<HujjatPartiya> obyektlar = {};
   static HujjatPartiya? ol(int tr) => obyektlar.firstWhere((element) => element.tr == tr);
 
-  int turi = 0;
+  int turi = 1;
   int tr = 0;
   int trMahal = 0;
   int trChiqim = 0;
@@ -21,7 +21,27 @@ class HujjatPartiya {
   
   HujjatPartiya();
 
+  static HujjatPartiya id(int id) {
+    return obyektlar.firstWhere((element) => element.trHujjat == id);
+  }
+
+  /*id(int id) async {
+    var hujjat = Hujjat.obyektlar.firstWhere((element) => element.tr == id);
+    Map json = await service!.selectId(hujjat.tr);
+    fromJson(json as  Map<String, dynamic>);
+  }*/
+
   HujjatPartiya.fromJson(Map<String, dynamic> json) {
+    turi = json['turi'];
+    tr = json['tr'];
+    trMahal = int.parse(json['trMahal'].toString());
+    trChiqim = int.parse(json['trChiqim'].toString());
+    trKirim = int.parse(json['trKirim'].toString());
+    trHujjat = int.parse(json['trHujjat'].toString());
+    sana = int.parse(json['sana'].toString()) * 1000;
+  }
+
+  fromJson(Map<String, dynamic> json) {
     turi = json['turi'];
     tr = json['tr'];
     trMahal = int.parse(json['trMahal'].toString());
@@ -47,12 +67,11 @@ class HujjatPartiya {
   }
 
   Future<void> insert() async {
-    tr = await service!.insert(toJson());
     obyektlar.add(this);
   }
 
-  Future<void> update(HujjatPartiya eski, HujjatPartiya yangi) async {
-    await service!.update(yangi.toJson(), where: " tr='${yangi.tr}'");
+  Future<void> update() async {
+    await service!.update(toJson(), where: " tr='$tr'");
   }
 
   num? summaNum = 0;

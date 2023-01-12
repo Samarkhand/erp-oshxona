@@ -95,12 +95,11 @@ class Hujjat {
   }
 
   Future<void> insert() async {
-    tr = await service!.insert(toJson());
     obyektlar.add(this);
   }
 
-  Future<void> update(Hujjat eski, Hujjat yangi) async {
-    await service!.update(yangi.toJson(), where: " tr='${yangi.tr}'");
+  Future<void> update() async {
+    await service!.update(toJson(), where: " tr='${tr}'");
   }
 
   Future yangiRaqam() async {

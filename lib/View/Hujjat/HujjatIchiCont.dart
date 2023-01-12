@@ -13,7 +13,6 @@ import 'package:erp_oshxona/Model/system/controller.dart';
 class HujjatIchiCont with Controller {
   late HujjatIchiView widget;
   late Hujjat object;
-  Hujjat? objectEski;
   Amaliyot? objectAmaliyot;
 
   late TextEditingController raqamController;
@@ -44,9 +43,7 @@ class HujjatIchiCont with Controller {
     if (widget.yangimi) {
       object.turi = widget.turi;
       await object.yangiRaqam();
-    } else {
-      objectEski = Hujjat.fromJson(object.toJson());
-    }
+    } else {}
     raqamController = TextEditingController(text: object.raqami.toString());
     izohController = TextEditingController(text: object.izoh);
     formValidator[formKeySelectBolim] = FormAlert.just();
@@ -71,10 +68,7 @@ class HujjatIchiCont with Controller {
         object.tr = await Hujjat.service!.newId(object.turi);
         object.insert();
       } else if (!widget.infomi) {
-        object.update(objectEski!, object);
-        /*await Hujjat.service!
-            .update(object.toJson(), where: " tr='${object.tr}'");*/
-        //Hujjat.obyektlar[object.tr] = object;
+        object.update();
       }
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Saqlandi"),

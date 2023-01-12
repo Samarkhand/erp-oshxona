@@ -28,6 +28,7 @@ class HujjatTur extends Tur {
     chiqimFil.tr: chiqimFil,
     chiqim.tr: chiqim,
     buyurtma.tr: buyurtma,
+    tarqatish.tr: tarqatish,
   };
 
   HujjatTur(super.tr, super.nomi);
