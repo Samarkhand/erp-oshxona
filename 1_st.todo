@@ -1,8 +1,8 @@
 Concept:
-    - Api data get
+    - Api data get @done
     - Partiya
-        - taom tanlash oynasi
-        - masalliq boshqarish oynasi
+        - taom tanlash oynasi @done
+        - masalliq boshqarish oynasi @done
     - Temalik buttonlar hosil qilish
         - primary: elevated, text, outlined
         - secondary
@@ -14,13 +14,21 @@ Concept:
         - device PC register
     - Hujjat
         - info tartibla
+        - summa chiqarilsin
+        - ichidagi masalliq soni chiqarilsin
+        - summa chiqarilsin agar ichki hujjat bo'lmasa
+        - Model. @done
+        - ro'yxati @done
+    - Hujjat Partiya
+        - mahal va smena chiqarilsin
+        - ichidagi tayyor mahsulotlar soni chiqarilsin
         - Model. @done
         - ro'yxati @done
     - Chiqim
         - O'chirish ha yo'q @done
         - qulfdan ochish @done
     - Buyurtma
-        - Test
+        - Test qilinsin
         - jo'natish knopkasi @done
         - yangilash knopkasi @done
         - ichiga hujjat statusi @done
@@ -35,6 +43,24 @@ Concept:
         - saqlash va yangi mah knopkasi
         - mah crud #MAN
         - Delete shart bilan: agar qoldig'i yoki bu oy davomida kirim, chiqim bo'lmagan bo'lsagina o'chirilsin
+    - Tarqatish
+        - hujjat ro'yxatida
+            - statusi ko'rinsin: faol / tugallangan
+            - tarqatilgan soni
+            - taom soni ko'rinsin
+        - ichida
+            - chiqim uchun mahsulotlar ro'yxati card'i
+            - hozirgi kont (hodim) ma'lumoti, statusi card'i
+            - o'ngda allaqachon olganlar ro'yxati card'i
+    - Tarqatish
+        - hujjat ro'yxatida
+            - statusi ko'rinsin: faol / tugallangan
+            - tarqatilgan soni
+            - taom soni ko'rinsin
+        - ichida
+            - chiqim uchun mahsulotlar ro'yxati card'i
+            - hozirgi kont (hodim) ma'lumoti, statusi card'i
+            - o'ngda allaqachon olganlar ro'yxati card'i
     - MBolim, MOlchov, MBrend crud #MAN
     - kirim
         - Model @done

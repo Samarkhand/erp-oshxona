@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'hujjat.dart';
 
 class HujjatTur extends Tur {
-  static final HujjatTur kirim = HujjatTur(1, "Kirim");
-  static final HujjatTur kirimFil = HujjatTur(2, "Filialdan Kirim"); 
+  static final HujjatTur kirim = HujjatTur(1, "Kirim(Xarid)");
+  static final HujjatTur kirimFil = HujjatTur(2, "Filialdan kirim"); 
   static final HujjatTur qaytibOlish = HujjatTur(3, "Qaytib olish");
   static final HujjatTur qaytibBerish = HujjatTur(4, "Qaytib berish");
   static final HujjatTur zarar = HujjatTur(5, "Qoldiqdan o'chirish");
-  static final HujjatTur kirimIch = HujjatTur(6, "Ishlab chiqarish");
-  static final HujjatTur chiqimIch = HujjatTur(7, "Ishlab chiqarish uchun harajat");
-  static final HujjatTur chiqimFil = HujjatTur(8, "Filialdan Kirim");
+  static final HujjatTur kirimIch = HujjatTur(6, "Taom tayyorlash");
+  static final HujjatTur chiqimIch = HujjatTur(7, "Tayyorlash uchun chiqim");
+  static final HujjatTur chiqimFil = HujjatTur(8, "Filialga chiqim");
   static final HujjatTur chiqim = HujjatTur(9, "Chiqim");
   static final HujjatTur buyurtmaKeldi = HujjatTur(10, "Bizga buyurtma");
-  static final HujjatTur buyurtma = HujjatTur(11, "Buyurtma");
+  static final HujjatTur buyurtma = HujjatTur(11, "Buyurtma(Xarid)");
   static final HujjatTur tarqatish = HujjatTur(12, "Chiqim");
 
   static final Map<int, HujjatTur> obyektlar = {

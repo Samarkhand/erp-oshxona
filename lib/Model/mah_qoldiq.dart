@@ -1,4 +1,6 @@
+import 'package:erp_oshxona/Library/api_num.dart';
 import 'package:erp_oshxona/Library/db/db.dart';
+import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Model/m_bolim.dart';
 import 'package:erp_oshxona/Model/m_brend.dart';
 import 'package:erp_oshxona/Model/m_olchov.dart';
@@ -47,8 +49,8 @@ class MahQoldiq {
     tannarxi = num.parse(json['tannarxi'].toString());
     sotnarxi = num.parse(json['sotnarxi'].toString());
     sumTannarxi = num.parse(json['sumTannarxi'].toString());
-    sana = int.parse(json['sana'].toString());
-    vaqtS = int.parse(json['vaqtS'].toString());
+    sana = int.parse(json['sana'].toString()) * 1000;
+    vaqtS = int.parse(json['vaqtS'].toString()) * 1000;
   }
 
   Map<String, dynamic> toJson() => {
@@ -110,11 +112,8 @@ class MahQoldiq {
       {
         "qoldi": qoldi,
         "sotildi": sotildi,
-        "ozQoldimi": ozQoldimi
-            ? 0
-            : mahsulot!.minMiqdori >= qoldi
-                ? 1
-                : 0,
+        "ozQoldimi": mahsulot!.minMiqdori >= qoldi ? 1 : 0,
+        "vaqtS": DateTime.now().millisecondsSinceEpoch,
       },
       where: "tr=$tr",
     );
@@ -127,14 +126,40 @@ class MahQoldiq {
       {
         "qoldi": qoldi,
         "sotildi": sotildi,
-        "ozQoldimi": ozQoldimi
-            ? 0
-            : mahsulot!.minMiqdori >= qoldi
-                ? 1
-                : 0,
+        "ozQoldimi": mahsulot!.minMiqdori >= qoldi ? 1 : 0,
+        "vaqtS": DateTime.now().millisecondsSinceEpoch,
       },
       where: "tr=$tr",
     );
+  }
+
+  static Future<void> ozaytirMah(Mahsulot mah, {num miqdor = 1.0}) async {
+    if (mah.mQoldiq == null) {}
+  }
+
+  static Future<void> kopaytirMah(Mahsulot mah,
+      {num miqdor = 1.0, num tannarxi = 0, num sotnarxi = 0}) async {
+    late MahQoldiq qoldiq;
+    if (mah.mQoldiq == null) {
+      qoldiq = MahQoldiq();
+      qoldiq.tr = mah.tr;
+      qoldiq.qoldi = miqdor;
+      qoldiq.ozQoldimi = mah.minMiqdori >= qoldiq.qoldi ? true : false;
+      qoldiq.tarozimi = mah.tarozimi;
+      qoldiq.trOlchov = mah.trOlchov;
+      qoldiq.trBolim = mah.trBolim;
+      qoldiq.trBrend = mah.trBrend;
+      qoldiq.tannarxi = tannarxi;
+      qoldiq.sotnarxi = sotnarxi;
+      qoldiq.sumTannarxi = (miqdor * sotnarxi).decimal(2);
+      qoldiq.sana = today.millisecondsSinceEpoch;
+      qoldiq.vaqtS = DateTime.now().millisecondsSinceEpoch;
+      MahQoldiq.obyektlar[qoldiq.tr] = qoldiq;
+      await MahQoldiq.service!.insert(qoldiq.toJson());
+      return;
+    }
+    qoldiq = mah.mQoldiq!;
+    await qoldiq.kopaytir(miqdor);
   }
 }
 

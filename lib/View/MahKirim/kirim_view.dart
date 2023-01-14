@@ -1,7 +1,8 @@
+import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
-import 'package:erp_oshxona/Model/hujjat_partiya.dart';
-import 'package:erp_oshxona/Model/mah_chiqim.dart';
-import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_cont.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
+import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/View/MahKirim/kirim_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,21 +10,19 @@ import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 
-class IchiChiqimRoyxatView extends StatefulWidget {
-  IchiChiqimRoyxatView(this.partiya, {Key? key}) : barchaTarkib = [], super(key: key);
-  const IchiChiqimRoyxatView.yangi(this.partiya, this.barchaTarkib, {Key? key}) : super(key: key);
+class KirimRoyxatView extends StatefulWidget {
+  const KirimRoyxatView(this.hujjat, {Key? key}) : super(key: key);
 
-  final HujjatPartiya partiya;
-  final List<Map> barchaTarkib;
+  final Hujjat hujjat;
 
   @override
-  State<IchiChiqimRoyxatView> createState() => _IchiChiqimRoyxatViewState();
+  State<KirimRoyxatView> createState() => _KirimRoyxatViewState();
 }
 
-class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
-  final IchiChiqimRoyxatCont _cont = IchiChiqimRoyxatCont();
+class _KirimRoyxatViewState extends State<KirimRoyxatView> {
+  final KirimRoyxatCont _cont = KirimRoyxatCont();
   bool yuklanmoqda = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -52,15 +51,17 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
     return AppBar(
       actions: _buildActions(),
       title: Wrap(
-        alignment: WrapAlignment.center,
-        runAlignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          _cont.hujjat.qulf ? const Icon(Icons.lock) : const SizedBox(),
-          Text("${widget.partiya.hujjat.turiObj.nomi} ${widget.partiya.hujjat.raqami} "),
-          Text("${dateFormat.format(widget.partiya.hujjat.sanaDT)} ", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-          statusBadge(_cont.hujjat.status),
-        ]),
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _cont.hujjat.qulf ? const Icon(Icons.lock) : const SizedBox(),
+            Text("${widget.hujjat.turiObj.nomi} ${widget.hujjat.raqami} "),
+            Text("${dateFormat.format(widget.hujjat.sanaDT)} ",
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.normal)),
+            statusBadge(_cont.hujjat.status),
+          ]),
     );
   }
 
@@ -70,22 +71,24 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cont.hujjat.sts != HujjatSts.homAshyoPrt.tr ? const SizedBox() : Expanded(
-            flex: 4,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _mahlarRoyxati(),
+          _cont.hujjat.sts != HujjatSts.ochilgan.tr
+              ? const SizedBox()
+              : Expanded(
+                  flex: 4,
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _mahlarRoyxati(),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
           const SizedBox(width: 10),
           Expanded(
             flex: 6,
@@ -98,7 +101,9 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _cont.hujjat.qulf ? _qulfHujjatIchiRoyxati() : _hujjatIchiRoyxati(),
+                  children: _cont.hujjat.qulf
+                      ? _qulfHujjatIchiRoyxati()
+                      : _hujjatIchiRoyxati(),
                 ),
               ),
             ),
@@ -111,16 +116,25 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
   List<Widget> _mahlarRoyxati() {
     List<Widget> royxat = [];
     for (var object in _cont.mahsulotList) {
+      var objQoldiq = object.mQoldiq;
       royxat.add(
         Material(
           child: InkWell(
             onDoubleTap: () => _cont.addToList(object),
             child: Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.all(7),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("${object.nomi} [${object.mOlchov.nomi}]"),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(object.nomi),
+                  objQoldiq != null && objQoldiq.qoldi != 0
+                    ? Text("${objQoldiq.qoldi.toStringAsFixed(objQoldiq.mahsulot!.kasr)} ${object.mOlchov.nomi}")
+                    : Text("0 ${object.mOlchov.nomi}",
+                      style: const TextStyle(color: Colors.redAccent)),
+                ],),
                   Wrap(
                     alignment: WrapAlignment.end,
                     children: [
@@ -142,25 +156,43 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
     }
     royxat.add(const SizedBox(height: 60));
     return [
-      TextFormField(
-        decoration: const InputDecoration(hintText: "Izlash..."),
-        onChanged: (value) {
-          _cont.mahIzlash(value);
-        },
+      Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              decoration: const InputDecoration(hintText: "Izlash..."),
+              onChanged: (value) {
+                _cont.mahIzlash(value);
+              },
+            ),
+          ),
+        ],
+      ),
+      Row(
+        children: [
+          Expanded(
+            child: MaterialButton(
+              onPressed: () {
+                setState(() {
+                  _cont.mahTuri = _cont.mahTuri == MTuri.homAshyo.tr
+                      ? MTuri.mahsulot.tr
+                      : MTuri.homAshyo.tr;
+                });
+                _cont.loadFromGlobal();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                alignment: Alignment.centerLeft,
+                child: Text("${MTuri.obyektlar[_cont.mahTuri]!.nomi} ro'yxati", style: const TextStyle(fontSize: 18)),
+              ),
+            ),
+          ),
+        ],
       ),
       Expanded(
           child: ListView(
         children: royxat,
       )),
-      Container(
-        alignment: Alignment.bottomLeft,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: Colors.black54,
-        ),
-        child: const Text("Taom uchun masalliqlar ", style: TextStyle(color: Colors.white)),
-      ),
     ];
   }
 
@@ -171,12 +203,13 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
       padding: const EdgeInsets.all(10),
       child: Text("Ro'yxat", style: MyTheme.h5),
     ));
-    for (var object in _cont.chiqimList) {
+    for (var object in _cont.kirimList) {
       n++;
       royxat.add(
         Material(
           child: InkWell(
-            onTap: () async {/*
+            onTap: () async {
+              /*
               //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
               String? value = await inputDialog(context,
                   object.miqdori.toStringAsFixed(object.mahsulot.kasr));
@@ -184,7 +217,7 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
                 setState(() {
                   object.miqdori = num.tryParse(value) ?? 0;
                 });
-                MahChiqim.service!.update({'miqdori': object.miqdori},
+                MahBuyurtma.service!.update({'miqdori': object.miqdori},
                     where:
                         "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
               }*/
@@ -201,24 +234,54 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
                       SizedBox(
                         width: 100,
                         child: TextField(
-                          controller: _cont.buyurtmaCont[object.tr],
+                          controller: _cont.miqdorCont[object.tr],
                           textAlign: TextAlign.end,
                           decoration: InputDecoration(
                             isDense: true,
+                            hintText: "Miqdori",
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 7.0, horizontal: 5.0),
                             border: const OutlineInputBorder(),
                             suffixText: " ${object.mahsulot.mOlchov.nomi}",
                           ),
                           onChanged: (value) {
-                            if(value == '') value = '0';
+                            if (value == '') value = '0';
                             if (object.miqdori != num.tryParse(value)) {
                               setState(() {
                                 object.miqdori = num.tryParse(value) ?? 0;
                               });
-                              MahChiqim.service!.update({'miqdori': object.miqdori},
+                              MahKirim.service!.update(
+                                  {'miqdori': object.miqdori},
                                   where:
-                                      "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
+                                      "tr='${object.tr}'");
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      SizedBox(
+                        width: 130,
+                        child: TextField(
+                          
+                          controller: _cont.tannarxiCont[object.tr],
+                          textAlign: TextAlign.end,
+                          decoration: const InputDecoration(
+                            hintText: "Narxi",
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 7.0, horizontal: 5.0),
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            if (value == '') value = '0';
+                            if (object.tannarxi != num.tryParse(value)) {
+                              setState(() {
+                                object.tannarxi = num.tryParse(value) ?? 0;
+                              });
+                              MahKirim.service!.update(
+                                  {'tannarxi': object.tannarxi},
+                                  where:
+                                      "tr='${object.tr}'");
                             }
                           },
                         ),
@@ -257,7 +320,7 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
       padding: const EdgeInsets.all(10),
       child: Text("Ro'yxat", style: MyTheme.h5),
     ));
-    for (var object in _cont.chiqimList) {
+    for (var object in _cont.kirimList) {
       n++;
       royxat.add(
         Material(
@@ -277,8 +340,8 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Text("${object.miqdori.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}"),
-                      
+                      Text(
+                          "${object.miqdori.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}"),
                       const SizedBox(width: 20),
                       OutlinedButton(
                         onPressed: () => deleteDialog(context,
@@ -307,15 +370,15 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
   }
 
   List<Widget>? _buildActions() {
-    if(_cont.hujjat.sts == HujjatSts.ochilgan.tr){
+    if (_cont.hujjat.sts == HujjatSts.ochilgan.tr) {
       return <Widget>[
-        IconButton(onPressed: () => _cont.tarkibTuzish(), icon: const Icon(Icons.arrow_forward), tooltip: "Buyurtma jo'natish"),
+        IconButton(
+            onPressed: () => _cont.qulflash(),
+            icon: const Icon(Icons.lock),
+            tooltip: "Qulflash"),
       ];
-    }
-    else {
-      return <Widget>[
-        IconButton(onPressed: () => _cont.tarkibQaytarish(), icon: const Icon(Icons.refresh), tooltip: "Tekshirish"),
-      ];
+    } else {
+      return null;
     }
   }
 
@@ -349,7 +412,6 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
 
   @override
   void initState() {
-    print(widget.barchaTarkib);
     _cont.init(widget, setState, context: super.context);
     super.initState();
   }

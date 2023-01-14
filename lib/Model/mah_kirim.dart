@@ -311,7 +311,7 @@ class MahKirimService {
         vergul = ',';
       }
     });
-    var sql = "REPLACE INTO '$tableName' ($cols) VALUES ($vals)";
+    var sql = "REPLACE INTO $tableName ($cols) VALUES ($vals)";
     var res = await db.query(sql);
     return res.insertId;
   }
@@ -328,7 +328,7 @@ class MahKirimService {
       params.add(map[value]);
     }
 
-    final String sql = "UPDATE '$tableName' SET $updateClause$where";
+    final String sql = "UPDATE $tableName SET $updateClause$where";
     await db.execute(sql, tables: [tableName], params: params);
     //await db.query(sql);
     //await db.update(map as Map<String, dynamic>, tableName, keys: []);

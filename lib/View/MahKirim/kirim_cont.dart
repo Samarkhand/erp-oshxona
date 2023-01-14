@@ -1,25 +1,22 @@
-import 'package:erp_oshxona/Library/api_num.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
-import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
-import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
-import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
+import 'package:erp_oshxona/View/MahKirim/kirim_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
 
-class IchKirimRoyxatCont with Controller {
-  late IchKirimRoyxatView widget;
+class KirimRoyxatCont with Controller {
+  late KirimRoyxatView widget;
   List objectList = [];
 
   late final Hujjat hujjat;
-  late final HujjatPartiya partiya;
 
   late DateTime sanaD;
   late DateTime sanaG;
@@ -28,14 +25,16 @@ class IchKirimRoyxatCont with Controller {
   List<MahKirim> kirimList = [];
 
   Map<int, TextEditingController> miqdorCont = {};
+  Map<int, TextEditingController> tannarxiCont = {};
+
+  int mahTuri = MTuri.homAshyo.tr;
 
   Future<void> init(widget, Function setState, {required BuildContext context}) async {
     this.setState = setState;
     this.widget = widget;
     this.context = context;
 
-    hujjat = widget.partiya.hujjat;
-    partiya = widget.partiya;
+    hujjat = widget.hujjat;
 
     showLoading(text: "Yuklanmoqda...");
     await loadItems();
@@ -70,85 +69,60 @@ class IchKirimRoyxatCont with Controller {
   }
 
   Future<void> loadItems() async {
-    int turi = MahKirimTur.kirimIch.tr;
-    await MahKirim.service!.select(where: "trHujjat=${hujjat.tr} AND turi=$turi").then((values) {
+    int turi = MahKirimTur.kirim.tr;
+    await MahKirim.service!.select(where: "trHujjat=${hujjat.tr} AND turi=$turi").then((values) { 
       for (var value in values.values) {
         var kirim = MahKirim.fromJson(value);
         MahKirim.obyektlar[kirim.tr] = (kirim);
         miqdorCont[kirim.tr] = TextEditingController(text: kirim.miqdori.toStringAsFixed(kirim.mahsulot.kasr));
+        tannarxiCont[kirim.tr] = TextEditingController(text: kirim.tannarxi.toStringAsFixed(2));
       }
     });
   }
 
   loadFromGlobal() async {
-    kirimList = MahKirim.obyektlar.values.where((element) => element.trHujjat == hujjat.tr && element.turi == MahKirimTur.kirimIch.tr).toList();
+    kirimList = MahKirim.obyektlar.values.where((element) => element.trHujjat == hujjat.tr && element.turi == MahKirimTur.kirim.tr).toList();
     kirimList.sort(
-      // Comparison function not necessary here, but shown for demonstrative purposes 
       (a, b) => -a.tr.compareTo(b.tr), 
     );
-    mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == MTuri.mahsulot.tr).toList();
+    mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == mahTuri).toList();
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
     for(var mah in mahsulotList){
       await MTarkib.loadToGlobal(mah.tr);
     }
   }
-  
-  tarkibTuzish() async {
-    showLoading(text: "Tarkib tuzilmoqda...");
-    List<Map<String, dynamic>>? barchaTarkib = [];
-    for(var obj in kirimList){
-      var tarkiblar = MTarkib.obyektlar[obj.trMah];
-      if(tarkiblar != null && tarkiblar.isNotEmpty){
-        for(var tarkibMah in tarkiblar){
-          barchaTarkib.add({
-            'mah' : tarkibMah.trMah,
-            'mahTarkib' : tarkibMah.trMahTarkib,
-            'miqdori' : tarkibMah.miqdori,
-            'miqdoriChiq' : (tarkibMah.miqdori * obj.miqdori).decimal(3),
-            //'nomi': tarkibMah.mahsulotTarkib.nomi,
-          });
-        }
-      }
-    }
+
+  qulflash() async {
     final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
-    //hujjat.qulf = true;
+
+    showLoading(text: "Tarkib tuzilmoqda...");
+    for(var kirim in kirimList){
+      await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
+      
+      kirim.qulf = true;
+      kirim.qoldi = kirim.miqdori;
+      //kirim.sts = HujjatSts.homAshyoPrt.tr;
+
+      await MahKirim.service!.update({
+        'qulf': kirim.qulf ? 1 : 0,
+        'vaqtS': vaqts,
+      }, where: "tr='${kirim.tr}'");
+    }
+    hujjat.qulf = true;
     hujjat.sts = HujjatSts.homAshyoPrt.tr;
+
     await Hujjat.service!.update({
       'qulf': hujjat.qulf ? 1 : 0,
       'sts': hujjat.sts,
       'vaqtS': vaqts,
     }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
-/*
-    var hujjatKir = Hujjat(HujjatTur.kirimIch.tr);
-    hujjatKir.tr = await Hujjat.service!.newId(hujjatKir.turi);
-    hujjatKir.qulf = true;
-    //hujjatKir.sts = 0;
-    hujjatKir.trHujjat = hujjat.tr;
-    hujjatKir.sana = vaqts;
-    hujjatKir.vaqt = vaqts;
-    hujjatKir.vaqtS = vaqts;
-    await hujjatKir.insert();*/
 
-    var hujjatChiq = Hujjat.fromJson(partiya.hujjat.toJson());
-    hujjatChiq.turi = HujjatTur.chiqimIch.tr;
-    hujjatChiq.tr = await Hujjat.service!.newId(hujjatChiq.turi);
-    hujjatChiq.qulf = false;
-    hujjatChiq.trHujjat = partiya.hujjat.tr;
-    await hujjatChiq.insert();
-
-    //partiya.trKirim = hujjatKir.tr;
-    partiya.trChiqim = hujjatChiq.tr;
-    await partiya.update();
+    setState((){
+      hujjat;
+      kirimList;
+    });
 
     hideLoading();
-
-    // ignore: use_build_context_synchronously
-    await Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => IchiChiqimRoyxatView.yangi(partiya, barchaTarkib),
-      ),
-    );
   }
 
   tarkibQaytarish() async {
@@ -169,16 +143,17 @@ class IchKirimRoyxatCont with Controller {
     if(kirimList.contains(kirim)){
       return;
     }
-    kirim.turi = MahKirimTur.kirimIch.tr;
+    kirim.turi = MahKirimTur.kirim.tr;
     kirim.tr = await MahKirim.service!.newId();
-    kirim.trHujjat=partiya.trHujjat; 
-    kirim.trMah=mah.tr; 
-    kirim.miqdori=miqdori;
+    kirim.trHujjat = hujjat.tr; 
+    kirim.trMah = mah.tr; 
+    kirim.miqdori = miqdori;
     kirim.sana = hujjat.sana;
     kirim.vaqt = DateTime.now().millisecondsSinceEpoch;
     kirim.vaqtS = kirim.vaqt;
     kirimList.add(kirim);
     miqdorCont[kirim.tr] = TextEditingController(text: kirim.miqdori.toStringAsFixed(kirim.mahsulot.kasr));
+    tannarxiCont[kirim.tr] = TextEditingController(text: (kirim.mahsulot.mQoldiq?.qoldi ?? 0.00).toStringAsFixed(2));
     setState(() => kirimList);
     await kirim.insert();
   }

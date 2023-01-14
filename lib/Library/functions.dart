@@ -8,6 +8,7 @@ import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
 import 'package:erp_oshxona/View/MahKirim/buyurtma_royxat_view.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
+import 'package:erp_oshxona/View/MahKirim/kirim_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -226,7 +227,7 @@ Widget? openHujjat(Hujjat object){
   Widget? view;
   logConsole(object.toJson());
   if(HujjatTur.kirim.tr == object.turi){
-    view = const SizedBox();
+    view = KirimRoyxatView(object);
   }
   else if(HujjatTur.kirimFil.tr == object.turi){
     view = const SizedBox();
@@ -249,14 +250,15 @@ Widget? openHujjat(Hujjat object){
       view = const SizedBox();
     }
     else if(object.sts == HujjatSts.homAshyoPrt.tr){
-      view = IchiChiqimRoyxatView(partiya, const []);
+      view = IchiChiqimRoyxatView(partiya);
     }
     else if(object.sts == HujjatSts.ochilgan.tr){
       view = IchKirimRoyxatView(partiya);
     }
   }
   else if(HujjatTur.chiqimIch.tr == object.turi){
-    view = const SizedBox();
+    var partiya = HujjatPartiya.id(object.tr);
+    view = IchiChiqimRoyxatView(partiya);
   }
   else if(HujjatTur.chiqimFil.tr == object.turi){
     view = const SizedBox();
