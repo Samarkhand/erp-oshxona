@@ -28,7 +28,7 @@ class InwareServer {
   static String get urlBuyurtma => "${Sozlash.server}/?a=service/order";
   static String get linkGetAuth => '$accountUrl/?authKey=';
   static const String linkOferta = '$siteUrl/ommaviyTak.php';
-  static const String linkYangiliklar = 'https://t.me/finmasterapp';
+  static const String linkYangiliklar = 'https://t.me/inwareorg';
   static const String linkTelegramMuallif = 'inware_admin';
   static const String linkEmailMuallif = 'support@inware.uz';
   static const String telegramBot = "InwareBot";

@@ -97,14 +97,16 @@ class KirimRoyxatCont with Controller {
 
     showLoading(text: "Tarkib tuzilmoqda...");
     for(var kirim in kirimList){
-      await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
-      
       kirim.qulf = true;
       kirim.qoldi = kirim.miqdori;
+      kirim.tannarxiReal = kirim.tannarxi;
       //kirim.sts = HujjatSts.homAshyoPrt.tr;
 
+      await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
+      
       await MahKirim.service!.update({
         'qulf': kirim.qulf ? 1 : 0,
+        'tannarxiReal': kirim.tannarxiReal,
         'vaqtS': vaqts,
       }, where: "tr='${kirim.tr}'");
     }

@@ -183,7 +183,7 @@ class _SozlashViewState extends State<SozlashView> {
                       Text("Yangiliklar",
                           style: TextStyle(color: Colors.blue.shade600))
                     ]),
-                    subtitle: const Text("Ilova haqida yangiliklar berib boriladigan telegram kanal - @FinMasterApp"),
+                    subtitle: const Text("Rasmiy telegram kanal - @inwareorg"),
                     onTap: () async {
                       /*Navigator.push(context, MaterialPageRoute<void>(
                         builder: (BuildContext context) {
@@ -472,7 +472,7 @@ class _SozlashViewState extends State<SozlashView> {
             ),
           ),
           const SizedBox(height: 50),
-          const Text("FinMaster by INWARE. 2022"),
+          const Text("ERP Kitchen by INWARE. 2022"),
           const SizedBox(height: 10),
         ],
       ),

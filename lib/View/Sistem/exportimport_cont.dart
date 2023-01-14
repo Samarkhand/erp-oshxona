@@ -28,7 +28,7 @@ class ExportimportCont with Controller {
   late ExportimportView widget;
   String text = '';
 
-  static String filePrefix = "FinMaster_";
+  static String filePrefix = "inware_erp_v1_";
 
   Future<void> init(widget, Function setState,
       {required BuildContext context}) async {

@@ -25,6 +25,7 @@ Concept:
         - Model. @done
         - ro'yxati @done
     - Chiqim
+        - ro'yxatdan o'chirish oynasi
         - O'chirish ha yo'q @done
         - qulfdan ochish @done
     - Buyurtma
@@ -43,15 +44,10 @@ Concept:
         - saqlash va yangi mah knopkasi
         - mah crud #MAN
         - Delete shart bilan: agar qoldig'i yoki bu oy davomida kirim, chiqim bo'lmagan bo'lsagina o'chirilsin
-    - Tarqatish
-        - hujjat ro'yxatida
-            - statusi ko'rinsin: faol / tugallangan
-            - tarqatilgan soni
-            - taom soni ko'rinsin
-        - ichida
-            - chiqim uchun mahsulotlar ro'yxati card'i
-            - hozirgi kont (hodim) ma'lumoti, statusi card'i
-            - o'ngda allaqachon olganlar ro'yxati card'i
+    - Tayyorlash
+        - qoldiq qoshiladigan bo'lsin
+        - qoldiq ayriladigan bo'lsin
+        - 
     - Tarqatish
         - hujjat ro'yxatida
             - statusi ko'rinsin: faol / tugallangan
@@ -63,5 +59,6 @@ Concept:
             - o'ngda allaqachon olganlar ro'yxati card'i
     - MBolim, MOlchov, MBrend crud #MAN
     - kirim
+        - delete
         - Model @done
-        - ro'yxati 
+        - ro'yxati @done

@@ -1,4 +1,4 @@
-# finmaster
+# erp_oshxona
 
 A new Flutter project.
 

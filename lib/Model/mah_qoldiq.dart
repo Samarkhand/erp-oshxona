@@ -134,7 +134,18 @@ class MahQoldiq {
   }
 
   static Future<void> ozaytirMah(Mahsulot mah, {num miqdor = 1.0}) async {
-    if (mah.mQoldiq == null) {}
+    if (mah.mQoldiq == null) {
+      throw Exception("Maxsulot qoldig'i mavjud emas va ushbu bazada avval ham mavjud bo'lmagan");
+    }
+    else if (mah.mQoldiq!.qoldi <= 0) {
+      throw Exception("Maxsulot qolmagan");
+    }
+    else if (mah.mQoldiq!.qoldi < miqdor) {
+      throw Exception("Maxsulot qoldig'i yetarli emas. Mavjud qoldiq: ${mah.mQoldiq!.qoldi} ${mah.mOlchov.nomi}");
+    }
+    else{
+      mah.mQoldiq!.ozaytir(miqdor);
+    }
   }
 
   static Future<void> kopaytirMah(Mahsulot mah,

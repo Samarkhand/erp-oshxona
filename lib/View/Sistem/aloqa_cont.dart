@@ -66,12 +66,12 @@ class AloqaCont with Controller {
     
     if (formKey.currentState!.validate()) {
       Map<String, String> datatopost = {
-        "qaydan": "FinMaster App",
-        "ilova": "FinMaster App",
+        "qaydan": "ERP Oshxona v1.0 App",
+        "ilova": "ERP Oshxona v1.0 App",
         "habar":
             "\nIsmi:  <b>$ism</b>$litsenziya\nAloqa uchun: <b>$aloqa</b>\n\nHabar:\n<b>$habar</b>",
         "haridor_tr": "1950954022", // 242795268
-        "haridor_ism": "FINMASTER.UZ",
+        "haridor_ism": "erp_kitchen",
         "vaqt_n": DateTime.now().toLocal().toString(),
         "vaqt_s": DateTime.now().millisecondsSinceEpoch.toString(),
       };
