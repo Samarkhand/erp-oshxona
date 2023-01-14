@@ -5,7 +5,8 @@ import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
-import 'package:erp_oshxona/View/MahKirim/kirim_view.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
+import 'package:erp_oshxona/View/MahKirim/kirim_royxat_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
@@ -101,12 +102,13 @@ class KirimRoyxatCont with Controller {
       kirim.qoldi = kirim.miqdori;
       kirim.tannarxiReal = kirim.tannarxi;
       //kirim.sts = HujjatSts.homAshyoPrt.tr;
-
-      await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
+      kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
       
       await MahKirim.service!.update({
         'qulf': kirim.qulf ? 1 : 0,
+        'qoldi': kirim.qoldi,
         'tannarxiReal': kirim.tannarxiReal,
+        'trQoldiq': kirim.trQoldiq,
         'vaqtS': vaqts,
       }, where: "tr='${kirim.tr}'");
     }
@@ -161,9 +163,16 @@ class KirimRoyxatCont with Controller {
   }
 
   remove(MahKirim kirim) async {
-    kirimList.remove(kirim);
-    setState(() => kirimList);
-    kirim.delete();
+    try{
+      kirim.delete();
+      kirimList.remove(kirim);
+    }
+    catch(e){
+      alertDialog(context, e as Alert);
+    }
+    finally{
+      setState(() => kirimList);
+    }
   }
 
   mahIzlash(String value){

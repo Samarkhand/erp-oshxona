@@ -3,7 +3,9 @@ import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/Model/system/turi.dart';
 
 class MahKirimTur extends Tur {
@@ -29,39 +31,6 @@ class MahKirimTur extends Tur {
 }
 
 class MahKirim {
-  insert() async {
-    obyektlar[tr] = this;
-    await service!.insert(toJson());
-  }
-
-  delete() async {
-    await service!.deleteId(trHujjat, tr);
-    obyektlar.remove(this);
-  }
-
-  update(List<String> cols) async {
-
-  }
-
-  Future<void> ozaytir([num miqdor = 1.0]) async {
-    qoldi -= miqdor;
-    await service!.update(
-      {
-        "qoldi": qoldi,
-      },
-      where: "tr=$tr",
-    );
-  }
-
-  Future<void> kopaytir([num miqdor = 1.0]) async {
-    qoldi += miqdor;
-    await service!.update(
-      {
-        "qoldi": qoldi,
-      },
-      where: "tr=$tr",
-    );
-  }
   static Map<int, MahKirim> obyektlar = {};
   static MahKirimService? service;
 
@@ -79,12 +48,15 @@ class MahKirim {
   num tannarxi = 0;
   num tannarxiReal = 0;
   num sotnarxi = 0;
+  int trQoldiq = 0;
   int trKont = 0;
+  int trKotib = 0;
   String nomi = '';
   String kodi = "";
   String izoh = "";
 
   Mahsulot get mahsulot => Mahsulot.obyektlar[trMah] ?? Mahsulot.obyektlar[0]!;
+  MahQoldiq? get qoldiq => MahQoldiq.obyektlar[trQoldiq];
   Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
@@ -129,7 +101,9 @@ class MahKirim {
     tannarxi = num.parse(json['tannarxi'].toString());
     tannarxiReal = num.parse(json['tannarxiReal'].toString());
     sotnarxi = num.parse(json['sotnarxi'].toString());
+    trQoldiq = int.parse(json['trQoldiq'].toString());
     trKont = int.parse(json['trKont'].toString());
+    trKotib= int.parse(json['trKotib'].toString());
     nomi = json['nomi'];
     kodi = json['kodi'];
     izoh = json['izoh'];
@@ -150,7 +124,9 @@ class MahKirim {
         'tannarxi': tannarxi,
         'tannarxiReal': tannarxiReal,
         'sotnarxi': sotnarxi,
+        'trQoldiq': trQoldiq,
         'trKont': trKont,
+        'trKotib': trKotib,
         'nomi': nomi,
         'kodi': kodi,
         'izoh': izoh,
@@ -171,7 +147,9 @@ class MahKirim {
     tannarxi = num.parse(json['tannarxi'].toString());
     tannarxiReal = num.parse(json['tannarxiReal'].toString());
     sotnarxi = num.parse(json['sotnarxi'].toString());
+    trQoldiq = int.parse(json['trQoldiq'].toString());
     trKont = int.parse(json['trKont'].toString());
+    trKotib= int.parse(json['trKotib'].toString());
     nomi = json['nomi'];
     kodi = json['kodi'];
     izoh = json['izoh'];
@@ -192,7 +170,9 @@ class MahKirim {
         'tannarxi': tannarxi,
         'tannarxiReal': tannarxiReal,
         'sotnarxi': sotnarxi,
+        'trQoldiq': trQoldiq,
         'trKont': trKont,
+        'trKotib': trKotib,
         'nomi': nomi,
         'kodi': kodi,
         'izoh': izoh,
@@ -203,6 +183,65 @@ class MahKirim {
 
   @override
   int get hashCode => tr.hashCode;
+
+  
+  insert() async {
+    obyektlar[tr] = this;
+    await service!.insert(toJson());
+  }
+
+  delete() async {
+    if(qulf && qoldiq != null){
+      if(qoldiq!.sotildi > 0 || qoldiq!.qoldi != miqdori || miqdori != qoldi){
+        throw Exception(
+          Alert(
+            AlertType.error, 
+            "O'chirish mumkun emas",
+            desc: "Ushbu kirim bo'lgan mahsulotdan chiqim ham bo'lgan. \nMaxsulot qaytarib berish amaliyotini qo'llash yoki Barcha chiqimlarni o'chirib chiqqandan keyin qayta o'chirishga urinish tavsiya qilinadi",
+          ),
+        );
+      }
+      await service!.update(
+        {
+          "yoq": 1,
+        },
+        where: "tr=$tr",
+      );
+    }
+    else {
+      await service!.deleteId(trHujjat, tr);
+    }
+    obyektlar.remove(this);
+  }
+
+  update(List<String> cols) async {
+    await service!.update(
+      {
+        "qoldi": qoldi,
+      },
+      where: "tr=$tr",
+    );
+  }
+
+  Future<void> ozaytir([num miqdor = 1.0]) async {
+    qoldi -= miqdor;
+    await service!.update(
+      {
+        "qoldi": qoldi,
+      },
+      where: "tr=$tr",
+    );
+  }
+
+  Future<void> kopaytir([num miqdor = 1.0]) async {
+    qoldi += miqdor;
+    await service!.update(
+      {
+        "qoldi": qoldi,
+      },
+      where: "tr=$tr",
+    );
+  }
 }
 
 class MahKirimService {

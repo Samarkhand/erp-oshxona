@@ -1,3 +1,5 @@
+import 'package:erp_oshxona/Library/functions.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -68,6 +70,32 @@ Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onC
               Navigator.pop(context);
             },
             child: const Text('O`CHIRILSIN'),
+          ),
+          TextButton(
+            onPressed: (){
+              cancel != null ? cancel() : null;
+              Navigator.pop(context);
+            },
+            child: const Text('BEKOR', style: TextStyle(color: Colors.grey)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void>? alertDialog(BuildContext context, Alert alert, {Function()? yes, Function()? cancel}) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(alert.title),
+        content: Text(alert.desc),
+        actions: [
+          TextButton(
+            onPressed: (){
+              yes != null ? yes() : null;
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
           ),
           TextButton(
             onPressed: (){

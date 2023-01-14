@@ -5,6 +5,7 @@ import 'package:erp_oshxona/Model/m_bolim.dart';
 import 'package:erp_oshxona/Model/m_brend.dart';
 import 'package:erp_oshxona/Model/m_olchov.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/Model/system/crudHelper.dart';
 
 class MahQoldiq {
@@ -135,20 +136,33 @@ class MahQoldiq {
 
   static Future<void> ozaytirMah(Mahsulot mah, {num miqdor = 1.0}) async {
     if (mah.mQoldiq == null) {
-      throw Exception("Maxsulot qoldig'i mavjud emas va ushbu bazada avval ham mavjud bo'lmagan");
-    }
-    else if (mah.mQoldiq!.qoldi <= 0) {
-      throw Exception("Maxsulot qolmagan");
-    }
-    else if (mah.mQoldiq!.qoldi < miqdor) {
-      throw Exception("Maxsulot qoldig'i yetarli emas. Mavjud qoldiq: ${mah.mQoldiq!.qoldi} ${mah.mOlchov.nomi}");
-    }
-    else{
+      throw Exception(
+        Alert(
+          AlertType.error,
+          "Mavjud emas",
+          desc:
+              "Maxsulot qoldig'i mavjud emas va ushbu bazada avval ham mavjud bo'lmagan",
+        ),
+      );
+    } else if (mah.mQoldiq!.qoldi <= 0) {
+      throw Exception(
+        Alert(AlertType.error, "Maxsulot qolmagan"),
+      );
+    } else if (mah.mQoldiq!.qoldi < miqdor) {
+      throw Exception(
+        Alert(
+          AlertType.warning,
+          "Yetarli emas",
+          desc:
+              "Maxsulot qoldig'i yetarli emas. Mavjud qoldiq: ${mah.mQoldiq!.qoldi} ${mah.mOlchov.nomi}",
+        ),
+      );
+    } else {
       mah.mQoldiq!.ozaytir(miqdor);
     }
   }
 
-  static Future<void> kopaytirMah(Mahsulot mah,
+  static Future<int> kopaytirMah(Mahsulot mah,
       {num miqdor = 1.0, num tannarxi = 0, num sotnarxi = 0}) async {
     late MahQoldiq qoldiq;
     if (mah.mQoldiq == null) {
@@ -166,11 +180,12 @@ class MahQoldiq {
       qoldiq.sana = today.millisecondsSinceEpoch;
       qoldiq.vaqtS = DateTime.now().millisecondsSinceEpoch;
       MahQoldiq.obyektlar[qoldiq.tr] = qoldiq;
-      await MahQoldiq.service!.insert(qoldiq.toJson());
-      return;
+      return await MahQoldiq.service!.insert(qoldiq.toJson());
+      ;
     }
     qoldiq = mah.mQoldiq!;
     await qoldiq.kopaytir(miqdor);
+    return qoldiq.tr;
   }
 }
 

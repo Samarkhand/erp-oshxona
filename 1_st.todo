@@ -1,5 +1,8 @@
 Concept:
     - Api data get @done
+    - trKotib qo'yib chiqilsin
+    - trQoldiq qo'yib ciqilsin
+    - 
     - Partiya
         - taom tanlash oynasi @done
         - masalliq boshqarish oynasi @done
@@ -25,7 +28,7 @@ Concept:
         - Model. @done
         - ro'yxati @done
     - Chiqim
-        - ro'yxatdan o'chirish oynasi
+        - qoldiqdan o'chirish oynasi
         - O'chirish ha yo'q @done
         - qulfdan ochish @done
     - Buyurtma

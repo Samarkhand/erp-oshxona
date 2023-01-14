@@ -8,7 +8,7 @@ import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
 import 'package:erp_oshxona/View/MahKirim/buyurtma_royxat_view.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
-import 'package:erp_oshxona/View/MahKirim/kirim_view.dart';
+import 'package:erp_oshxona/View/MahKirim/kirim_royxat_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -128,14 +128,6 @@ Widget badgeSaqLashTuri(int tr, bool razmer) {
             ],
           ),
         );
-}
-
-/// habarlar turlari
-abstract class AlertType {
-  static const int info = 1;
-  static const int success = 2;
-  static const int warning = 3;
-  static const int error = 4;
 }
 
 bool signJWToken(String? auth) {

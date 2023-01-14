@@ -2,7 +2,7 @@ import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
-import 'package:erp_oshxona/View/MahKirim/kirim_cont.dart';
+import 'package:erp_oshxona/View/MahKirim/kirim_royxat_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
@@ -380,32 +380,6 @@ class _KirimRoyxatViewState extends State<KirimRoyxatView> {
     } else {
       return null;
     }
-  }
-
-  _delete(BuildContext context, KBolim element) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('O`chirilsinmi?'),
-        content: const Text(
-            'O`chirmoqchi bo`lgan elementingizni qayta tiklab bo`lmaydi'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('BEKOR', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              _cont.showLoading();
-              await _cont.delete(element);
-              _cont.hideLoading();
-            },
-            child: const Text('O`CHIRILSIN'),
-          ),
-        ],
-      ),
-    );
   }
 
   /* ================= */
