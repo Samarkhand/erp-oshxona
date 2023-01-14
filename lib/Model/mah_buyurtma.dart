@@ -1,6 +1,6 @@
-import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/kont.dart';
+import 'package:erp_oshxona/Model/mah_chiqim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/Model/system/turi.dart';
 
@@ -55,6 +55,7 @@ class MahBuyurtma {
 
   Mahsulot get mahsulot => Mahsulot.obyektlar[trMah]!;
   Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
+  //MahKirim? get kirim => trKirim == 0 ? null : MahKirim.obyektlar[trKirim];
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
   DateTime get vaqtSDT => DateTime.fromMillisecondsSinceEpoch(vaqtS);
@@ -108,15 +109,18 @@ class MahBuyurtma {
   int get hashCode => trHujjat.hashCode ^ tr.hashCode;
 }
 
-class MahBuyurtmaService {
-  String prefix = '';
+class MahBuyurtmaService extends MahChiqimService{
+  @override
   final String tableName = "mah_buyurtma";
-  MahBuyurtmaService({this.prefix = ''});
 
+  MahBuyurtmaService({super.prefix = ''});
+
+  @override
   String get table => "'$prefix$tableName'";
 
+  @override
   String get createTable => """
-    CREATE TABLE "$table" (
+    CREATE TABLE $table (
       "trHujjat"	INTEGER NOT NULL DEFAULT 0,
       "tr"	INTEGER NOT NULL DEFAULT 0,
       "turi"	INTEGER NOT NULL DEFAULT 0,
@@ -137,7 +141,7 @@ class MahBuyurtmaService {
       PRIMARY KEY("trHujjat","tr")
     );
   """;
-
+/*
   Future<Set> select({String? where}) async {
     where = where == null ? "" : " WHERE $where";
     Set map = {};
@@ -232,5 +236,5 @@ class MahBuyurtmaService {
     await db.execute(sql, tables: [table], params: params);
     //await db.query(sql);
     //await db.update(map as Map<String, dynamic>, table, keys: []);
-  }
+  }*/
 }

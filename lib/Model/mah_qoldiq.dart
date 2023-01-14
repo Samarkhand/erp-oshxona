@@ -106,7 +106,7 @@ class MahQoldiq {
   Future<void> ozaytir([num miqdor = 1.0]) async {
     qoldi -= miqdor;
     sotildi += miqdor;
-    await MahQoldiq.service!.update(
+    await service!.update(
       {
         "qoldi": qoldi,
         "sotildi": sotildi,
@@ -123,7 +123,7 @@ class MahQoldiq {
   Future<void> kopaytir([num miqdor = 1.0]) async {
     qoldi += miqdor;
     sotildi -= miqdor;
-    await MahQoldiq.service!.update(
+    await service!.update(
       {
         "qoldi": qoldi,
         "sotildi": sotildi,
@@ -145,7 +145,7 @@ class MahQoldiqService extends CrudService {
   String get tableName => "'$prefix$table'";
 
   String get createTable => """
-CREATE TABLE "$tableName" (
+CREATE TABLE $tableName (
   "tr"	INTEGER NOT NULL DEFAULT 0,
 	"qoldi"	NUMERIC NOT NULL DEFAULT 0,
 	"sotildi"	NUMERIC NOT NULL DEFAULT 0,

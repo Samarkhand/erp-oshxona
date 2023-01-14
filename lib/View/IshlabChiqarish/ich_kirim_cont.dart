@@ -4,7 +4,6 @@ import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
-import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
@@ -68,7 +67,7 @@ class IchKirimRoyxatCont with Controller {
       ));
     }
   }
-  
+
   Future<void> loadItems() async {
     await MahKirim.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
       for (var value in values.values) {
@@ -79,7 +78,7 @@ class IchKirimRoyxatCont with Controller {
     });
   }
 
-  loadFromGlobal(){
+  loadFromGlobal() async {
     kirimList = MahKirim.obyektlar.values.where((element) => element.trHujjat == hujjat.tr).toList();
     kirimList.sort(
       // Comparison function not necessary here, but shown for demonstrative purposes 
@@ -87,21 +86,24 @@ class IchKirimRoyxatCont with Controller {
     );
     mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == MTuri.mahsulot.tr).toList();
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
+    for(var mah in mahsulotList){
+      await MTarkib.loadToGlobal(mah.tr);
+    }
   }
   
   tarkibTuzish() async {
     showLoading(text: "Tarkib tuzilmoqda...");
-    List<Map>? barchaTarkib = [];
+    List<Map<String, dynamic>>? barchaTarkib = [];
     for(var obj in kirimList){
-      obj.trMah;
       var tarkiblar = MTarkib.obyektlar[obj.trMah];
-      if(tarkiblar != null){
+      if(tarkiblar != null && tarkiblar.isNotEmpty){
         for(var tarkibMah in tarkiblar){
           barchaTarkib.add({
             'mah' : tarkibMah.trMah,
             'mahTarkib' : tarkibMah.trMahTarkib,
             'miqdori' : tarkibMah.miqdori,
             'miqdoriChiq' : tarkibMah.miqdori * obj.miqdori,
+            //'nomi': tarkibMah.mahsulotTarkib.nomi,
           });
         }
       }
@@ -109,12 +111,12 @@ class IchKirimRoyxatCont with Controller {
     final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
     //hujjat.qulf = true;
     hujjat.sts = HujjatSts.homAshyoPrt.tr;
-    Hujjat.service!.update({
+    await Hujjat.service!.update({
       'qulf': hujjat.qulf ? 1 : 0,
       'sts': hujjat.sts,
       'vaqtS': vaqts,
     }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
-
+/*
     var hujjatKir = Hujjat(HujjatTur.kirimIch.tr);
     hujjatKir.tr = await Hujjat.service!.newId(hujjatKir.turi);
     hujjatKir.qulf = true;
@@ -123,17 +125,20 @@ class IchKirimRoyxatCont with Controller {
     hujjatKir.sana = vaqts;
     hujjatKir.vaqt = vaqts;
     hujjatKir.vaqtS = vaqts;
-    await hujjatKir.insert();
+    await hujjatKir.insert();*/
 
-    var hujjatChiq = Hujjat.fromJson(hujjatKir.toJson());
+    var hujjatChiq = Hujjat.fromJson(partiya.hujjat.toJson());
     hujjatChiq.turi = HujjatTur.chiqimIch.tr;
     hujjatChiq.tr = await Hujjat.service!.newId(hujjatChiq.turi);
     hujjatChiq.qulf = false;
+    hujjatChiq.trHujjat = partiya.hujjat.tr;
     await hujjatChiq.insert();
 
-    partiya.trKirim = hujjatKir.tr;
+    //partiya.trKirim = hujjatKir.tr;
     partiya.trChiqim = hujjatChiq.tr;
-    partiya.update();
+    await partiya.update();
+
+    hideLoading();
 
     // ignore: use_build_context_synchronously
     await Navigator.pushReplacement(
@@ -142,8 +147,6 @@ class IchKirimRoyxatCont with Controller {
         builder: (context) => IchiChiqimRoyxatView(partiya, barchaTarkib),
       ),
     );
-
-    hideLoading();
   }
 
   tarkibQaytarish() async {
@@ -164,9 +167,9 @@ class IchKirimRoyxatCont with Controller {
     if(kirimList.contains(kirim)){
       return;
     }
-    kirim.turi=MahKirimTur.kirimIch.tr;
+    kirim.turi = MahKirimTur.kirimIch.tr;
     kirim.tr = await MahKirim.service!.newId();
-    kirim.trHujjat=hujjat.tr; 
+    kirim.trHujjat=partiya.trHujjat; 
     kirim.trMah=mah.tr; 
     kirim.miqdori=miqdori;
     kirim.sana = hujjat.sana;

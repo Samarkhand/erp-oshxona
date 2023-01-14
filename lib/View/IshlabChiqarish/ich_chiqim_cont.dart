@@ -1,7 +1,7 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
-import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/Model/mah_chiqim_ich.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
@@ -22,7 +22,7 @@ class IchiChiqimRoyxatCont with Controller {
   late DateTime sanaG;
 
   List<Mahsulot> mahsulotList = [];
-  List<MahChiqim> chiqimList = [];
+  List<MahChiqimIch> chiqimList = [];
 
   Map<int, TextEditingController> buyurtmaCont = {};
 
@@ -72,12 +72,12 @@ class IchiChiqimRoyxatCont with Controller {
       ));
     }
   }
-  
+
   Future<void> loadItems() async {
-    await MahChiqim.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
+    await MahChiqimIch.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
       for (var value in values) {
-        var buyurtma = MahChiqim.fromJson(value);
-        MahChiqim.obyektlar.add(buyurtma);
+        var buyurtma = MahChiqimIch.fromJson(value);
+        MahChiqimIch.obyektlar.add(buyurtma);
         buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
       }
     });
@@ -88,20 +88,23 @@ class IchiChiqimRoyxatCont with Controller {
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
   }
 
-  chiqimFromAtribute(){
-    chiqimList = MahChiqim.obyektlar.where((element) => element.trHujjat == hujjat.tr).toList();
+  chiqimFromAtribute() async {
+    chiqimList = [];
+    for(var map in barchaTarkib){
+      await add(Mahsulot.obyektlar[map['mahTarkib']]!, map['miqdoriChiq']);
+    }
     chiqimList.sort(
       (a, b) => -a.tr.compareTo(b.tr),
     );
   }
-  
+
   chiqimFromGlobal(){
-    chiqimList = MahChiqim.obyektlar.where((element) => element.trHujjat == hujjat.tr).toList();
+    chiqimList = MahChiqimIch.obyektlar.where((element) => element.trHujjat == hujjat.tr).toList();
     chiqimList.sort(
       (a, b) => -a.tr.compareTo(b.tr),
     );
   }
-  
+
   tarkibTuzish() async {
     showLoading(text: "Tarkib tuzilmoqda...");
     List<MTarkib>? barchaTarkib = [];
@@ -127,26 +130,26 @@ class IchiChiqimRoyxatCont with Controller {
     String? value = await inputDialog(context, "");
     if(value != null){
       num miqdori = num.tryParse(value) ?? 0;
-      add(buyurtma, miqdori: miqdori);
+      await add(buyurtma, miqdori);
     }
   }
 
-  add(Mahsulot mah, {num miqdori = 1}) async {
-    var buyurtma = MahChiqim()..trHujjat=hujjat.tr ..trMah=mah.tr ..miqdori=miqdori;
-    if(chiqimList.contains(buyurtma)){
-      return;
-    }
-    buyurtma.sana = hujjat.sana;
-    buyurtma.vaqt = DateTime.now().millisecondsSinceEpoch;
-    buyurtma.vaqtS = buyurtma.vaqt;
-    buyurtma.tr = await MahChiqim.service!.newId(buyurtma.trHujjat);
-    chiqimList.add(buyurtma);
-    buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
+  add(Mahsulot mah, [num miqdori = 1]) async {
+    var chiqim = MahChiqimIch();
+    chiqim.trHujjat = partiya.trChiqim;
+    chiqim.tr = await MahChiqimIch.service!.newId(chiqim.trHujjat);
+    chiqim.trMah = mah.tr;
+    chiqim.miqdori = miqdori;
+    chiqim.sana = partiya.sana;
+    chiqim.vaqt = DateTime.now().millisecondsSinceEpoch;
+    chiqim.vaqtS = chiqim.vaqt;
+    chiqimList.add(chiqim);
+    buyurtmaCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(chiqim.mahsulot.kasr));
     setState(() => chiqimList);
-    await buyurtma.insert();
+    await chiqim.insert();
   }
 
-  remove(MahChiqim buyurtma) async {
+  remove(MahChiqimIch buyurtma) async {
     chiqimList.remove(buyurtma);
     setState(() => chiqimList);
     buyurtma.delete();

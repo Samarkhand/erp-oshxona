@@ -75,7 +75,7 @@ class HujjatPartiyaIchiCont with Controller {
       object.vaqtS = object.vaqt;
       partiya.sana = object.sana;
       if (widget.yangimi) {
-        object.tr = await Hujjat.service!.insert(object.toJson());
+        object.tr = await Hujjat.service!.newId(object.turi);
         object.insert();
         partiya.tr = await HujjatPartiya.service!.insert(partiya.toJson());
         partiya.trHujjat = object.tr;

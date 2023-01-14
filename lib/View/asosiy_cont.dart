@@ -1,5 +1,7 @@
 import 'package:erp_oshxona/Library/api_get.dart';
 import 'package:erp_oshxona/Library/sorovnoma.dart';
+import 'package:erp_oshxona/Model/m_tarkib.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mahal.dart';
 import 'package:erp_oshxona/Model/smena.dart';
 import 'package:flutter/material.dart';
@@ -91,19 +93,19 @@ class AsosiyCont with Controller {
   mahsulotYukla() async {
     // load
     showLoading(text: "MOlchov yuklanmoqda...");
-    MOlchov.obyektlar = (await MOlchov.service!.select())
+    MOlchov.obyektlar = (await MOlchov.service!.select(where: " yoq=0"))
         .map((key, value) => MapEntry(key, MOlchov.fromJson(value)));
     // load
     showLoading(text: "MBolim yuklanmoqda...");
-    MBolim.obyektlar = (await MBolim.service!.select())
+    MBolim.obyektlar = (await MBolim.service!.select(where: " yoq=0"))
         .map((key, value) => MapEntry(key, MBolim.fromJson(value)));
     // load
     showLoading(text: "MBrend yuklanmoqda...");
-    MBrend.obyektlar = (await MBrend.service!.select())
+    MBrend.obyektlar = (await MBrend.service!.select(where: " yoq=0"))
         .map((key, value) => MapEntry(key, MBrend.fromJson(value)));
     // load
     showLoading(text: "Mahsulot yuklanmoqda...");
-    Mahsulot.obyektlar = (await Mahsulot.service!.select())
+    Mahsulot.obyektlar = (await Mahsulot.service!.select(where: " yoq=0"))
         .map((key, value) => MapEntry(key, Mahsulot.fromJson(value)));
     // load
     showLoading(text: "Mahal yuklanmoqda...");
@@ -131,6 +133,11 @@ class AsosiyCont with Controller {
     showLoading(text: "MahQoldiq yuklanmoqda...");
     MahQoldiq.obyektlar = (await MahQoldiq.service!.select())
         .map((key, value) => MapEntry(key, MahQoldiq.fromJson(value)));
+    // load MahKirim
+    showLoading(text: "MahKirim yuklanmoqda...");
+    MahKirim.obyektlar = (await MahKirim.service!.select(where: " yoq=0"))
+        .map((key, value) => MapEntry(key, MahKirim.fromJson(value)));
+    
   }
 
   kontYukla() async {

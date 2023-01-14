@@ -69,17 +69,11 @@ class DatabaseHelper {
     sql += SmenaService.createTable;
     sql += MArtikulService.createTable;
     // 
-    Hujjat.service = HujjatService(prefix: "${today.year}_${today.month}_");
     sql += Hujjat.service!.createTable;
-    HujjatPartiya.service = HujjatPartiyaService(prefix: "${today.year}_${today.month}_");
     sql += HujjatPartiya.service!.createTable;
-    MahQoldiq.service = MahQoldiqService(prefix: "${today.year}_${today.month}_");
     sql += MahQoldiq.service!.createTable;
-    MahKirim.service = MahKirimService(prefix: "${today.year}_${today.month}_");
     sql += MahKirim.service!.createTable;
-    MahChiqim.service = MahChiqimService(prefix: "${today.year}_${today.month}_");
     sql += MahChiqim.service!.createTable;
-    MahBuyurtma.service = MahBuyurtmaService(prefix: "${today.year}_${today.month}_");
     sql += MahBuyurtma.service!.createTable;
     await db.execute(sql);
 

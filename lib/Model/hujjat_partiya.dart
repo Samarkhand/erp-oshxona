@@ -12,7 +12,6 @@ class HujjatPartiya {
   int tr = 0;
   int trMahal = 0;
   int trChiqim = 0;
-  int trKirim = 0;
   int trHujjat = 0;
   int sana = 0;
 
@@ -36,7 +35,6 @@ class HujjatPartiya {
     tr = json['tr'];
     trMahal = int.parse(json['trMahal'].toString());
     trChiqim = int.parse(json['trChiqim'].toString());
-    trKirim = int.parse(json['trKirim'].toString());
     trHujjat = int.parse(json['trHujjat'].toString());
     sana = int.parse(json['sana'].toString()) * 1000;
   }
@@ -46,7 +44,6 @@ class HujjatPartiya {
     tr = json['tr'];
     trMahal = int.parse(json['trMahal'].toString());
     trChiqim = int.parse(json['trChiqim'].toString());
-    trKirim = int.parse(json['trKirim'].toString());
     trHujjat = int.parse(json['trHujjat'].toString());
     sana = int.parse(json['sana'].toString()) * 1000;
   }
@@ -56,7 +53,6 @@ class HujjatPartiya {
         'tr': tr,
         'trMahal': trMahal,
         'trChiqim': trChiqim,
-        'trKirim': trKirim,
         'trHujjat': trHujjat,
         'sana': toSecond(sana),
       };
@@ -108,14 +104,13 @@ class HujjatPartiyaService {
   final String table = "hujjat_partiya";
   HujjatPartiyaService({this.prefix = ''});
 
-  String get tableName => "$prefix$table";
+  String get tableName => "'$prefix$table'";
 
   String get createTable => """
     CREATE TABLE $tableName (
       "tr"	INTEGER NOT NULL DEFAULT 0,
       "turi"	INTEGER NOT NULL DEFAULT 0,
       `trMahal` INTEGER NOT NULL DEFAULT 0,
-      `trKirim` INTEGER NOT NULL DEFAULT 0,
       `trChiqim` INTEGER NOT NULL DEFAULT 0,
       `trHujjat` INTEGER NOT NULL DEFAULT 0,
       PRIMARY KEY("tr")
@@ -126,7 +121,7 @@ class HujjatPartiyaService {
     where = where == null ? "" : " WHERE $where";
     Set map = {};
     await for (final rows
-        in db.watch("SELECT * FROM '$tableName' $where", tables: [tableName])) {
+        in db.watch("SELECT * FROM $tableName $where", tables: [tableName])) {
       for (final element in rows) {
         map.add(element);
       }
@@ -136,7 +131,7 @@ class HujjatPartiyaService {
   }
 
   Future<Map> selectId(int id, {String? where}) async {
-    Map row = await db.query("SELECT * FROM '$tableName' WHERE tr = ?",
+    Map row = await db.query("SELECT * FROM $tableName WHERE tr = ?",
         params: [id],
         //fromMap: (map) => {},
         singleResult: true);
@@ -145,7 +140,7 @@ class HujjatPartiyaService {
 
   Future<void> delete({String? where}) async {
     where = where == null ? "" : " WHERE $where";
-    await db.query("DELETE FROM '$tableName' $where");
+    await db.query("DELETE FROM $tableName $where");
   }
 
   Future<void> deleteId(int id, {String? where}) async {
@@ -155,7 +150,7 @@ class HujjatPartiyaService {
 
   Future<int> count({String? where}) async {
     where = where == null ? "" : " WHERE $where";
-    Map row = await db.query("SELECT COUNT(*) FROM '$tableName'$where",
+    Map row = await db.query("SELECT COUNT(*) FROM $tableName$where",
         //params: [tableName],
         //fromMap: (map) => {},
         singleResult: true);
@@ -166,12 +161,12 @@ class HujjatPartiyaService {
     map['turi'] = (map['turi'] == 0) ? null : map['turi'];
     map['tr'] = (map['tr'] == 0) ? null : map['tr'];
 
-    var insertId = await db.insert(map as Map<String, dynamic>, "'$tableName'");
+    var insertId = await db.insert(map as Map<String, dynamic>, "$tableName");
     return insertId;
   }
 
   Future<int> newId() async {
-    int? tr = await db.query("SELECT MAX(tr) FROM '$tableName'",
+    int? tr = await db.query("SELECT MAX(tr) FROM $tableName",
         //params: [turi],
         //fromMap: (map) => {},
         singleResult: true);
@@ -196,7 +191,7 @@ class HujjatPartiyaService {
         vergul = ',';
       }
     });
-    var sql = "REPLACE INTO '$tableName' ($cols) VALUES ($vals)";
+    var sql = "REPLACE INTO $tableName ($cols) VALUES ($vals)";
     var res = await db.query(sql);
     return res.insertId;
   }
@@ -213,7 +208,7 @@ class HujjatPartiyaService {
       params.add(map[value]);
     }
 
-    final String sql = "UPDATE '$tableName' SET $updateClause$where";
+    final String sql = "UPDATE $tableName SET $updateClause$where";
     await db.execute(sql, tables: [tableName], params: params);
     //await db.query(sql);
     //await db.update(map as Map<String, dynamic>, tableName, keys: []);
@@ -221,7 +216,7 @@ class HujjatPartiyaService {
 
   Future<int> newRaqam({String? where}) async {
     where = where == null ? "" : " WHERE $where";
-    int? tr = await db.query("SELECT MAX(raqami) FROM '$tableName' $where ORDER BY tr DESC LIMIT 0, 1",
+    int? tr = await db.query("SELECT MAX(raqami) FROM $tableName $where ORDER BY tr DESC LIMIT 0, 1",
         //params: [turi],
         //fromMap: (map) => {},
         singleResult: true);

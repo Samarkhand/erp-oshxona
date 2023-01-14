@@ -4,6 +4,7 @@ import 'package:erp_oshxona/Library/sozlash.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/View/Auth/kirish_view.dart';
+import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
 import 'package:erp_oshxona/View/MahKirim/buyurtma_royxat_view.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
@@ -223,22 +224,42 @@ getView() {
 
 Widget? openHujjat(Hujjat object){
   Widget? view;
+  logConsole(object.toJson());
   if(HujjatTur.kirim.tr == object.turi){
+    view = const SizedBox();
   }
   else if(HujjatTur.kirimFil.tr == object.turi){
+    view = const SizedBox();
   }
   else if(HujjatTur.qaytibOlish.tr == object.turi){
+    view = const SizedBox();
   }
   else if(HujjatTur.qaytibBerish.tr == object.turi){
+    view = const SizedBox();
   }
   else if(HujjatTur.zarar.tr == object.turi){
+    view = const SizedBox();
   }
   else if(HujjatTur.kirimIch.tr == object.turi){
-    view = IchKirimRoyxatView(HujjatPartiya.id(object.tr));
+    var partiya = HujjatPartiya.id(object.tr);
+    if(object.sts == HujjatSts.tugallanganPrt.tr){
+      view = const SizedBox();
+    }
+    else if(object.sts == HujjatSts.tayyorlashPrt.tr){
+      view = const SizedBox();
+    }
+    else if(object.sts == HujjatSts.homAshyoPrt.tr){
+      view = IchiChiqimRoyxatView(partiya, const []);
+    }
+    else if(object.sts == HujjatSts.ochilgan.tr){
+      view = IchKirimRoyxatView(partiya);
+    }
   }
   else if(HujjatTur.chiqimIch.tr == object.turi){
+    view = const SizedBox();
   }
   else if(HujjatTur.chiqimFil.tr == object.turi){
+    view = const SizedBox();
   }
   else if(HujjatTur.buyurtma.tr == object.turi){
     view = BuyurtmaRoyxatView(object);

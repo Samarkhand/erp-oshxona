@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'hujjat.dart';
 
 class HujjatTur extends Tur {
-  static HujjatTur kirim = HujjatTur(1, "Kirim");
-  static HujjatTur kirimFil = HujjatTur(2, "Filialdan Kirim"); 
-  static HujjatTur qaytibOlish = HujjatTur(3, "Qaytib olish");
-  static HujjatTur qaytibBerish = HujjatTur(4, "Qaytib berish");
-  static HujjatTur zarar = HujjatTur(5, "Qoldiqdan o'chirish");
-  static HujjatTur kirimIch = HujjatTur(6, "Ishlab chiqarish");
-  static HujjatTur chiqimIch = HujjatTur(7, "Ishlab chiqarish uchun harajat");
-  static HujjatTur chiqimFil = HujjatTur(8, "Filialdan Kirim");
-  static HujjatTur chiqim = HujjatTur(9, "Chiqim");
-  static HujjatTur buyurtmaKeldi = HujjatTur(10, "Bizga buyurtma");
-  static HujjatTur buyurtma = HujjatTur(11, "Buyurtma");
-  static HujjatTur tarqatish = HujjatTur(12, "Chiqim");
+  static final HujjatTur kirim = HujjatTur(1, "Kirim");
+  static final HujjatTur kirimFil = HujjatTur(2, "Filialdan Kirim"); 
+  static final HujjatTur qaytibOlish = HujjatTur(3, "Qaytib olish");
+  static final HujjatTur qaytibBerish = HujjatTur(4, "Qaytib berish");
+  static final HujjatTur zarar = HujjatTur(5, "Qoldiqdan o'chirish");
+  static final HujjatTur kirimIch = HujjatTur(6, "Ishlab chiqarish");
+  static final HujjatTur chiqimIch = HujjatTur(7, "Ishlab chiqarish uchun harajat");
+  static final HujjatTur chiqimFil = HujjatTur(8, "Filialdan Kirim");
+  static final HujjatTur chiqim = HujjatTur(9, "Chiqim");
+  static final HujjatTur buyurtmaKeldi = HujjatTur(10, "Bizga buyurtma");
+  static final HujjatTur buyurtma = HujjatTur(11, "Buyurtma");
+  static final HujjatTur tarqatish = HujjatTur(12, "Chiqim");
 
   static final Map<int, HujjatTur> obyektlar = {
     kirim.tr: kirim,
@@ -63,22 +63,22 @@ class HujjatSts extends Tur {
     tugallangan.tr: tugallangan,
   };
 
-  static HujjatSts ochilgan = HujjatSts(0, "Ochilgan", ranggi: Colors.orange.shade800);
-  static HujjatSts tugallangan = HujjatSts(1, "Tugallangan", ranggi: Colors.blue.shade800);
+  static final HujjatSts ochilgan = HujjatSts(0, "Ochilgan", ranggi: Colors.orange.shade800);
+  static final HujjatSts tugallangan = HujjatSts(1, "Tugallangan", ranggi: Colors.blue.shade800);
 
   /// Buyurtma uchun
-  static HujjatSts jonatilganBrtm = HujjatSts(1, "Jo'natilgan", ranggi: Colors.green.shade800);
+  static final HujjatSts jonatilganBrtm = HujjatSts(1, "Jo'natilgan", ranggi: Colors.green.shade800);
   /// Buyurtma uchun
-  static HujjatSts tasdiqKutBrtm = HujjatSts(2, "Tasdiqni kutmoqda", ranggi: Colors.red.shade800);
+  static final HujjatSts tasdiqKutBrtm = HujjatSts(2, "Tasdiqni kutmoqda", ranggi: Colors.red.shade800);
   /// Buyurtma uchun
-  static HujjatSts tugallanganBrtm = HujjatSts(3, "Tugallangan", ranggi: Colors.blue.shade800);
+  static final HujjatSts tugallanganBrtm = HujjatSts(3, "Tugallangan", ranggi: Colors.blue.shade800);
 
   /// ishlab chiqarish partiyasi uchun
-  static HujjatSts homAshyoPrt = HujjatSts(1, "Masalliqlar tanlanmoqda", ranggi:  Colors.orange.shade800);
+  static final HujjatSts homAshyoPrt = HujjatSts(1, "Masalliqlar tanlanmoqda", ranggi:  Colors.orange.shade800);
   /// ishlab chiqarish partiyasi uchun
-  static HujjatSts tayyorlashPrt = HujjatSts(2, "Tayyorlanmoqda", ranggi: Colors.green.shade800);
+  static final HujjatSts tayyorlashPrt = HujjatSts(2, "Tayyorlanmoqda", ranggi: Colors.green.shade800);
   /// Buyurtma uchun
-  static HujjatSts tugallanganPrt = HujjatSts(3, "Tugallangan", ranggi: Colors.blue.shade800);
+  static final HujjatSts tugallanganPrt = HujjatSts(3, "Tugallangan", ranggi: Colors.blue.shade800);
 }
 /*
     const STS_YANGI = 0;

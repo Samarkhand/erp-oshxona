@@ -1,4 +1,5 @@
 import 'package:erp_oshxona/Library/db/db.dart';
+import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
@@ -6,6 +7,7 @@ import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/Model/system/turi.dart';
 
 class MahKirimTur extends Tur {
+  static MahKirimTur qoldiq = MahKirimTur(0, "Boshlang'ich qoldiq", 0);
   static MahKirimTur kirim = MahKirimTur(1, "Kirim", HujjatTur.kirim.tr);
   static MahKirimTur kirimFil = MahKirimTur(2, "Filialdan Kirim", HujjatTur.kirimFil.tr); 
   static MahKirimTur qaytibOlish = MahKirimTur(3, "Qaytib olish", HujjatTur.qaytibOlish.tr);
@@ -37,19 +39,43 @@ class MahKirim {
     obyektlar.remove(this);
   }
 
+  update(List<String> cols) async {
+
+  }
+
+  Future<void> ozaytir([num miqdor = 1.0]) async {
+    qoldi -= miqdor;
+    await service!.update(
+      {
+        "qoldi": qoldi,
+      },
+      where: "tr=$tr",
+    );
+  }
+
+  Future<void> kopaytir([num miqdor = 1.0]) async {
+    qoldi += miqdor;
+    await service!.update(
+      {
+        "qoldi": qoldi,
+      },
+      where: "tr=$tr",
+    );
+  }
   static Map<int, MahKirim> obyektlar = {};
   static MahKirimService? service;
 
   int tr = 0;
-  int turi = MahKirimTur.kirimFil.tr;
+  int turi = MahKirimTur.kirim.tr;
   int trHujjat = 0;
   bool qulf = false;
   bool yoq = false;
+  int trMah = 0;
+  num qoldi = 0;
+  num miqdori = 0;
   int sana = 0;
   int vaqtS = 0;
   int vaqt = 0;
-  int trMah = 0;
-  num miqdori = 0;
   num tannarxi = 0;
   num tannarxiReal = 0;
   num sotnarxi = 0;
@@ -78,6 +104,7 @@ class MahKirim {
     vaqt = now;
     trMah = trMah;
     miqdori = brtm.miqdori;
+    qoldi = brtm.miqdori;
     tannarxi = brtm.narxi;
     tannarxiReal = brtm.narxi;
     sotnarxi = brtm.narxi;
@@ -93,11 +120,12 @@ class MahKirim {
     trHujjat = int.parse(json['trHujjat'].toString());
     qulf = json['qulf'].toString() == "1" ? true : false;
     yoq = json['yoq'].toString() == "1" ? true : false;
-    sana = int.parse(json['sana'].toString());
-    vaqtS = int.parse(json['vaqtS'].toString());
-    vaqt = int.parse(json['vaqt'].toString());
+    sana = int.parse(json['sana'].toString())*1000;
+    vaqtS = int.parse(json['vaqtS'].toString())*1000;
+    vaqt = int.parse(json['vaqt'].toString())*1000;
     trMah = int.parse(json['trMah'].toString());
     miqdori = num.parse(json['miqdori'].toString());
+    qoldi = num.parse(json['qoldi'].toString());
     tannarxi = num.parse(json['tannarxi'].toString());
     tannarxiReal = num.parse(json['tannarxiReal'].toString());
     sotnarxi = num.parse(json['sotnarxi'].toString());
@@ -108,15 +136,16 @@ class MahKirim {
   }
 
   Map<String, dynamic> toJson() => {
-        'trHujjat': trHujjat,
         'tr': tr,
         'turi': turi,
+        'trHujjat': trHujjat,
         'yoq': yoq ? 1 : 0,
         'qulf': qulf ? 1 : 0,
         'trMah': trMah,
-        'sana': sana,
-        'vaqtS': vaqtS,
-        'vaqt': vaqt,
+        'sana': toSecond(sana),
+        'vaqtS': toSecond(vaqtS),
+        'vaqt': toSecond(vaqt),
+        'qoldi': qoldi,
         'miqdori': miqdori,
         'tannarxi': tannarxi,
         'tannarxiReal': tannarxiReal,
@@ -138,6 +167,7 @@ class MahKirim {
     vaqt = int.parse(json['vaqt'].toString());
     trMah = int.parse(json['trMah'].toString());
     miqdori = num.parse(json['miqdori'].toString());
+    qoldi = num.parse(json['qoldi'].toString());
     tannarxi = num.parse(json['tannarxi'].toString());
     tannarxiReal = num.parse(json['tannarxiReal'].toString());
     sotnarxi = num.parse(json['sotnarxi'].toString());
@@ -183,20 +213,22 @@ class MahKirimService {
   String get tableName => "'$prefix$table'";
 
   String get createTable => """
-    CREATE TABLE "$tableName" (
+    CREATE TABLE $tableName (
       "tr"	INTEGER NOT NULL DEFAULT 0,
       "turi"	INTEGER NOT NULL DEFAULT 0,
+      "trHujjat"	INTEGER NOT NULL DEFAULT 0,
       "qulf" INTEGER NOT NULL DEFAULT 0,
       "yoq"	INTEGER NOT NULL DEFAULT 0,
       "trMah"	INTEGER NOT NULL DEFAULT 0,
-      "trHujjat"	INTEGER NOT NULL DEFAULT 0,
+      "qoldi"	NUMERIC NOT NULL DEFAULT 0,
+      "miqdori"	NUMERIC NOT NULL DEFAULT 0,
       "sana"	INTEGER NOT NULL DEFAULT 0,
       "vaqtS"	INTEGER NOT NULL DEFAULT 0,
       "vaqt"	INTEGER NOT NULL DEFAULT 0,
-      "miqdori"	NUMERIC NOT NULL DEFAULT 0,
       "tannarxi"	NUMERIC NOT NULL DEFAULT 0,
       "tannarxiReal"	NUMERIC NOT NULL DEFAULT 0,
       "sotnarxi"	NUMERIC NOT NULL DEFAULT 0,
+      "trKotib"	INTEGER NOT NULL DEFAULT 0,
       "trKont"	INTEGER NOT NULL DEFAULT 0,
       "nomi"	TEXT NOT NULL DEFAULT '',
       "kodi"	TEXT NOT NULL DEFAULT '',

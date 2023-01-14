@@ -69,7 +69,7 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cont.hujjat.sts != HujjatSts.ochilgan.tr ? const SizedBox() : Expanded(
+          _cont.hujjat.sts != HujjatSts.homAshyoPrt.tr ? const SizedBox() : Expanded(
             flex: 4,
             child: Card(
               shape: RoundedRectangleBorder(
@@ -156,9 +156,9 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-            color: Colors.black54,
-          ),
-        child: const Text("Tayyorlash uchun taomlardan tanlang\nKeyingi qadamda taomlar tarkibini dastur tuzib beradi", style: TextStyle(color: Colors.white)),
+          color: Colors.black54,
+        ),
+        child: const Text("Taom uchun masalliqlar ", style: TextStyle(color: Colors.white)),
       ),
     ];
   }
@@ -348,6 +348,7 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
 
   @override
   void initState() {
+    print(widget.barchaTarkib);
     _cont.init(widget, setState, context: super.context);
     super.initState();
   }
