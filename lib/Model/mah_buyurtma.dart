@@ -1,37 +1,11 @@
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
-import 'package:erp_oshxona/Model/system/turi.dart';
-
-enum StsMahbuyurtmaTr{ochiq, jonatilgan, qabulQilingan}
-
-class StsMahbuyurtma extends Tur{
-  StsMahbuyurtma(super.tr, super.nomi);
-
-  static Map<StsMahbuyurtmaTr, StsMahbuyurtma> obyektlar = {
-    StsMahbuyurtmaTr.ochiq : ochiq,
-    StsMahbuyurtmaTr.jonatilgan : jonatilgan,
-    StsMahbuyurtmaTr.qabulQilingan : qabulQilingan,
-  };
-
-  static StsMahbuyurtma ochiq = StsMahbuyurtma(StsMahbuyurtmaTr.ochiq.index, "Ochiq");
-  static StsMahbuyurtma jonatilgan = StsMahbuyurtma(StsMahbuyurtmaTr.jonatilgan.index, "Ochiq");
-  static StsMahbuyurtma qabulQilingan = StsMahbuyurtma(StsMahbuyurtmaTr.qabulQilingan.index, "Ochiq");
-}
+import 'package:erp_oshxona/Model/system/alert.dart';
 
 class MahBuyurtma {
-  
-  insert() async {
-    obyektlar.add(this);
-    await service!.insert(toJson());
-  }
-
-  delete() async {
-    await service!.deleteId(trHujjat, tr);
-    obyektlar.remove(this);
-  }
-
   static Set<MahBuyurtma> obyektlar = {};
   static MahBuyurtmaService? service;
 
@@ -42,6 +16,7 @@ class MahBuyurtma {
   bool yoq = false;
   int trKont = 0;
   int trMah = 0;
+  int trKirim = 0;
   int sana = 0;
   int vaqtS = 0;
   int vaqt = 0;
@@ -54,8 +29,7 @@ class MahBuyurtma {
   String izoh = "";
 
   Mahsulot get mahsulot => Mahsulot.obyektlar[trMah]!;
-  Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
-  //MahKirim? get kirim => trKirim == 0 ? null : MahKirim.obyektlar[trKirim];
+  MahKirim? get kirim => trKirim == 0 ? null : MahKirim.obyektlar[trKirim];
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
   DateTime get vaqtSDT => DateTime.fromMillisecondsSinceEpoch(vaqtS);
@@ -69,6 +43,7 @@ class MahBuyurtma {
     qulf = json['qulf'].toString() == "1" ? true : false;
     yoq = json['yoq'].toString() == "1" ? true : false;
     trKont = int.parse(json['trKont'].toString());
+    trMah = int.parse(json['trMah'].toString());
     trMah = int.parse(json['trMah'].toString());
     sana = int.parse(json['sana'].toString()) * 1000;
     vaqtS = int.parse(json['vaqtS'].toString()) * 1000;
@@ -90,6 +65,7 @@ class MahBuyurtma {
         'qulf': qulf ? 1 : 0,
         'trKont': trKont,
         'trMah': trMah,
+        'trMah': trMah,
         'sana': toSecond(sana),
         'vaqtS': toSecond(vaqtS),
         'vaqt': toSecond(vaqt),
@@ -107,6 +83,28 @@ class MahBuyurtma {
 
   @override
   int get hashCode => trHujjat.hashCode ^ tr.hashCode;
+  
+  insert() async {
+    obyektlar.add(this);
+    await service!.insert(toJson());
+  }
+
+  delete() async {
+    if(qulf){
+      throw ExceptionIW(
+        Alert(
+          AlertType.error, 
+          "O'chirish mumkun emas",
+          desc: "Ushbu ma'lumot kirim uchun asos sifatida saqlanadi",
+        ),
+      );
+    }
+    else {
+      await service!.deleteId(trHujjat, tr);
+    }
+    obyektlar.remove(this);
+  }
+
 }
 
 class MahBuyurtmaService extends MahChiqimService{
@@ -128,6 +126,7 @@ class MahBuyurtmaService extends MahChiqimService{
       "yoq"	INTEGER NOT NULL DEFAULT 0,
       "trKont"	INTEGER NOT NULL DEFAULT 0,
       "trMah"	INTEGER NOT NULL DEFAULT 0,
+      "trMah"	INTEGER NOT NULL DEFAULT 0,
       "sana"	INTEGER NOT NULL DEFAULT 0,
       "vaqtS"	INTEGER NOT NULL DEFAULT 0,
       "vaqt"	INTEGER NOT NULL DEFAULT 0,
@@ -141,100 +140,4 @@ class MahBuyurtmaService extends MahChiqimService{
       PRIMARY KEY("trHujjat","tr")
     );
   """;
-/*
-  Future<Set> select({String? where}) async {
-    where = where == null ? "" : " WHERE $where";
-    Set map = {};
-    await for (final rows
-        in db.watch("SELECT * FROM $table $where", tables: [table])) {
-      for (final element in rows) {
-        map.add(element);
-      }
-      return map;
-    }
-    return map;
-  }
-
-  Future<Map> selectId(int hujjatId, int id, {String? where}) async {
-    Map row = await db.query("SELECT * FROM $table WHERE trHujjat = ? AND tr = ?",
-        params: [hujjatId, id],
-        //fromMap: (map) => {},
-        singleResult: true);
-    return row;
-  }
-
-  Future<void> delete({String? where}) async {
-    where = where == null ? "" : " WHERE $where";
-    await db.query("DELETE FROM $table $where");
-  }
-
-  Future<void> deleteId(int hujjatId, int id, {String? where}) async {
-    where = where ?? " trHujjat = $hujjatId AND tr='$id'";
-    await delete(where: where);
-  }
-
-  Future<int> count({String? where}) async {
-    where = where == null ? "" : " WHERE $where";
-    Map row = await db.query("SELECT COUNT(*) FROM $table$where",
-        //params: [table],
-        //fromMap: (map) => {},
-        singleResult: true);
-    return int.parse(row['seq'].toString()) + 1;
-  }
-
-  Future<int> insert(Map map) async {
-    map['trHujjat'] = (map['trHujjat'] == 0) ? null : map['trHujjat'];
-    map['tr'] = (map['tr'] == 0) ? null : map['tr'];
-
-    var insertId = await db.insert(map as Map<String, dynamic>, table);
-    return insertId;
-  }
-
-  Future<int> newId(int hujjatId) async {
-    int? tr = await db.query("SELECT MAX(tr) FROM $table WHERE trHujjat = ?",
-        params: [hujjatId],
-        //fromMap: (map) => {},
-        singleResult: true);
-    return (tr ?? 0) + 1;
-  }
-
-  Future replace(Map map) async {
-    map['trHujjat'] = (map['trHujjat'] == 0) ? null : map.remove('trHujjat');
-    map['tr'] = (map['tr'] == 0) ? null : map.remove('tr');
-
-    var cols = '';
-    var vals = '';
-
-    var vergul = '';
-
-    map.forEach((col, val) {
-      val = val;
-      col = col;
-      cols += "$vergul `$col`";
-      vals += "$vergul '$val'";
-      if (vergul == "") {
-        vergul = ',';
-      }
-    });
-    var sql = "REPLACE INTO $table ($cols) VALUES ($vals)";
-    await db.query(sql);
-  }
-
-  Future<void> update(Map map, {String? where}) async {
-    where = where == null ? "" : " WHERE $where";
-
-    String updateClause = "";
-    final List params = [];
-    final values = map.keys; //.where((element) => !keys.contains(element));
-    for (String value in values) {
-      if (updateClause.isNotEmpty) updateClause += ", ";
-      updateClause += "$value=?";
-      params.add(map[value]);
-    }
-
-    final String sql = "UPDATE $table SET $updateClause$where";
-    await db.execute(sql, tables: [table], params: params);
-    //await db.query(sql);
-    //await db.update(map as Map<String, dynamic>, table, keys: []);
-  }*/
 }

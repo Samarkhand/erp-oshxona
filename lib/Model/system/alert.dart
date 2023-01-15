@@ -22,3 +22,8 @@ class Alert{
   Alert(this.type, this.title, {this.desc = '', this.tr = 0});
 
 }
+
+class ExceptionIW implements Exception {
+  Alert alert;
+  ExceptionIW(this.alert);
+}

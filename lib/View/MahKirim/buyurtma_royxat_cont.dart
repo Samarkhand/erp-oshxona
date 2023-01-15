@@ -7,7 +7,9 @@ import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/View/MahKirim/buyurtma_royxat_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
@@ -21,17 +23,20 @@ class BuyurtmaRoyxatCont with Controller {
   List objectList = [];
 
   late final Hujjat hujjat;
+  late final Hujjat kirimHujjat;
 
   late DateTime sanaD;
   late DateTime sanaG;
 
   List<Mahsulot> mahsulotList = [];
   List<MahBuyurtma> buyurtmaList = [];
+  List<MahKirim> kirimList = [];
 
   Map<int, TextEditingController> buyurtmaCont = {};
 
   Future<void> init(widget, Function setState,
-      {required BuildContext context}) async {
+      {required BuildContext context}) async 
+  {
     this.setState = setState;
     this.widget = widget;
     this.context = context;
@@ -70,16 +75,31 @@ class BuyurtmaRoyxatCont with Controller {
   }
   
   Future<void> loadItems() async {
-    await MahBuyurtma.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
-      for (var value in values) {
-        var buyurtma = MahBuyurtma.fromJson(value);
-        MahBuyurtma.obyektlar.add(buyurtma);
-        buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
-      }
-    });
+    if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
+      await MahKirim.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
+        for (var value in values.values) {
+          var kirim = MahKirim.fromJson(value);
+          MahKirim.obyektlar[kirim.tr] = kirim;
+          //buyurtmaCont[kirim.tr] = TextEditingController(text: kirim.miqdori.toStringAsFixed(kirim.mahsulot.kasr));
+          kirimList.add(kirim);
+        }
+      });
+    }
+    else {
+      await MahBuyurtma.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
+        for (var value in values) {
+          var buyurtma = MahBuyurtma.fromJson(value);
+          MahBuyurtma.obyektlar.add(buyurtma);
+          buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
+        }
+      });
+    }
   }
 
   loadFromGlobal(){
+    if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
+      kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat)!;
+    }
     buyurtmaList = MahBuyurtma.obyektlar.where((element) => element.trHujjat == hujjat.tr).toList();
     buyurtmaList.sort(
       // Comparison function not necessary here, but shown for demonstrative purposes 
@@ -88,7 +108,7 @@ class BuyurtmaRoyxatCont with Controller {
     mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == MTuri.homAshyo.tr).toList();
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
   }
-  
+
   Future<void> sanaTanlashD(BuildContext context, StateSetter setState) async {
     final now = DateTime.now();
     final DateTime? picked = await showDatePicker(
@@ -142,7 +162,7 @@ class BuyurtmaRoyxatCont with Controller {
         hujjat.qulf = true;
         hujjat.sts = HujjatSts.jonatilganBrtm.tr;
       });
-      Hujjat.service!.update({
+      await Hujjat.service!.update({
         'qulf': hujjat.qulf ? 1 : 0,
         'sts': hujjat.sts,
         'vaqtS': vaqts,
@@ -193,23 +213,38 @@ class BuyurtmaRoyxatCont with Controller {
         hujjat.qulf = result['hujjat']['qulf'] == 1;
         hujjat.sts = result['hujjat']['sts'];
       });
-      Hujjat.service!.update({
-        'qulf': hujjat.qulf ? 1 : 0,
-        'sts': hujjat.sts,
-        'vaqtS': vaqts,
-      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
       if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
         // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
+        if(hujjat.trHujjat == 0){
+          kirimHujjat = Hujjat(HujjatTur.kirimFil.tr);
+          kirimHujjat.tr = await Hujjat.service!.newId(kirimHujjat.turi);
+          kirimHujjat.sana = hujjat.sana;
+          kirimHujjat.vaqt = DateTime.now().millisecondsSinceEpoch;
+          kirimHujjat.vaqtS = kirimHujjat.vaqt;
+          kirimHujjat.trHujjat = hujjat.tr;
+          hujjat.trHujjat = kirimHujjat.tr;
+          await Hujjat.service!.insert(kirimHujjat.toJson());
+        }
         if(hujjat.trHujjat != 0){
-          Hujjat kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat)!;
           for(Map buyurtmaData in result['mahsulotlar']){
             var brtm = buyurtmaList.firstWhere((element) => element.tr == int.parse(buyurtmaData['tr'].toString()), orElse: () => MahBuyurtma.fromJson(buyurtmaData as Map<String, dynamic>));
             if(brtm.yoq) continue;
-            var kirim = MahKirim.fromBrtm(brtm)..trHujjat=kirimHujjat.tr;
+            var kirim = MahKirim.fromBrtm(brtm);
+            kirim.trHujjat = kirimHujjat.tr;
+            kirim.turi = MahKirimTur.kirimFil.tr;
+            kirim.sana = hujjat.sana;
+            kirim.vaqt = DateTime.now().millisecondsSinceEpoch;
+            kirim.vaqtS = kirim.vaqt;
             await MahKirim.service!.insert(kirim.toJson());
           }
         }
       }
+      await Hujjat.service!.update({
+        'qulf': hujjat.qulf ? 1 : 0,
+        'sts': hujjat.sts,
+        'trHujjat': hujjat.trHujjat,
+        'vaqtS': vaqts,
+      }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
     }
     if (result?['alert'] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -254,20 +289,29 @@ class BuyurtmaRoyxatCont with Controller {
         hujjat.qulf = result['hujjat']['qulf'] == 1;
         hujjat.sts = result['hujjat']['sts'];
       });
-      Hujjat.service!.update({
+      await Hujjat.service!.update({
         'qulf': hujjat.qulf ? 1 : 0,
         'sts': hujjat.sts,
         'vaqtS': vaqts,
       }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
       if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
         // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
-        Hujjat? kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat);
+        //Hujjat? kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat);
         if(kirimHujjat != null){
-          for(Map buyurtmaData in result['mahsulotlar']){
-            var brtm = buyurtmaList.firstWhere((element) => element.tr == int.parse(buyurtmaData['tr'].toString()), orElse: () => MahBuyurtma.fromJson(buyurtmaData as Map<String, dynamic>));
-            if(brtm.yoq) continue;
-            var kirim = MahKirim.fromBrtm(brtm);
-            await MahKirim.service!.insert(kirim.toJson());
+          for(var kirim in kirimList){
+            kirim.qulf = true;
+            kirim.vaqtS = vaqts;
+            kirim.qoldi = kirim.miqdori;
+            kirim.tannarxiReal = kirim.tannarxi;
+            kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
+
+            await MahKirim.service!.update({
+              'qulf': 1,
+              'qoldi': kirim.qoldi,
+              'tannarxiReal': kirim.tannarxiReal,
+              'trQoldiq': kirim.trQoldiq,
+              'vaqtS': vaqts,
+            }, where: "tr='${kirim.tr}'");
           }
         }
       }
@@ -313,9 +357,16 @@ class BuyurtmaRoyxatCont with Controller {
   }
 
   remove(MahBuyurtma buyurtma) async {
-    buyurtmaList.remove(buyurtma);
-    setState(() => buyurtmaList);
-    buyurtma.delete();
+    try{
+      await buyurtma.delete();
+      buyurtmaList.remove(buyurtma);
+    }
+    catch(e){
+      alertDialog(context, e as Alert);
+    }
+    finally{
+      setState(() => buyurtmaList);
+    }
   }
 
   mahIzlash(String value){

@@ -101,7 +101,6 @@ class KirimRoyxatCont with Controller {
       kirim.qulf = true;
       kirim.qoldi = kirim.miqdori;
       kirim.tannarxiReal = kirim.tannarxi;
-      //kirim.sts = HujjatSts.homAshyoPrt.tr;
       kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
       
       await MahKirim.service!.update({
@@ -164,11 +163,11 @@ class KirimRoyxatCont with Controller {
 
   remove(MahKirim kirim) async {
     try{
-      kirim.delete();
+      await kirim.delete();
       kirimList.remove(kirim);
     }
-    catch(e){
-      alertDialog(context, e as Alert);
+    on ExceptionIW catch (_, e){
+      alertDialog(context, _.alert);
     }
     finally{
       setState(() => kirimList);

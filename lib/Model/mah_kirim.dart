@@ -193,11 +193,11 @@ class MahKirim {
   delete() async {
     if(qulf && qoldiq != null){
       if(qoldiq!.sotildi > 0 || qoldiq!.qoldi != miqdori || miqdori != qoldi){
-        throw Exception(
+        throw ExceptionIW(
           Alert(
             AlertType.error, 
             "O'chirish mumkun emas",
-            desc: "Ushbu kirim bo'lgan mahsulotdan chiqim ham bo'lgan. \nMaxsulot qaytarib berish amaliyotini qo'llash yoki Barcha chiqimlarni o'chirib chiqqandan keyin qayta o'chirishga urinish tavsiya qilinadi",
+            desc: "Ushbu kirim bo'lgan mahsulotdan chiqim ham bo'lgan va chiqim tannarxi uchun asos sifatida saqlanadi.\nMaxsulot qaytarib berish amaliyotini qo'llash yoki Barcha chiqimlarni o'chirib chiqqandan keyin qayta o'chirishga urinish tavsiya qilinadi",
           ),
         );
       }
@@ -299,12 +299,12 @@ class MahKirimService {
   }
 
   Future<void> delete({String? where}) async {
-    where ??= " WHERE $where";
+    where = where == null ? "" : " WHERE $where";
     await db.query("DELETE FROM $tableName $where");
   }
 
   Future<void> deleteId(int hujjatId, int id, {String? where}) async {
-    where ??= " tr='$id'";
+    where = where == null ? "" :" tr='$id'";
     await delete(where: where);
   }
 

@@ -78,7 +78,7 @@ class IchiChiqimRoyxatCont with Controller {
       for (var value in values) {
         var buyurtma = MahChiqimIch.fromJson(value);
         MahChiqimIch.obyektlar.add(buyurtma);
-        buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(buyurtma.mahsulot.kasr));
+        buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(3));
       }
     });
   }
@@ -144,7 +144,7 @@ class IchiChiqimRoyxatCont with Controller {
     chiqim.vaqt = DateTime.now().millisecondsSinceEpoch;
     chiqim.vaqtS = chiqim.vaqt;
     chiqimList.add(chiqim);
-    buyurtmaCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(chiqim.mahsulot.kasr));
+    buyurtmaCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(3));
     setState(() => chiqimList);
     await chiqim.insert();
   }
