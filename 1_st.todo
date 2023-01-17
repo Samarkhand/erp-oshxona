@@ -1,6 +1,8 @@
 Concept:
+    - Hodimlar kartasi kiritilsin
     - Qulf hujjat delete bo'lmasin
         - hujjat ichidagi ichak chavog'i bilan delete bo'lsin
+    - mah_sotnarxi belgilashlar tarixi tablesi
     - Api data get @done
     - trKotib qo'yib chiqilsin
     - trQoldiq qo'yib ciqilsin

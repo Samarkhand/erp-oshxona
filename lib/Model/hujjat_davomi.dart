@@ -12,10 +12,10 @@ class HujjatTur extends Tur {
   static final HujjatTur kirimIch = HujjatTur(6, "Taom tayyorlash");
   static final HujjatTur chiqimIch = HujjatTur(7, "Tayyorlash uchun chiqim");
   static final HujjatTur chiqimFil = HujjatTur(8, "Filialga chiqim");
-  static final HujjatTur chiqim = HujjatTur(9, "Chiqim");
+  static final HujjatTur chiqim = HujjatTur(9, "Chiqim(Savdo)");
   static final HujjatTur buyurtmaKeldi = HujjatTur(10, "Bizga buyurtma");
   static final HujjatTur buyurtma = HujjatTur(11, "Buyurtma(Xarid)");
-  static final HujjatTur tarqatish = HujjatTur(12, "Chiqim");
+  static final HujjatTur tarqatish = HujjatTur(12, "Taom tarqatish");
 
   static final Map<int, HujjatTur> obyektlar = {
     kirim.tr: kirim,
@@ -41,10 +41,13 @@ class HujjatSts extends Tur {
 
   static final Map<int, Map<int, HujjatSts>> obyektlar = {
     HujjatTur.kirim.tr: oddiyHujjatSts,
+    HujjatTur.kirimFil.tr: oddiyHujjatSts,
     HujjatTur.qaytibOlish.tr: oddiyHujjatSts,
     HujjatTur.qaytibBerish.tr: oddiyHujjatSts,
     HujjatTur.zarar.tr: oddiyHujjatSts,
+    HujjatTur.chiqimIch.tr: oddiyHujjatSts,
     HujjatTur.chiqim.tr: oddiyHujjatSts,
+    HujjatTur.tarqatish.tr: oddiyHujjatSts,
     HujjatTur.kirimIch.tr: {
       ochilgan.tr: ochilgan,
       homAshyoPrt.tr: homAshyoPrt,

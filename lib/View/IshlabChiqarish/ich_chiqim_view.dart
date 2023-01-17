@@ -48,7 +48,9 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
     );
   }
 
-  AppBar? _appBar(BuildContext context, {String? title}) {
+  AppBar? _appBar(BuildContext context) {
+    const kichikTS =  TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.normal);
     return AppBar(
       actions: _buildActions(),
       title: Wrap(
@@ -56,10 +58,12 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
         runAlignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          _cont.hujjat.qulf ? const Icon(Icons.lock) : const SizedBox(),
-          Text("${widget.partiya.hujjat.turiObj.nomi} ${widget.partiya.hujjat.raqami} "),
-          Text("${dateFormat.format(widget.partiya.hujjat.sanaDT)} ", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-          statusBadge(_cont.hujjat.status),
+            _cont.hujjat.qulf ? const Icon(Icons.lock) : const SizedBox(),
+            Text(" ${_cont.hujjat.turiObj.nomi}  "),
+            Text("No ${_cont.hujjat.raqami}, ", style: kichikTS),
+            Text("${_cont.partiya.mahal.nomi}, ", style: kichikTS),
+            Text("${dateFormat.format(_cont.hujjat.sanaDT)}  ", style: kichikTS),
+            statusBadge(_cont.hujjat.status),
         ]),
     );
   }
@@ -349,7 +353,6 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
 
   @override
   void initState() {
-    print(widget.barchaTarkib);
     _cont.init(widget, setState, context: super.context);
     super.initState();
   }

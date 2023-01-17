@@ -2,6 +2,7 @@ import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
+import 'package:erp_oshxona/Model/mahal.dart';
 
 class HujjatPartiya {
   static HujjatPartiyaService? service;
@@ -16,12 +17,14 @@ class HujjatPartiya {
   int sana = 0;
 
   Hujjat get hujjat => Hujjat.ol(HujjatTur.kirimIch, trHujjat)!;
+  Mahal get mahal => Mahal.obyektlar[trMahal]!;
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   
   HujjatPartiya();
 
-  static HujjatPartiya id(int id) {
-    return obyektlar.firstWhere((element) => element.trHujjat == id);
+  /// trHujjat id bo'yicha
+  static HujjatPartiya id(int trHujjat) {
+    return obyektlar.firstWhere((element) => element.trHujjat == trHujjat);
   }
 
   /*id(int id) async {
@@ -113,6 +116,7 @@ class HujjatPartiyaService {
       `trMahal` INTEGER NOT NULL DEFAULT 0,
       `trChiqim` INTEGER NOT NULL DEFAULT 0,
       `trHujjat` INTEGER NOT NULL DEFAULT 0,
+      `sana` INTEGER NOT NULL DEFAULT 0,
       PRIMARY KEY("tr")
     );
   """;

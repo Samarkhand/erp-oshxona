@@ -6,16 +6,6 @@ import 'package:erp_oshxona/Model/mahsulot.dart';
 
 class MahTarqat  {
 
-  insert() {
-    obyektlar.add(this);
-    return service!.insert(toJson());
-  }
-
-  delete() {
-    obyektlar.remove(this);
-    return service!.deleteId(trHujjat, tr);
-  }
-
   static Set<MahTarqat> obyektlar = {};
   static MahTarqatService? service;
 
@@ -91,6 +81,17 @@ class MahTarqat  {
 
   @override
   int get hashCode => trHujjat.hashCode ^ tr.hashCode;
+  
+  insert() {
+    obyektlar.add(this);
+    return service!.insert(toJson());
+  }
+
+  delete() {
+    obyektlar.remove(this);
+    return service!.deleteId(trHujjat, tr);
+  }
+
 }
 
 class MahTarqatService extends MahChiqimService {

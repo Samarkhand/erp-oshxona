@@ -1,5 +1,6 @@
 import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Library/functions.dart';
+import 'package:erp_oshxona/Model/kBolim.dart';
 import 'package:erp_oshxona/Model/system/crudHelper.dart';
 
 class Kont {
@@ -17,11 +18,14 @@ class Kont {
   num boshBalans = 0;
   DateTime vaqt = DateTime(2000);
   DateTime vaqtS = DateTime(2000);
+  String tag = '';
   String davKod = '';
   String telKod = '';
   String tel = '';
   String nomi = '';
   String izoh = '';
+
+  KBolim get mBolim => KBolim.obyektlar[bolim]!;
 
   Kont();
 
@@ -36,6 +40,7 @@ class Kont {
         boshBalans = num.parse(json['boshBalans'].toString()),
         vaqt = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(json['vaqt'])),
         vaqtS = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(json['vaqtS'])),
+        tag = json['tag'].toString(),
         davKod = json['davKod'].toString(),
         telKod = json['telKod'].toString(),
         tel = json['tel'].toString(),
@@ -52,6 +57,7 @@ class Kont {
         'boshBalans': boshBalans,
         'vaqt': toSecond(vaqt.millisecondsSinceEpoch),
         'vaqtS': toSecond(vaqtS.millisecondsSinceEpoch),
+        'tag': tag,
         'davKod': davKod,
         'telKod': telKod,
         'tel': tel,
@@ -70,6 +76,7 @@ class Kont {
         boshBalans = num.parse(json['boshBalans'].toString()),
         vaqt = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(int.parse(json['vaqt']))),
         vaqtS = DateTime.fromMillisecondsSinceEpoch(toMilliSecond(json['vaqtS'])),
+        tag = json['tag'].toString(),
         davKod = json['davKod'].toString(),
         telKod = json['telKod'].toString(),
         tel = json['tel'].toString(),
@@ -86,6 +93,7 @@ class Kont {
         'boshBalans': boshBalans,
         'vaqt': toSecond(vaqt.millisecondsSinceEpoch),
         'vaqtS': toSecond(vaqtS.millisecondsSinceEpoch),
+        'tag': tag,
         'davKod': davKod,
         'telKod': telKod,
         'tel': tel,
@@ -119,6 +127,7 @@ CREATE TABLE "kont" (
 	"boshBalans"	NUMERIC DEFAULT 0,
 	"vaqt"	INTEGER DEFAULT 0,
 	"vaqtS"	INTEGER DEFAULT 0,
+  "tag"	TEXT DEFAULT '',
   "davKod"	TEXT DEFAULT '',
 	"telKod"	TEXT DEFAULT '',
 	"tel"	TEXT DEFAULT '',
