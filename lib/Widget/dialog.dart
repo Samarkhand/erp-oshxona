@@ -11,10 +11,13 @@ Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onC
         return AlertDialog(
           title: const Text('Miqdor kiriting'),
           content: TextField(
-              controller: cont,
+            controller: cont,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+            ],
             autofocus: true,
             textAlign: TextAlign.center,
-            onChanged: ((value) => qiymat = value),
             decoration: InputDecoration(
               hintText: "Miqdori",
               suffix: IconButton(
@@ -25,14 +28,11 @@ Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onC
                 },
               ),
             ),
+            onChanged: ((value) => qiymat = value),
             onSubmitted: (value) {
               onSave ?? false;
               Navigator.pop(context);
             },
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
-            ],
           ),
           actions: <Widget>[
             TextButton(

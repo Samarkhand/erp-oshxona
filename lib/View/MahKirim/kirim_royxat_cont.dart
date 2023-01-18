@@ -101,7 +101,7 @@ class KirimRoyxatCont with Controller {
       kirim.qulf = true;
       kirim.qoldi = kirim.miqdori;
       kirim.tannarxiReal = kirim.tannarxi;
-      kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
+      kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal);
       
       await MahKirim.service!.update({
         'qulf': kirim.qulf ? 1 : 0,

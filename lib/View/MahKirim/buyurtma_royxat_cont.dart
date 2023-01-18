@@ -297,22 +297,20 @@ class BuyurtmaRoyxatCont with Controller {
       if(hujjat.sts == HujjatSts.tasdiqKutBrtm.tr){
         // agar kirimFil hujjat hosil qilingan bo'lmasa - qilinsin.
         //Hujjat? kirimHujjat = Hujjat.ol(HujjatTur.kirimFil, hujjat.trHujjat);
-        if(kirimHujjat != null){
-          for(var kirim in kirimList){
-            kirim.qulf = true;
-            kirim.vaqtS = vaqts;
-            kirim.qoldi = kirim.miqdori;
-            kirim.tannarxiReal = kirim.tannarxi;
-            kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal, sotnarxi: kirim.sotnarxi);
+        for(var kirim in kirimList){
+          kirim.qulf = true;
+          kirim.vaqtS = vaqts;
+          kirim.qoldi = kirim.miqdori;
+          kirim.tannarxiReal = kirim.tannarxi;
+          kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal);
 
-            await MahKirim.service!.update({
-              'qulf': 1,
-              'qoldi': kirim.qoldi,
-              'tannarxiReal': kirim.tannarxiReal,
-              'trQoldiq': kirim.trQoldiq,
-              'vaqtS': vaqts,
-            }, where: "tr='${kirim.tr}'");
-          }
+          await MahKirim.service!.update({
+            'qulf': 1,
+            'qoldi': kirim.qoldi,
+            'tannarxiReal': kirim.tannarxiReal,
+            'trQoldiq': kirim.trQoldiq,
+            'vaqtS': vaqts,
+          }, where: "tr='${kirim.tr}'");
         }
       }
     }

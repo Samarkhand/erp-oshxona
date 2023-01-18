@@ -47,7 +47,6 @@ class MahKirim {
   int vaqt = 0;
   num tannarxi = 0;
   num tannarxiReal = 0;
-  num sotnarxi = 0;
   int trQoldiq = 0;
   int trKont = 0;
   int trKotib = 0;
@@ -79,7 +78,6 @@ class MahKirim {
     qoldi = brtm.miqdori;
     tannarxi = brtm.narxi;
     tannarxiReal = brtm.narxi;
-    sotnarxi = brtm.narxi;
     trKont = brtm.trKont;
     nomi = brtm.nomi;
     kodi = brtm.kodi;
@@ -100,7 +98,6 @@ class MahKirim {
     qoldi = num.parse(json['qoldi'].toString());
     tannarxi = num.parse(json['tannarxi'].toString());
     tannarxiReal = num.parse(json['tannarxiReal'].toString());
-    sotnarxi = num.parse(json['sotnarxi'].toString());
     trQoldiq = int.parse(json['trQoldiq'].toString());
     trKont = int.parse(json['trKont'].toString());
     trKotib= int.parse(json['trKotib'].toString());
@@ -123,7 +120,6 @@ class MahKirim {
         'miqdori': miqdori,
         'tannarxi': tannarxi,
         'tannarxiReal': tannarxiReal,
-        'sotnarxi': sotnarxi,
         'trQoldiq': trQoldiq,
         'trKont': trKont,
         'trKotib': trKotib,
@@ -146,7 +142,6 @@ class MahKirim {
     qoldi = num.parse(json['qoldi'].toString());
     tannarxi = num.parse(json['tannarxi'].toString());
     tannarxiReal = num.parse(json['tannarxiReal'].toString());
-    sotnarxi = num.parse(json['sotnarxi'].toString());
     trQoldiq = int.parse(json['trQoldiq'].toString());
     trKont = int.parse(json['trKont'].toString());
     trKotib= int.parse(json['trKotib'].toString());
@@ -169,7 +164,6 @@ class MahKirim {
         'miqdori': miqdori,
         'tannarxi': tannarxi,
         'tannarxiReal': tannarxiReal,
-        'sotnarxi': sotnarxi,
         'trQoldiq': trQoldiq,
         'trKont': trKont,
         'trKotib': trKotib,
@@ -266,7 +260,6 @@ class MahKirimService {
       "vaqt"	INTEGER NOT NULL DEFAULT 0,
       "tannarxi"	NUMERIC NOT NULL DEFAULT 0,
       "tannarxiReal"	NUMERIC NOT NULL DEFAULT 0,
-      "sotnarxi"	NUMERIC NOT NULL DEFAULT 0,
       "trKotib"	INTEGER NOT NULL DEFAULT 0,
       "trKont"	INTEGER NOT NULL DEFAULT 0,
       "nomi"	TEXT NOT NULL DEFAULT '',

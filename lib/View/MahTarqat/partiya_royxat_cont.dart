@@ -1,3 +1,4 @@
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/View/MahTarqat/partiya_royxat_view.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,7 @@ class HujjatPTRoyxatCont with Controller {
   }
 
   loadFromGlobal() {
-    objectList = Hujjat.obyektlar.toList();
+    objectList = Hujjat.obyektlar.where((element) => element.turi == widget.turi).toList();
     objectList.sort((a, b) {
       int cmp = -a.sana.compareTo(b.sana);
       if (cmp != 0) return cmp;

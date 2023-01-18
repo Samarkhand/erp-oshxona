@@ -1,3 +1,4 @@
+import 'package:erp_oshxona/Library/api_string.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
@@ -7,6 +8,7 @@ import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/Library/theme.dart';
+import 'package:flutter/services.dart';
 
 class TarqatishView extends StatefulWidget {
   TarqatishView(this.hujjat, {Key? key}) : super(key: key);
@@ -47,8 +49,7 @@ class _TarqatishViewState extends State<TarqatishView> {
   }
 
   AppBar? _appBar(BuildContext context) {
-    const kichikTS =  TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.normal);
+    const kichikTS = TextStyle(fontSize: 16, fontWeight: FontWeight.normal);
     return AppBar(
       actions: _buildActions(),
       title: Wrap(
@@ -60,7 +61,8 @@ class _TarqatishViewState extends State<TarqatishView> {
             Text(" ${_cont.hujjat.turiObj.nomi}  "),
             Text("No ${_cont.hujjat.raqami}, ", style: kichikTS),
             Text("${_cont.partiya.mahal.nomi}, ", style: kichikTS),
-            Text("${dateFormat.format(_cont.hujjat.sanaDT)}  ", style: kichikTS),
+            Text("${dateFormat.format(_cont.hujjat.sanaDT)}  ",
+                style: kichikTS),
             statusBadge(_cont.hujjat.status),
           ]),
     );
@@ -80,19 +82,7 @@ class _TarqatishViewState extends State<TarqatishView> {
                 _kontCard(),
                 Expanded(
                   flex: 6,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: _taomnomaRoyxati(),
-                      ),
-                    ),
-                  ),
+                  child: _taomnomaRoyxati(),
                 ),
               ],
             ),
@@ -135,7 +125,7 @@ class _TarqatishViewState extends State<TarqatishView> {
               controller: _cont.tagInputCont,
               focusNode: _cont.tagInputFN,
               decoration: InputDecoration(
-                hintText: "Enter NFC Card",
+                hintText: "(F9) Enter NFC Card",
                 hintStyle: const TextStyle(color: Colors.white70),
                 contentPadding: const EdgeInsets.all(10),
                 prefixIcon:
@@ -181,55 +171,75 @@ class _TarqatishViewState extends State<TarqatishView> {
             Text(kont?.mBolim.nomi ?? "Bo'limi noma'lum",
                 style: MyTheme.d5.copyWith(color: Colors.white)),
             const SizedBox(height: 15),
-            Text("Kartochka raqami",
-                style: MyTheme.d5.copyWith(color: Colors.white70)),
-            const SizedBox(height: 5),
-            Text(kont?.tag ?? "Noma'lum",
-                style: MyTheme.h5.copyWith(color: Colors.white)),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Kartochka raqami",
+                          style: MyTheme.d5.copyWith(color: Colors.white70)),
+                      const SizedBox(height: 5),
+                      Text(kont?.tag ?? "Noma'lum",
+                          style: MyTheme.h5.copyWith(color: Colors.white)),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: Material(
+                    color: Colors.white70,
+                    borderRadius: BorderRadius.circular(15.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Icon(Icons.chevron_right, size: 30,),
+                    ),
+                  ),
+                  onTap: () {},
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _taomnomaRoyxati() {
+  Widget _taomnomaRoyxati() {
     List<Widget> royxat = [];
+    royxat.add(const SizedBox(height: 10));
     for (var object in _cont.taomnoma) {
       royxat.add(
         Material(
           child: InkWell(
+            onTap: () {},
             child: Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.all(10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                      "${object.mahsulot.nomi} [${object.mahsulot.mOlchov.nomi}]"),
-                  SizedBox(
-                    width: 100,
-                    child: TextField(
-                      controller: _cont.taomnomaCont[object.tr],
-                      textAlign: TextAlign.end,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 7.0, horizontal: 5.0),
-                        border: const OutlineInputBorder(),
-                        suffixText: " ${object.mahsulot.mOlchov.nomi}",
-                        
-                      ),
-                      onChanged: (value) {
-                        if (value == '') value = '0';
-                        if (object.miqdori != num.tryParse(value)) {
-                          setState(() {
-                            object.miqdori = num.tryParse(value) ?? 0;
-                          });
-                          MahKirim.service!.update({'miqdori': object.miqdori},
-                              where:
-                                  "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
-                        }
-                      },
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(Icons.remove_red_eye),
                     ),
+                    onTap: () {},
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(object.mahsulot.nomi),
+                        Text("${object.qoldi} ${object.mahsulot.mOlchov.nomi}"),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 160,
+                    child: _miqdorOzgartirTF(object),
                   ),
                 ],
               ),
@@ -239,16 +249,37 @@ class _TarqatishViewState extends State<TarqatishView> {
       );
     }
     royxat.add(const SizedBox(height: 60));
-    return [
-      Padding(
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Text("Taomnoma", style: MyTheme.h5),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Taomnoma", style: MyTheme.h5),
+                  TextButton.icon(
+                    onPressed: () {},
+                    label: const Text("Qoshimcha"),
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+                child: ListView(
+              children: royxat,
+            )),
+          ],
+        ),
       ),
-      Expanded(
-          child: ListView(
-        children: royxat,
-      )),
-    ];
+    );
   }
 
   List<Widget> _tarqatilganRoyxati() {
@@ -304,6 +335,56 @@ class _TarqatishViewState extends State<TarqatishView> {
         //IconButton(onPressed: () => _cont.tarkibQaytarish(), icon: const Icon(Icons.refresh), tooltip: "Tekshirish"),
       ];
     }
+  }
+
+  _miqdorOzgartirTF(MahKirim object) {
+    TextEditingController cont = _cont.taomnomaCont[object.tr]!;
+    return TextField(
+      controller: cont,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+      ],
+      textAlign: TextAlign.end,
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
+        border: const OutlineInputBorder(),
+        suffixText: " ${object.mahsulot.mOlchov.nomi}",
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            num value = (num.tryParse(cont.text) ?? 0);
+            if ((value - 1) < 0) {
+              cont.text = '0';
+            } else {
+              cont.text = (value + 1).toStringAsFixed(object.mahsulot.kasr);
+            }
+          },
+        ),
+        prefixIcon: IconButton(
+          icon: const Icon(Icons.remove),
+          onPressed: () {
+            num value = (num.tryParse(cont.text) ?? 0);
+            if ((value - 1) < 0) {
+              cont.text = '0';
+            } else {
+              cont.text = (value - 1).toStringAsFixed(object.mahsulot.kasr);
+            }
+          },
+        ),
+      ),
+      onChanged: (value) {
+        var val = num.tryParse(value);
+        if (val == null || val < 0) {
+          cont.text = '';
+        } /*
+        else {
+          cont.text = val.toStringAsFixed(object.mahsulot.kasr);
+        } */
+      },
+    );
   }
 
   /* ================= */

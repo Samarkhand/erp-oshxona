@@ -73,7 +73,7 @@ class TarqatishCont with Controller {
     for (var ent in MahKirim.obyektlar.entries.where((element) => element.value.trHujjat==partiya.trHujjat && element.value.turi==turi)){
       var kirim = ent.value;
       taomnoma.add(kirim);
-      taomnomaCont[kirim.tr] = TextEditingController(text: kirim.miqdori.toStringAsFixed(kirim.mahsulot.kasr));
+      taomnomaCont[kirim.tr] = TextEditingController(text: /*kirim.miqdori*/1.toStringAsFixed(kirim.mahsulot.kasr));
     }
   }
 
