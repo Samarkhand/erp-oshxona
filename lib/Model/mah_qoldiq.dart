@@ -134,9 +134,9 @@ class MahQoldiq {
     );
   }
 
-  static Future<void> ozaytirMah(Mahsulot mah, {num miqdor = 1.0}) async {
+  static sotiladimi(Mahsulot mah, {num miqdor = 1.0}) {
     if (mah.mQoldiq == null) {
-      throw Exception(
+      throw ExceptionIW(
         Alert(
           AlertType.error,
           "Mavjud emas",
@@ -145,11 +145,11 @@ class MahQoldiq {
         ),
       );
     } else if (mah.mQoldiq!.qoldi <= 0) {
-      throw Exception(
+      throw ExceptionIW(
         Alert(AlertType.error, "Maxsulot qolmagan"),
       );
     } else if (mah.mQoldiq!.qoldi < miqdor) {
-      throw Exception(
+      throw ExceptionIW(
         Alert(
           AlertType.warning,
           "Yetarli emas",
@@ -157,9 +157,31 @@ class MahQoldiq {
               "Maxsulot qoldig'i yetarli emas. Mavjud qoldiq: ${mah.mQoldiq!.qoldi} ${mah.mOlchov.nomi}",
         ),
       );
-    } else {
-      mah.mQoldiq!.ozaytir(miqdor);
     }
+  }
+
+  static Future<Map> ozaytirMah(Mahsulot mah, {num miqdor = 1.0}) async {
+    try{
+      await sotiladimi(mah, miqdor: miqdor);
+    }
+    on ExceptionIW{
+      rethrow;
+    }
+
+    //await MahQoldiq.obyektlar[mah.tr]!.ozaytir(miqdor);
+    Map<String, dynamic> ret = {
+      'qoldiqlar':<Map<String, dynamic>>[
+        {
+          'tr': mah.tr,
+          'miqdori': miqdor,
+          'tannarxi': MahQoldiq.obyektlar[mah.tr]!.tannarxi
+        },
+      ],
+      'kirimlar':<Map<String, dynamic>>[
+
+      ],
+    };
+    return ret;
   }
 
   static Future<int> kopaytirMah(Mahsulot mah,
@@ -181,7 +203,6 @@ class MahQoldiq {
       qoldiq.vaqtS = DateTime.now().millisecondsSinceEpoch;
       MahQoldiq.obyektlar[qoldiq.tr] = qoldiq;
       return await MahQoldiq.service!.insert(qoldiq.toJson());
-      ;
     }
     qoldiq = mah.mQoldiq!;
     await qoldiq.kopaytir(miqdor);

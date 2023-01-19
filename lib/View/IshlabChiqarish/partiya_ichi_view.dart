@@ -419,7 +419,7 @@ class _HujjatPartiyaIchiViewState extends State<HujjatPartiyaIchiView> {
     }
     return DropdownButtonFormField<Mahal>(
       items: list,
-      value: Mahal.obyektlar.values.first,
+      value: _cont.partiya.mahal,
       borderRadius: const BorderRadius.all(Radius.circular(10)),
       isExpanded: true,
       enableFeedback: true,
@@ -434,16 +434,16 @@ class _HujjatPartiyaIchiViewState extends State<HujjatPartiyaIchiView> {
       ),
       onChanged: (value) {
         _cont.partiya.trMahal = value!.tr;
-      }, 
+      },
+      onSaved: (value) {
+        _cont.partiya.trMahal = value!.tr;
+      },
       validator: (value) {
         if(value == null){
           return "Tanlgang";
         }
         return null;
       },
-      onSaved: (value) {
-        _cont.partiya.trMahal = value!.tr;
-      }, 
     );
   }
 

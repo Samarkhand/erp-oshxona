@@ -1,8 +1,12 @@
+import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_ich.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/ich_chiqim_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
@@ -105,17 +109,35 @@ class IchiChiqimRoyxatCont with Controller {
     );
   }
 
-  tarkibTuzish() async {
+  qulflash() async {
+    final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
     showLoading(text: "Tarkib tuzilmoqda...");
-    List<MTarkib>? barchaTarkib = [];
-    for(var obj in chiqimList){
-      obj.trMah;
-      var tarkiblar = MTarkib.obyektlar[obj.trMah];
-      if(tarkiblar != null){
-        for(var tarkibMah in tarkiblar){
-          barchaTarkib.add(tarkibMah);
-        }
+    for(var chiqim in chiqimList){
+      try{
+        await MahQoldiq.ozaytirMah(chiqim.mahsulot, miqdor: chiqim.miqdori);
       }
+      on ExceptionIW catch (e){
+        alertDialog(context, e.alert);
+      }
+    }
+
+    int turi = MahKirimTur.kirimIch.tr;
+    var kirimla = await MahKirim.service!.select(where: "trHujjat=${hujjat.tr} AND turi=$turi");
+    for (var value in kirimla.values) {
+      var kirim = MahKirim.fromJson(value);
+      
+      kirim.qulf = true;
+      kirim.qoldi = kirim.miqdori;
+      kirim.tannarxiReal = kirim.tannarxi;
+      kirim.trQoldiq = await MahQoldiq.kopaytirMah(kirim.mahsulot, miqdor: kirim.miqdori, tannarxi: kirim.tannarxiReal);
+      
+      await MahKirim.service!.update({
+        'qulf': kirim.qulf ? 1 : 0,
+        'qoldi': kirim.qoldi,
+        'tannarxiReal': kirim.tannarxiReal,
+        'trQoldiq': kirim.trQoldiq,
+        'vaqtS': vaqts,
+      }, where: "tr='${kirim.tr}'");
     }
 
     hideLoading();

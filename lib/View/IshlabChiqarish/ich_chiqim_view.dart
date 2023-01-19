@@ -313,12 +313,12 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
   List<Widget>? _buildActions() {
     if(_cont.hujjat.sts == HujjatSts.ochilgan.tr){
       return <Widget>[
-        IconButton(onPressed: () => _cont.tarkibTuzish(), icon: const Icon(Icons.arrow_forward), tooltip: "Buyurtma jo'natish"),
+        IconButton(onPressed: () => _cont.qulflash(), icon: const Icon(Icons.arrow_forward), tooltip: "Buyurtma jo'natish"),
       ];
     }
     else {
       return <Widget>[
-        IconButton(onPressed: () => _cont.tarkibQaytarish(), icon: const Icon(Icons.refresh), tooltip: "Tekshirish"),
+        IconButton(onPressed: () => _cont.tarkibQaytarish(), icon: const Icon(Icons.arrow_back), tooltip: "Tekshirish"),
       ];
     }
   }

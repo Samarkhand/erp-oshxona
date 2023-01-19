@@ -2,6 +2,7 @@ import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/amaliyot.dart';
 import 'package:erp_oshxona/Model/hisob.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
+import 'package:erp_oshxona/Model/mahal.dart';
 import 'package:erp_oshxona/View/IshlabChiqarish/partiya_ichi_view.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
@@ -50,6 +51,7 @@ class HujjatPartiyaIchiCont with Controller {
       await object.yangiRaqam();
       partiya.tr = object.tr;
       partiya.trHujjat = object.tr;
+      partiya.trMahal = Mahal.obyektlar.values.first.tr;
     } else {
       objectEski = Hujjat.fromJson(object.toJson());
     }
