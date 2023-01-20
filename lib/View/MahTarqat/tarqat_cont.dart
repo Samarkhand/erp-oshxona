@@ -1,6 +1,7 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
+import 'package:erp_oshxona/Model/hujjat_tarqat.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_ich.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/View/MahTarqat/tarqat_view.dart';
@@ -18,7 +19,7 @@ class TarqatishCont with Controller {
   late final HujjatPartiya partiya;
 
   Kont? hodim;
-  List<Hujjat> tarqatilganlar = [];
+  List<HujjatTarqat> tarqatilganlar = [];
   List<MahKirim> taomnoma = [];
   Map<int, double> taomnomaMiqdor = {};
   Map<int, TextEditingController> taomnomaCont = {};
@@ -75,6 +76,15 @@ class TarqatishCont with Controller {
       taomnoma.add(kirim);
       taomnomaCont[kirim.tr] = TextEditingController(text: /*kirim.miqdori*/1.toStringAsFixed(kirim.mahsulot.kasr));
     }
+
+    for(int i = 0; i < 20; i++){
+      var hujjatTarqat = HujjatTarqat();
+      hujjatTarqat.qulf = false;
+      hujjatTarqat.trKont = i + 1000;
+      hujjatTarqat.trHujjat = partiya.hujjat.tr;
+      hujjatTarqat.sana = partiya.sana;
+      tarqatilganlar.add(hujjatTarqat);
+    }
   }
 
   addToList(Kont kont) async {
@@ -85,10 +95,10 @@ class TarqatishCont with Controller {
   }
 
   add(Kont kont, List<MahKirim> mahsulotlar) async {
-    var tarqatish = Hujjat(HujjatTur.tarqatish.tr);
-    tarqatish.trHujjat = partiya.trChiqim;
-    tarqatish.tr = await MahChiqimIch.service!.newId(tarqatish.trHujjat);
+    var tarqatish = HujjatTarqat();
     tarqatish.trHujjat = hujjat.tr;
+    tarqatish.trKont = kont.tr;
+    tarqatish.kodi = kont.tag;
     tarqatish.sana = partiya.sana;
     tarqatish.vaqt = DateTime.now().millisecondsSinceEpoch;
     tarqatish.vaqtS = tarqatish.vaqt;
@@ -97,7 +107,7 @@ class TarqatishCont with Controller {
     await tarqatish.insert();
   }
 
-  remove(Hujjat tarqatish) async {
+  remove(HujjatTarqat tarqatish) async {
     tarqatilganlar.remove(tarqatish);
     setState(() => tarqatilganlar);
   }

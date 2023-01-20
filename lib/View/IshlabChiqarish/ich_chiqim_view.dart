@@ -311,7 +311,7 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
   }
 
   List<Widget>? _buildActions() {
-    if(_cont.hujjat.sts == HujjatSts.ochilgan.tr){
+    if(_cont.hujjat.sts != HujjatSts.tugallanganPrt.tr){
       return <Widget>[
         IconButton(onPressed: () => _cont.qulflash(), icon: const Icon(Icons.arrow_forward), tooltip: "Buyurtma jo'natish"),
       ];
@@ -321,32 +321,6 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
         IconButton(onPressed: () => _cont.tarkibQaytarish(), icon: const Icon(Icons.arrow_back), tooltip: "Tekshirish"),
       ];
     }
-  }
-
-  _delete(BuildContext context, KBolim element) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('O`chirilsinmi?'),
-        content: const Text(
-            'O`chirmoqchi bo`lgan elementingizni qayta tiklab bo`lmaydi'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('BEKOR', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              _cont.showLoading();
-              await _cont.delete(element);
-              _cont.hideLoading();
-            },
-            child: const Text('O`CHIRILSIN'),
-          ),
-        ],
-      ),
-    );
   }
 
   /* ================= */
