@@ -1,3 +1,6 @@
+import 'package:erp_oshxona/Library/functions.dart';
+import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/mah_chiqim_zar.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Library/global.dart';
 import 'package:erp_oshxona/View/Hujjat/HujjatRoyxatCont.dart';
@@ -28,7 +31,8 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(context, title: "${widget.turi?.nomi ?? "Hujjatlar"} hujjatlar reystri" ),
+      appBar: _appBar(context,
+          title: "${widget.turi?.nomi ?? "Hujjatlar"} hujjatlar reystri"),
       body: SafeArea(
         child: _cont.isLoading
             ? Center(
@@ -58,7 +62,6 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
   Widget _body(context) {
     return Column(
       children: [
-        
         Material(
           elevation: 2,
           child: Padding(
@@ -76,10 +79,10 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
                       await showDialog(
                         context: context,
                         builder: (context) => Dialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(10.0)), //this right here
-                        child: HujjatIchiView.yangi(widget.turi!.tr)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10.0)), //this right here
+                            child: HujjatIchiView.yangi(widget.turi!.tr)),
                       );
                       await _cont.loadFromGlobal();
                       /*
@@ -106,8 +109,13 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
               if (_cont.objectList.length + 1 == index) {
                 return const SizedBox(height: 60);
               }
+              
+logConsole(_cont.objectListSummaAndMiqdori[_cont.objectList[index].tr]);
               return HujjatCard(
                 _cont.objectList[index],
+                _cont.objectListSummaAndMiqdori[_cont.objectList[index].tr] != null
+                    ? _cont.objectListSummaAndMiqdori[_cont.objectList[index].tr]!
+                    : {'summa': 0, 'miqdori': 0},
                 cont: _cont,
                 doAfterDelete: _cont.loadFromGlobal,
               );

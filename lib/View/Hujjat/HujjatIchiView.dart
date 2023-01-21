@@ -13,14 +13,14 @@ import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/system/form.dart';
 
 class HujjatIchiView extends StatefulWidget {
-  HujjatIchiView(this.hujjat, {Key? key})
+  HujjatIchiView(this.hujjat, this.objectSummaVaMiqdori, {Key? key})
       : infomi = true,
         yangimi = false,
         turi = 0,
         super(key: key) {
     turi = hujjat.turi;
   }
-  HujjatIchiView.tahrir(this.hujjat, {Key? key})
+  HujjatIchiView.tahrir(this.hujjat, this.objectSummaVaMiqdori, {Key? key})
       : yangimi = false,
         infomi = false,
         turi = 0,
@@ -37,6 +37,10 @@ class HujjatIchiView extends StatefulWidget {
   int turi;
   Hujjat hujjat;
   bool yangimi;
+  Map<String, num> objectSummaVaMiqdori = {
+    'summa': 0,
+    'miqdori': 0,
+  };
   bool infomi;
 
   @override
@@ -48,9 +52,9 @@ class _HujjatIchiViewState extends State<HujjatIchiView> {
   bool yuklanmoqda = false;
 
   String _title = "";
-
   @override
   Widget build(BuildContext context) {
+    
     return SizedBox(
       width: 600,
       child: _cont.isLoading
@@ -164,6 +168,7 @@ class _HujjatIchiViewState extends State<HujjatIchiView> {
   }
 
   Widget _info(context) {
+    
     final turi = HujjatTur.obyektlar[_cont.object.turi]!;
     return Column(children: [
       Padding(
@@ -193,8 +198,8 @@ class _HujjatIchiViewState extends State<HujjatIchiView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Summa", style: MyTheme.infoText),
-                        Text(sumFormat.format(_cont.object.summa),
-                            style: MyTheme.h6.copyWith(color: turi.ranggi)),
+                        Text(sumFormat.format(widget.objectSummaVaMiqdori['summa']),
+                            style: MyTheme.h6.copyWith(color: Colors.black)),
                       ],
                     ),
                   ),
@@ -204,8 +209,8 @@ class _HujjatIchiViewState extends State<HujjatIchiView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Mol soni", style: MyTheme.infoText),
-                        Text(sumFormat.format(_cont.object.summa),
-                            style: MyTheme.h6.copyWith(color: turi.ranggi)),
+                        Text(sumFormat.format(widget.objectSummaVaMiqdori['miqdori']),
+                            style: MyTheme.h6.copyWith(color: Colors.black)),
                       ],
                     ),
                   ),

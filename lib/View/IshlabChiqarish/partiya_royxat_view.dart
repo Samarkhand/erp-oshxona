@@ -113,6 +113,10 @@ class _HujjatPartiyaRoyxatViewState extends State<HujjatPartiyaRoyxatView> {
               }
               return HujjatCard(
                 _cont.objectList[index].hujjat,
+                {
+                  'summa' : 0,
+                  'miqdori': 0,
+                },
                 cont: _cont,
                 doAfterDelete: _cont.loadFromGlobal,
               );

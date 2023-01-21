@@ -9,6 +9,7 @@ import 'package:erp_oshxona/View/IshlabChiqarish/ich_kirim_view.dart';
 import 'package:erp_oshxona/View/MahKirim/buyurtma_royxat_view.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
 import 'package:erp_oshxona/View/MahKirim/kirim_royxat_view.dart';
+import 'package:erp_oshxona/View/MahZarar/zarar_royxat_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -231,7 +232,7 @@ Widget? openHujjat(Hujjat object){
     view = const SizedBox();
   }
   else if(HujjatTur.zarar.tr == object.turi){
-    view = const SizedBox();
+    view = ChiqZararRoyxatView(object);
   }
   else if(HujjatTur.kirimIch.tr == object.turi){
     var partiya = HujjatPartiya.id(object.tr);

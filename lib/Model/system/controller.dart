@@ -7,6 +7,7 @@ import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_ich.dart';
+import 'package:erp_oshxona/Model/mah_chiqim_zar.dart';
 import 'package:erp_oshxona/Model/mah_tarqat.dart';
 import 'package:erp_oshxona/Model/mahal.dart';
 import 'package:erp_oshxona/Model/smena.dart';
@@ -74,6 +75,7 @@ class Controller {
     MahKirim.service = MahKirimService(prefix: "${today.year}_${today.month}_");
     MahChiqim.service = MahChiqimService(prefix: "${today.year}_${today.month}_");
     MahChiqimIch.service = MahChiqimIchService(prefix: "${today.year}_${today.month}_");
+    MahChiqimZar.service = MahChiqimZarService(prefix: "${today.year}_${today.month}_");
     MahBuyurtma.service = MahBuyurtmaService(prefix: "${today.year}_${today.month}_");
     MahTarqat.service = MahTarqatService(prefix: "${today.year}_${today.month}_");
     Mahal.service = MahalService();

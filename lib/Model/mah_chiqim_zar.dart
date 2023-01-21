@@ -21,7 +21,6 @@ class MahChiqimZar  {
 
   int trHujjat = 0;
   int tr = 0;
-  int turi = 0;
   bool qulf = false;
   bool yoq = false;
   int trKont = 0;
@@ -32,8 +31,6 @@ class MahChiqimZar  {
   int vaqt = 0;
   num miqdori = 0;
   num tannarxi = 0;
-  num chiqnarxi = 0;
-  num chiqnarxiReal = 0;
   String nomi = '';
   String kodi = "";
   String izoh = "";
@@ -50,7 +47,6 @@ class MahChiqimZar  {
   MahChiqimZar.fromJson(Map<String, dynamic> json) {
     trHujjat = int.parse(json['trHujjat'].toString());
     tr = int.parse(json['tr'].toString());
-    turi = int.parse(json['turi'].toString());
     qulf = json['qulf'].toString() == "1" ? true : false;
     yoq = json['yoq'].toString() == "1" ? true : false;
     trKont = int.parse(json['trKont'].toString());
@@ -61,8 +57,6 @@ class MahChiqimZar  {
     vaqt = int.parse(json['vaqt'].toString()) * 1000;
     miqdori = num.parse(json['miqdori'].toString());
     tannarxi = num.parse(json['tannarxi'].toString());
-    chiqnarxi = num.parse(json['chiqnarxi'].toString());
-    chiqnarxiReal = num.parse(json['chiqnarxiReal'].toString());
     nomi = json['nomi'];
     kodi = json['kodi'];
     izoh = json['izoh'];
@@ -71,7 +65,6 @@ class MahChiqimZar  {
   Map<String, dynamic> toJson() => {
         'trHujjat': trHujjat,
         'tr': tr,
-        'turi': turi,
         'yoq': yoq ? 1 : 0,
         'qulf': qulf ? 1 : 0,
         'trKont': trKont,
@@ -82,8 +75,6 @@ class MahChiqimZar  {
         'vaqt': toSecond(vaqt),
         'miqdori': miqdori,
         'tannarxi': tannarxi,
-        'chiqnarxi': chiqnarxi,
-        'chiqnarxiReal': chiqnarxiReal,
         'nomi': nomi,
         'kodi': kodi,
         'izoh': izoh,
@@ -110,7 +101,6 @@ class MahChiqimZarService extends MahChiqimService {
     CREATE TABLE $table (
       "trHujjat"	INTEGER NOT NULL DEFAULT 0,
       "tr"	INTEGER NOT NULL DEFAULT 0,
-      "turi"	INTEGER NOT NULL DEFAULT 0,
       "qulf" INTEGER NOT NULL DEFAULT 0,
       "yoq"	INTEGER NOT NULL DEFAULT 0,
       "trKont"	INTEGER NOT NULL DEFAULT 0,

@@ -9,10 +9,11 @@ import 'package:erp_oshxona/View/Hujjat/HujjatIchiView.dart';
 import 'package:flutter/material.dart';
 
 class HujjatCard extends StatelessWidget {
-  const HujjatCard(this.object,
+  const HujjatCard(this.object, this.objectSummaVaMiqdori,
       {Key? key, required this.cont, required this.doAfterDelete})
       : super(key: key);
   final Hujjat object;
+  final Map<String, num> objectSummaVaMiqdori;
   final Controller cont;
   final Function doAfterDelete;
 
@@ -35,20 +36,21 @@ class HujjatCard extends StatelessWidget {
           Widget? view = openHujjat(object);
           if (view == null) return;
           await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => view,
-              ));
+            context,
+            MaterialPageRoute(
+              builder: (context) => view,
+            ),
+          );
           await doAfterDelete();
         },
         onTap: (() async {
           await showDialog(
             context: context,
             builder: (context) => Dialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(10.0)), //this right here
-                child: HujjatIchiView(object)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)), //this right here
+              child: HujjatIchiView(object, objectSummaVaMiqdori),
+            ),
           );
           await doAfterDelete();
         }),
@@ -114,7 +116,7 @@ class HujjatCard extends StatelessWidget {
                         ),
                       ),
                     ]),
-                    Text(sumFormat.format(object.summa)),
+                    Text(sumFormat.format(objectSummaVaMiqdori['summa'])),
                   ],
                 ),
               ),
@@ -133,8 +135,9 @@ Widget statusBadge(HujjatSts status) {
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
       child: Text(
-      status.nomi,
-      style: const TextStyle(color: Colors.white),
-    ),),
+        status.nomi,
+        style: const TextStyle(color: Colors.white),
+      ),
+    ),
   );
 }

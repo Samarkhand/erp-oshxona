@@ -15,6 +15,7 @@ import 'package:erp_oshxona/Model/m_code.dart';
 import 'package:erp_oshxona/Model/m_olchov.dart';
 import 'package:erp_oshxona/Model/mah_buyurtma.dart';
 import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/Model/mah_chiqim_zar.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahal.dart';
@@ -67,7 +68,6 @@ class DatabaseHelper {
     sql += MArtikulService.createTable;
     sql += MahalService.createTable;
     sql += SmenaService.createTable;
-    sql += MArtikulService.createTable;
     // 
     sql += Hujjat.service!.createTable;
     sql += HujjatPartiya.service!.createTable;
@@ -75,6 +75,7 @@ class DatabaseHelper {
     sql += MahKirim.service!.createTable;
     sql += MahChiqim.service!.createTable;
     sql += MahBuyurtma.service!.createTable;
+    sql += MahChiqimZar.service!.createTable;
     await db.execute(sql);
 
     //await Sozlash.initValues();
