@@ -250,7 +250,8 @@ class MahKirim {
   ///     }
   ///   ],
   ///};
-  static Future<Map> chiqarildi(Mahsulot mah, [num miqdori = 1]) async {
+  static Future<Map> chiqar
+  (Mahsulot mah, [num miqdori = 1]) async {
     List partiyalar=[];
     num umSon=0;
     num umSum=0;
