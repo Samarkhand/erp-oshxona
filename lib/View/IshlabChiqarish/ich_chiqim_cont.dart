@@ -1,5 +1,6 @@
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
+import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_ich.dart';
@@ -29,6 +30,9 @@ class IchiChiqimRoyxatCont with Controller {
   List<MahChiqimIch> chiqimList = [];
 
   Map<int, TextEditingController> buyurtmaCont = {};
+
+  Map<Mahsulot, num> mahChiqim = {};
+  Map<Mahsulot, num> mahQoldiq = {};
 
   Future<void> init(widget, Function setState, {required BuildContext context}) async {
     this.setState = setState;
@@ -140,6 +144,14 @@ class IchiChiqimRoyxatCont with Controller {
       }, where: "tr='${kirim.tr}'");
     }
 
+    var hujjatTarqat = Hujjat(HujjatTur.tarqatish.tr);
+    hujjatTarqat.tr = await Hujjat.service!.newId(hujjatTarqat.turi);
+    hujjatTarqat.qulf = false;
+    hujjatTarqat.trHujjat = partiya.hujjat.tr;
+    hujjatTarqat.sana = partiya.sana;
+    hujjatTarqat.vaqt = vaqts;
+    hujjatTarqat.vaqtS = vaqts;
+    await hujjatTarqat.insert();
     hideLoading();
   }
 

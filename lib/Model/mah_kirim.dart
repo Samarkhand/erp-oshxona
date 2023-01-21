@@ -1,3 +1,4 @@
+import 'package:erp_oshxona/Library/api_num.dart';
 import 'package:erp_oshxona/Library/db/db.dart';
 import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
@@ -217,7 +218,7 @@ class MahKirim {
     );
   }
 
-  Future<void> ozaytir([num miqdor = 1.0]) async {
+  Future<void> _ozaytir([num miqdor = 1.0]) async {
     qoldi -= miqdor;
     await service!.update(
       {
@@ -227,7 +228,7 @@ class MahKirim {
     );
   }
 
-  Future<void> kopaytir([num miqdor = 1.0]) async {
+  Future<void> _kopaytir([num miqdor = 1.0]) async {
     qoldi += miqdor;
     await service!.update(
       {
@@ -235,6 +236,100 @@ class MahKirim {
       },
       where: "tr=$tr",
     );
+  }
+
+  ///{
+  ///    "orta_narx": narx,
+  ///    "sum": umSum,
+  ///    "son": umSon,
+  ///    "partiyalar": [
+  ///     {
+  ///       'trKirim': kirim.tr,
+  ///       'miqdori': (kirim.miqdori < miqdori ? kirim.miqdori : miqdori).decimal(4),
+  ///       'tannarxi': kirim.tannarxiReal,
+  ///     }
+  ///   ],
+  ///};
+  static Future<Map> chiqar
+  (Mahsulot mah, [num miqdori = 1]) async {
+    List partiyalar=[];
+    num umSon=0;
+    num umSum=0;
+
+    var barchaKirimlar = obyektlar.values.where((element) => element.trMah == mah.tr).toList();
+    barchaKirimlar.sort(((a, b) => a.sana.compareTo(b.sana)));
+
+    for(var kirim in barchaKirimlar){
+      if(kirim.qoldi <= 0) continue;
+      if(miqdori <= 0) break;
+      
+      Map map = {
+        'trKirim': kirim.tr,
+        'miqdori': (kirim.miqdori < miqdori ? kirim.miqdori : miqdori).decimal(4),
+        'tannarxi': kirim.tannarxiReal,
+      };
+      //await kirim._ozaytir(map['miqdori']);
+      miqdori -= kirim.qoldi;
+
+      partiyalar.add(map);
+
+      umSon += map['miqdori'];
+      umSum += (map['miqdori'] * map['tannarxi']).decimal(2);
+    }
+    num narx = (umSum / umSon).decimal(2);
+    if(narx <= 0) {
+      narx = barchaKirimlar.last.tannarxiReal;
+    }
+
+    return {
+      "orta_narx": narx,
+      "sum": umSum,
+      "son": umSon,
+      "partiyalar": partiyalar,
+    };
+  }
+
+  ///{
+  ///    "orta_narx": narx,
+  ///    "sum": umSum,
+  ///    "son": umSon,
+  ///    "mahlar": mahlar,
+  ///};
+  ///
+  Future<Map> olNarx(Mahsulot mah, [num miqdori = 1]) async {
+    List mahlar=[];
+    num umSon=0;
+    num umSum=0;
+
+    var barchaKirimlar = obyektlar.values.where((element) => element.trMah == mah.tr).toList();
+    barchaKirimlar.sort(((a, b) => a.sana.compareTo(b.sana)));
+
+    for(var kirim in barchaKirimlar){
+      if(kirim.qoldi <= 0) continue;
+      umSon += kirim.qoldi;
+      umSum += kirim.qoldi * kirim.tannarxiReal;
+      
+      miqdori -= kirim.qoldi;
+
+      mahlar.add(kirim);
+
+      Map map = {
+        'trKirim': kirim.tr,
+        'miqdori': kirim.miqdori < miqdori ? kirim.miqdori : miqdori,
+        'tannarxi': kirim.tannarxiReal,
+      };
+    }
+    num narx = (umSum / umSon).decimal(2);
+    if(narx <= 0) {
+      narx = barchaKirimlar.last.tannarxiReal;
+    }
+
+    return {
+      "orta_narx": narx,
+      "sum": umSum,
+      "son": umSon,
+      "mahlar": mahlar,
+    };
   }
 }
 

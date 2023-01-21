@@ -196,7 +196,13 @@ class _TarqatishViewState extends State<TarqatishView> {
                       child: Icon(Icons.chevron_right, size: 30,),
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    if(_cont.hodim == null){
+                      // TODO: izohli tarqatish
+                      return;
+                    }
+                    _cont.add(_cont.hodim!, _cont.taomnoma);
+                  },
                 ),
               ],
             ),
