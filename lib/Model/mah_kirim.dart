@@ -218,7 +218,7 @@ class MahKirim {
     );
   }
 
-  Future<void> _ozaytir([num miqdor = 1.0]) async {
+  Future<void> ozaytir([num miqdor = 1.0]) async {
     qoldi -= miqdor;
     await service!.update(
       {
@@ -228,7 +228,7 @@ class MahKirim {
     );
   }
 
-  Future<void> _kopaytir([num miqdor = 1.0]) async {
+  Future<void> kopaytir([num miqdor = 1.0]) async {
     qoldi += miqdor;
     await service!.update(
       {

@@ -12,7 +12,7 @@ class HujjatTur extends Tur {
   static final HujjatTur kirimIch = HujjatTur(6, "Taom tayyorlash");
   static final HujjatTur chiqimIch = HujjatTur(7, "Tayyorlash uchun chiqim");
   static final HujjatTur chiqimFil = HujjatTur(8, "Filialga chiqim");
-  static final HujjatTur chiqim = HujjatTur(9, "Chiqim(Savdo)");
+  static final HujjatTur chiqim = HujjatTur(9, "Chiqim(sarf)");
   static final HujjatTur buyurtmaKeldi = HujjatTur(10, "Bizga buyurtma");
   static final HujjatTur buyurtma = HujjatTur(11, "Buyurtma(Xarid)");
   static final HujjatTur tarqatish = HujjatTur(12, "Taom tarqatish");

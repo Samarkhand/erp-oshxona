@@ -115,10 +115,6 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
   List<Widget> _mahlarRoyxati() {
     List<Widget> royxat = [];
     for (var object in _cont.mahsulotList) {
-      var objQoldiq = object.mQoldiq;
-      if (objQoldiq == null || objQoldiq.qoldi == 0) {
-        continue;
-      }
       royxat.add(
         Material(
           child: InkWell(
@@ -131,17 +127,25 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(object.nomi),
-                      objQoldiq != null && objQoldiq.qoldi != 0
+                      Text(object.mahsulot.nomi),
+                      !(object.qoldi <= 0)
                           ? Text(
-                              "${objQoldiq.qoldi.toStringAsFixed(objQoldiq.mahsulot!.kasr)} ${object.mOlchov.nomi}")
-                          : Text("0 ${object.mOlchov.nomi}",
+                              "${object.qoldi.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}")
+                          : Text("0 ${object.mahsulot.mOlchov.nomi}",
                               style: const TextStyle(color: Colors.redAccent)),
+                      Wrap(
+                    children: [
+                      Text(dateFormat.format(object.sanaDT)),
+                      Text(object.izoh),
+                    ]),
                     ],
                   ),
                   Wrap(
                     alignment: WrapAlignment.end,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
+                      Text(sumFormat.format(object.tannarxiReal)),
+                      const SizedBox(width: 5),
                       OutlinedButton(
                         onPressed: () => _cont.addToList(object),
                         child: const Padding(
@@ -262,7 +266,7 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
                           },
                         ),
                       ),
-                      const SizedBox(width: 20),
+                      /*const SizedBox(width: 20),
                       SizedBox(
                         width: 130,
                         child: TextField(
@@ -287,7 +291,7 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
                             }
                           },
                         ),
-                      ),
+                      ),*/
                       const SizedBox(width: 20),
                       OutlinedButton(
                         onPressed: () => deleteDialog(context,

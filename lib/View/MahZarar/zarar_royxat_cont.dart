@@ -3,6 +3,7 @@ import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_zar.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/Model/system/alert.dart';
@@ -22,7 +23,7 @@ class ChiqZararRoyxatCont with Controller {
   late DateTime sanaD;
   late DateTime sanaG;
 
-  List<Mahsulot> mahsulotList = [];
+  List<MahKirim> mahsulotList = [];
   List<MahChiqimZar> chiqimList = [];
 
   Map<int, TextEditingController> miqdorCont = {};
@@ -76,7 +77,7 @@ class ChiqZararRoyxatCont with Controller {
         var chiqim = MahChiqimZar.fromJson(value);
         MahChiqimZar.obyektlar.add(chiqim);
         miqdorCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(chiqim.mahsulot.kasr));
-        tannarxiCont[chiqim.tr] = TextEditingController(text: chiqim.tannarxi.toStringAsFixed(2));
+        //tannarxiCont[chiqim.tr] = TextEditingController(text: chiqim.tannarxi.toStringAsFixed(2));
       }
     });
   }
@@ -86,8 +87,8 @@ class ChiqZararRoyxatCont with Controller {
     chiqimList.sort(
       (a, b) => -a.tr.compareTo(b.tr), 
     );
-    mahsulotList = Mahsulot.obyektlar.values.where((element) => element.turi == mahTuri).toList();
-    mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
+    mahsulotList = MahKirim.obyektlar.values.where((element) => element.qoldi > 0 && element.mahsulot.turi == mahTuri).toList();
+    mahsulotList.sort((a, b) => -b.mahsulot.nomi.compareTo(a.mahsulot.nomi));
     for(var mah in mahsulotList){
       await MTarkib.loadToGlobal(mah.tr);
     }
@@ -96,19 +97,18 @@ class ChiqZararRoyxatCont with Controller {
   qulflash() async {
     final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
 
-    showLoading(text: "Tarkib tuzilmoqda...");
+    showLoading(text: "Qulflanmoqda...");
     for(var chiqim in chiqimList){
-      chiqim.qulf = true;
-      chiqim.tannarxi = chiqim.tannarxi;
-      await MahQoldiq.ozaytirMah(chiqim.mahsulot, miqdor: chiqim.miqdori);
+      await MahKirim.obyektlar[chiqim.trKirim]!.ozaytir(chiqim.miqdori);
+      await chiqim.mahsulot.mQoldiq!.ozaytir(chiqim.miqdori);
       
+      chiqim.qulf = true;
       await MahChiqimZar.service!.update({
         'qulf': chiqim.qulf ? 1 : 0,
-        'tannarxi': chiqim.tannarxi,
-        'trKirim': chiqim.trKirim,
         'vaqtS': vaqts,
       }, where: "tr='${chiqim.tr}'");
     }
+
     hujjat.qulf = true;
     hujjat.sts = HujjatSts.tugallangan.tr;
 
@@ -126,15 +126,15 @@ class ChiqZararRoyxatCont with Controller {
     hideLoading();
   }
 
-  addToList(Mahsulot chiqim) async {
+  addToList(MahKirim mah) async {
     String? value = await inputDialog(context, "");
     if(value != null){
       num miqdori = num.tryParse(value) ?? 0;
-      add(chiqim, miqdori: miqdori);
+      add(mah, miqdori: miqdori);
     }
   }
 
-  add(Mahsulot mah, {num miqdori = 1}) async {
+  add(MahKirim mah, {num miqdori = 1}) async {
     var chiqim = MahChiqimZar();
     if(chiqimList.contains(chiqim)){
       return;
@@ -142,15 +142,16 @@ class ChiqZararRoyxatCont with Controller {
     //chiqim.turi = HujjatTur.zarar.tr;
     chiqim.tr = await MahChiqimZar.service!.newId(hujjat.tr);
     chiqim.trHujjat = hujjat.tr; 
-    chiqim.trMah = mah.tr; 
+    chiqim.trMah = mah.trMah; 
+    chiqim.trKirim = mah.tr; 
     chiqim.miqdori = miqdori;
-    chiqim.tannarxi = mah.mQoldiq!.tannarxi != 0 ? mah.mQoldiq!.tannarxi : 0;
+    chiqim.tannarxi = mah.tannarxi;
     chiqim.sana = hujjat.sana;
     chiqim.vaqt = DateTime.now().millisecondsSinceEpoch;
     chiqim.vaqtS = chiqim.vaqt;
     chiqimList.add(chiqim);
     miqdorCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(chiqim.mahsulot.kasr));
-    tannarxiCont[chiqim.tr] = TextEditingController(text: (mah.mQoldiq?.tannarxi ?? 0.00).toStringAsFixed(2));
+    tannarxiCont[chiqim.tr] = TextEditingController(text: mah.tannarxi.toStringAsFixed(2));
     setState(() => chiqimList);
     await chiqim.insert();
   }
@@ -173,7 +174,7 @@ class ChiqZararRoyxatCont with Controller {
     setState(() {
       mahsulotList = mahsulotList
           .where((element) =>
-              element.nomi.toLowerCase().contains(value.toLowerCase()))
+              element.mahsulot.nomi.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
