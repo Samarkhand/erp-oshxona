@@ -134,35 +134,36 @@ class MahQoldiq {
     );
   }
 
-  static sotiladimi(Mahsulot mah, {num miqdor = 1.0}) {
+  static Future<Alert?> sotiladimi(Mahsulot mah, [num miqdori = 1.0]) async {
     if (mah.mQoldiq == null) {
-      throw ExceptionIW(
+      return (
         Alert(
           AlertType.error,
           "Mavjud emas",
           desc:
               "Maxsulot qoldig'i mavjud emas va ushbu bazada avval ham mavjud bo'lmagan",
-        ),
+        )
       );
     } else if (mah.mQoldiq!.qoldi <= 0) {
-      throw ExceptionIW(
-        Alert(AlertType.error, "Maxsulot qolmagan"),
+      return (
+        Alert(AlertType.error, "Maxsulot qolmagan")
       );
-    } else if (mah.mQoldiq!.qoldi < miqdor) {
-      throw ExceptionIW(
+    } else if (mah.mQoldiq!.qoldi < miqdori) {
+      return (
         Alert(
           AlertType.warning,
           "Yetarli emas",
           desc:
               "Maxsulot qoldig'i yetarli emas. Mavjud qoldiq: ${mah.mQoldiq!.qoldi} ${mah.mOlchov.nomi}",
-        ),
+        )
       );
     }
+    return null;
   }
 
   static Future<Map> ozaytirMah(Mahsulot mah, {num miqdor = 1.0}) async {
     try{
-      await sotiladimi(mah, miqdor: miqdor);
+      await sotiladimi(mah, miqdor);
     }
     on ExceptionIW{
       rethrow;

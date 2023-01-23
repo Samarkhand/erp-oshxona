@@ -4,6 +4,7 @@ import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
@@ -24,6 +25,8 @@ class ChiqimRoyxatCont with Controller {
 
   List<Mahsulot> mahsulotList = [];
   Set<MahChiqim> tarkibList = {};
+  Map<Mahsulot, num> chiqMahMap = {};
+  bool mahYetmaydi = false;
 
   Map<int, TextEditingController> tarkibCont = {};
 
@@ -74,6 +77,7 @@ class ChiqimRoyxatCont with Controller {
       for (var value in values) {
         var tarkib = MahChiqim.fromJson(value);
         MahChiqim.obyektlar.add(tarkib);
+        chiqMahMap[tarkib.mahsulot] = (chiqMahMap[tarkib.mahsulot] ?? 0) + tarkib.miqdori;
         tarkibCont[tarkib.tr] = TextEditingController(
             text: tarkib.miqdori.toStringAsFixed(tarkib.mahsulot.kasr));
       }
@@ -93,32 +97,6 @@ class ChiqimRoyxatCont with Controller {
         .where((element) => element.turi == MTuri.homAshyo.tr && element.mQoldiq != null && element.mQoldiq!.qoldi != 0)
         .toList();
     mahsulotList.sort((a, b) => -b.nomi.compareTo(a.nomi));
-  }
-
-  Future<void> sanaTanlashD(BuildContext context, StateSetter setState) async {
-    final now = DateTime.now();
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: sanaD,
-      firstDate: DateTime(1970),
-      lastDate: DateTime(now.year + 1),
-    );
-    if (picked != null && picked != sanaD) {
-      setState(() => sanaD = picked);
-    }
-  }
-
-  Future<void> sanaTanlashG(BuildContext context, StateSetter setState) async {
-    final now = DateTime.now();
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: sanaG,
-      firstDate: DateTime(1970),
-      lastDate: DateTime(now.year + 1),
-    );
-    if (picked != null && picked != sanaG) {
-      setState(() => sanaG = picked);
-    }
   }
 
   addToList(Mahsulot tarkib) async {
@@ -144,12 +122,15 @@ class ChiqimRoyxatCont with Controller {
     tarkibList.add(tarkib);
     tarkibCont[tarkib.tr] = TextEditingController(
         text: tarkib.miqdori.toStringAsFixed(tarkib.mahsulot.kasr));
+    chiqMahMap[tarkib.mahsulot] = (chiqMahMap[tarkib.mahsulot] ?? 0) + tarkib.miqdori;
     setState(() => tarkibList);
     await tarkib.insert();
   }
 
   remove(MahChiqim tarkib) async {
     tarkibList.remove(tarkib);
+    miqdorHisobla(tarkib);
+    miqdorOchirsinmi(tarkib);
     setState(() => tarkibList);
     tarkib.delete();
   }
@@ -167,7 +148,26 @@ class ChiqimRoyxatCont with Controller {
   }
 
   qulfla() async {
-    showLoading(text: "Qulflanmoqda");
+    showLoading(text: "Qulflashga tayyorlanmoqda...");
+    for(var chiq in tarkibList){
+      if(await MahQoldiq.sotiladimi(chiq.mahsulot, chiqMahMap[chiq.mahsulot]!) != null){
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Qulflab bo'lmaydi"),
+          duration: Duration(seconds: 5),
+        ));
+        hideLoading();
+        return;
+      }
+    }
+    showLoading(text: "Tannatx qo'yilmoqda...");
+    for(var chiq in chiqMahMap.entries){
+      var partiyalari = await MahKirim.chiqar(chiq.key, chiq.value);
+      print(partiyalari);
+    }
+    hideLoading();
+    return;
+
+    showLoading(text: "Qulflanmoqda...");
     final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
     hujjat.qulf = true;
     hujjat.sts = HujjatSts.tugallangan.tr;
@@ -176,16 +176,33 @@ class ChiqimRoyxatCont with Controller {
       'sts': hujjat.sts,
       'vaqtS': vaqts,
     }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
-    for(var mah in tarkibList){
-      MahQoldiq qoldiq = MahQoldiq.obyektlar[mah.trMah]!;
-      await qoldiq.ozaytir(mah.miqdori);
+
+    showLoading(text: "Qoldiqdan ayrilmoqda...");
+    for(var chiq in tarkibList){
+      MahQoldiq qoldiq = MahQoldiq.obyektlar[chiq.trMah]!;
+      await qoldiq.ozaytir(chiq.miqdori);
+
       await MahChiqim.service!.update({
         'qulf': hujjat.qulf ? 1 : 0,
         'vaqtS': vaqts,
-      }, where: "trHujjat='${hujjat.tr}' AND tr='${mah.tr}'");
+      }, where: "trHujjat='${hujjat.tr}' AND tr='${chiq.tr}'");
     }
-    //setState(() => hujjat);
     hideLoading();
+  }
+
+  miqdorHisobla(MahChiqim chiqim){
+    chiqMahMap[chiqim.mahsulot] = 0;
+    for(var chiq in tarkibList.where((element) => element.mahsulot == chiqim.mahsulot)){
+      chiqMahMap[chiq.mahsulot] = chiqMahMap[chiq.mahsulot]! + chiq.miqdori;
+    }
+    setState(() => chiqMahMap[chiqim.mahsulot]);
+  }
+  miqdorOchirsinmi(MahChiqim chiqim){
+    var tarkibla = tarkibList.where((element) => element.mahsulot == chiqim.mahsulot);
+    if(tarkibla.isEmpty){
+      chiqMahMap.remove(chiqim.mahsulot);
+    }
+
   }
 
   qulfOch() async {

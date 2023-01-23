@@ -4,7 +4,6 @@ import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_zar.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
-import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/View/MahZarar/zarar_royxat_view.dart';
@@ -71,7 +70,6 @@ class ChiqZararRoyxatCont with Controller {
   }
 
   Future<void> loadItems() async {
-    int turi = HujjatTur.zarar.tr;
     await MahChiqimZar.service!.select(where: "trHujjat=${hujjat.tr}").then((values) { 
       for (var value in values) {
         var chiqim = MahChiqimZar.fromJson(value);
@@ -87,7 +85,7 @@ class ChiqZararRoyxatCont with Controller {
     chiqimList.sort(
       (a, b) => -a.tr.compareTo(b.tr), 
     );
-    mahsulotList = MahKirim.obyektlar.values.where((element) => element.qoldi > 0 && element.mahsulot.turi == mahTuri).toList();
+    mahsulotList = MahKirim.obyektlar.values.where((element) => element.qulf && element.qoldi > 0 && element.mahsulot.turi == mahTuri).toList();
     mahsulotList.sort((a, b) => -b.mahsulot.nomi.compareTo(a.mahsulot.nomi));
     for(var mah in mahsulotList){
       await MTarkib.loadToGlobal(mah.tr);
@@ -95,6 +93,17 @@ class ChiqZararRoyxatCont with Controller {
   }
 
   qulflash() async {
+    showLoading(text: "Qulflashga tayyorlanmoqda...");
+    for(var chiq in chiqimList){
+      var alert = await MahKirim.qoldimi(chiq.kirim, chiq.miqdori);
+      if(alert != null){
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Qulflab bo'lmaydi"),
+          duration: Duration(seconds: 5),
+        ));
+        return;
+      }
+    }
     final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
 
     showLoading(text: "Qulflanmoqda...");

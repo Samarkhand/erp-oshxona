@@ -1,5 +1,7 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/mah_chiqim.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
@@ -126,7 +128,7 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
                     children: [
                       Text(object.nomi),
                       const Spacer(),
-                      Text(sumFormat.format(object.mQoldiq!.sotnarxi)),
+                      Text(sumFormat.format(object.mQoldiq!.tannarxi)),
                       const SizedBox(width: 10),
                       OutlinedButton(
                         onPressed: () => _cont.addToList(object),
@@ -178,72 +180,7 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
     for (var object in _cont.tarkibList) {
       n++;
       royxat.add(
-        Material(
-          child: InkWell(
-            onTap: () async {
-              //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
-              String? value = await inputDialog(context,
-                  object.miqdori.toStringAsFixed(object.mahsulot.kasr));
-              if (value != null && object.miqdori != num.tryParse(value)) {
-                setState(() {
-                  object.miqdori = num.tryParse(value) ?? 0;
-                });
-                MahChiqim.service!.update({'miqdori': object.miqdori},
-                    where:
-                        "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("$n. ${object.mahsulot.nomi}"),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        child: TextField(
-                          controller: _cont.tarkibCont[object.tr],
-                          textAlign: TextAlign.end,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 7.0, horizontal: 5.0),
-                            border: const OutlineInputBorder(),
-                            suffixText: " ${object.mahsulot.mOlchov.nomi}",
-                          ),
-                          onChanged: (value) {
-                            if (value == '') value = '0';
-                            if (object.miqdori != num.tryParse(value)) {
-                              setState(() {
-                                object.miqdori = num.tryParse(value) ?? 0;
-                              });
-                              MahChiqim.service!.update(
-                                  {'miqdori': object.miqdori},
-                                  where:
-                                      "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      OutlinedButton(
-                        onPressed: () => deleteDialog(context,
-                            yes: () => _cont.remove(object)),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Icon(Icons.delete, color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        _tarkibItem(object, n)
       );
     }
     royxat.add(const SizedBox(height: 60));
@@ -311,13 +248,110 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
     ];
   }
 
+  Widget _tarkibItem(MahChiqim object, int n) {
+    return FutureBuilder<Alert?>(
+          future: MahQoldiq.sotiladimi(object.mahsulot, _cont.chiqMahMap[object.mahsulot]!),
+          builder: (BuildContext context, AsyncSnapshot<Alert?> snapshot) {
+            return Material(
+          child: InkWell(
+            onTap: () async {
+              //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
+              String? value = await inputDialog(context,
+                  object.miqdori.toStringAsFixed(object.mahsulot.kasr));
+              if (value != null && object.miqdori != num.tryParse(value)) {
+                setState(() {
+                  object.miqdori = num.tryParse(value) ?? 0;
+                });
+                _cont.miqdorHisobla(object);
+                MahChiqim.service!.update({'miqdori': object.miqdori},
+                    where:
+                        "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("$n. ${object.mahsulot.nomi}"),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            child: TextField(
+                              controller: _cont.tarkibCont[object.tr],
+                              textAlign: TextAlign.end,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 7.0, horizontal: 5.0),
+                                border: const OutlineInputBorder(),
+                                suffixText: " ${object.mahsulot.mOlchov.nomi}",
+                              ),
+                              onChanged: (value) {
+                                if (value == '') value = '0';
+                                if (object.miqdori != num.tryParse(value)) {
+                                  setState(() {
+                                    object.miqdori = num.tryParse(value) ?? 0;
+                                  });
+                                  MahChiqim.service!.update(
+                                      {'miqdori': object.miqdori},
+                                      where:
+                                          "trHujjat='${object.trHujjat}' AND tr='${object.tr}'");
+                                }
+                                _cont.miqdorHisobla(object);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          OutlinedButton(
+                            onPressed: () => deleteDialog(context,
+                                yes: () => _cont.remove(object)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Icon(Icons.delete, color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  snapshot.data != null
+                      ? Row(children: [
+                          Expanded(
+                              child: Text(
+                            "${snapshot.data!.title}. ${snapshot.data!.desc}",
+                            softWrap: true,
+                            style: const TextStyle(color: Colors.redAccent),
+                          ))
+                        ])
+                      : const SizedBox(),
+                ],
+              ),
+            ),
+          ),
+        );
+          },
+        );
+  }
+
   List<Widget>? _buildActions() {
-    return _cont.hujjat.qulf ? <Widget>[
-      IconButton(onPressed: () => _cont.qulfOch(), icon: const Icon(Icons.lock_open), tooltip: "Qulfdan ochish"),
-    ] : 
-    <Widget>[
-      IconButton(onPressed: () => _cont.qulfla(), icon: const Icon(Icons.lock), tooltip: "Qulflash"),
-    ];
+    return _cont.hujjat.qulf
+        ? <Widget>[
+            IconButton(
+                onPressed: () => _cont.qulfOch(),
+                icon: const Icon(Icons.lock_open),
+                tooltip: "Qulfdan ochish"),
+          ]
+        : <Widget>[
+            IconButton(
+                onPressed: () => _cont.qulfla(),
+                icon: const Icon(Icons.lock),
+                tooltip: "Qulflash"),
+          ];
   }
 
   /* ================= */
@@ -327,4 +361,5 @@ class _ChiqimRoyxatViewState extends State<ChiqimRoyxatView> {
     _cont.init(widget, setState, context: super.context);
     super.initState();
   }
+  
 }

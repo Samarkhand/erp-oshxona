@@ -109,6 +109,7 @@ class KirimRoyxatCont with Controller {
         'tannarxiReal': kirim.tannarxiReal,
         'trQoldiq': kirim.trQoldiq,
         'vaqtS': vaqts,
+        'nomi': kirim.mahsulot.nomi,
       }, where: "tr='${kirim.tr}'");
     }
     hujjat.qulf = true;

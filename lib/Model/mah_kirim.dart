@@ -238,6 +238,35 @@ class MahKirim {
     );
   }
 
+  static Future<Alert?> qoldimi(MahKirim? kirim, [num miqdori = 1]) async {
+    if(kirim == null){
+      return (
+        Alert(
+          AlertType.error,
+          "Mavjud emas",
+          desc:
+              "Maxsulot kirim partiyasi mavjud emas. Ro'yxatdan o'chirib, qayta kiriting",
+        )
+      );
+    }
+    else if(kirim.qoldi < miqdori){
+      return (
+        Alert(AlertType.error, "Ushbu kirim partiyada maxsulot qolmagan")
+      );
+    } else if (kirim.qoldi < miqdori) {
+      return (
+        Alert(
+          AlertType.warning,
+          "Yetarli emas",
+          desc:
+              "Ushbu kirim partiyasida maxsulot qoldig'i yetarli emas. Boshqa partiyadan ham chiqim qilishga harakat qilib ko'ring. Mavjud qoldiq: ${kirim.qoldi} ${kirim.mahsulot.mOlchov.nomi}",
+        )
+      );
+    }
+
+    return null;
+  }
+
   ///{
   ///    "orta_narx": narx,
   ///    "sum": umSum,
@@ -265,16 +294,17 @@ class MahKirim {
       
       Map map = {
         'trKirim': kirim.tr,
-        'miqdori': (kirim.miqdori < miqdori ? kirim.miqdori : miqdori).decimal(4),
+        'miqdori': (kirim.qoldi < miqdori ? kirim.qoldi : miqdori).decimal(4),
         'tannarxi': kirim.tannarxiReal,
       };
-      //await kirim._ozaytir(map['miqdori']);
+      map['sum'] = ((map['miqdori'] * map['tannarxi']) as double).decimal(2);
+      //await kirim.ozaytir(map['miqdori']);
       miqdori -= kirim.qoldi;
 
       partiyalar.add(map);
 
       umSon += map['miqdori'];
-      umSum += (map['miqdori'] * map['tannarxi']).decimal(2);
+      umSum += map['sum'];
     }
     num narx = (umSum / umSon).decimal(2);
     if(narx <= 0) {

@@ -1,7 +1,10 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_zar.dart';
+import 'package:erp_oshxona/Model/mah_kirim.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/View/MahZarar/zarar_royxat_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
@@ -46,7 +49,7 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
     );
   }
 
-  AppBar? _appBar(BuildContext context, {String? title}) {
+  AppBar? _appBar(BuildContext context) {
     return AppBar(
       actions: _buildActions(),
       title: Wrap(
@@ -115,50 +118,49 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
   List<Widget> _mahlarRoyxati() {
     List<Widget> royxat = [];
     for (var object in _cont.mahsulotList) {
-      royxat.add(
-        Material(
-          child: InkWell(
-            onDoubleTap: () => _cont.addToList(object),
-            child: Padding(
-              padding: const EdgeInsets.all(7),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      royxat.add(Material(
+              child: InkWell(
+                onDoubleTap: () => _cont.addToList(object),
+                child: Padding(
+                  padding: const EdgeInsets.all(7),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(object.mahsulot.nomi),
-                      !(object.qoldi <= 0)
-                          ? Text(
-                              "${object.qoldi.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}")
-                          : Text("0 ${object.mahsulot.mOlchov.nomi}",
-                              style: const TextStyle(color: Colors.redAccent)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(object.mahsulot.nomi),
+                          !(object.qoldi <= 0)
+                              ? Text(
+                                  "${object.qoldi.toStringAsFixed(object.mahsulot.kasr)} ${object.mahsulot.mOlchov.nomi}")
+                              : Text("0 ${object.mahsulot.mOlchov.nomi}",
+                                  style:
+                                      const TextStyle(color: Colors.redAccent)),
+                          Wrap(children: [
+                            Text(dateFormat.format(object.sanaDT)),
+                            Text(object.izoh),
+                          ]),
+                        ],
+                      ),
                       Wrap(
-                    children: [
-                      Text(dateFormat.format(object.sanaDT)),
-                      Text(object.izoh),
-                    ]),
-                    ],
-                  ),
-                  Wrap(
-                    alignment: WrapAlignment.end,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(sumFormat.format(object.tannarxiReal)),
-                      const SizedBox(width: 5),
-                      OutlinedButton(
-                        onPressed: () => _cont.addToList(object),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Icon(Icons.chevron_right),
-                        ),
+                        alignment: WrapAlignment.end,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(sumFormat.format(object.tannarxiReal)),
+                          const SizedBox(width: 5),
+                          OutlinedButton(
+                            onPressed: () => _cont.addToList(object),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Icon(Icons.chevron_right),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
         ),
       );
     }
@@ -215,7 +217,11 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
     for (var object in _cont.chiqimList) {
       n++;
       royxat.add(
-        Material(
+        
+        FutureBuilder<Alert?>(
+          future: MahKirim.qoldimi(object.kirim, object.miqdori),
+          builder: (BuildContext context, AsyncSnapshot<Alert?> snapshot) {
+            return Material(
           child: InkWell(
             onTap: () async {
               /*
@@ -233,7 +239,8 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
             },
             child: Padding(
               padding: const EdgeInsets.all(5),
-              child: Row(
+              child: Column(
+              children: [Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("$n. ${object.mahsulot.nomi}"),
@@ -305,8 +312,12 @@ class _ChiqZararRoyxatViewState extends State<ChiqZararRoyxatView> {
                   ),
                 ],
               ),
+              snapshot.data != null ? Row(children:[Expanded( child: Text("${snapshot.data!.title}. ${snapshot.data!.desc}", softWrap: true, style: const TextStyle(color: Colors.redAccent),))]) : const SizedBox(),
+            ]),
             ),
           ),
+            );
+          },
         ),
       );
     }

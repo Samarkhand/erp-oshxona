@@ -118,6 +118,7 @@ class IchiChiqimRoyxatCont with Controller {
     showLoading(text: "Tarkib tuzilmoqda...");
     for(var chiqim in chiqimList){
       try{
+        await MahKirim.chiqar(chiqim.mahsulot, chiqim.miqdori);
         await MahQoldiq.ozaytirMah(chiqim.mahsulot, miqdor: chiqim.miqdori);
       }
       on ExceptionIW catch (e){
@@ -141,6 +142,7 @@ class IchiChiqimRoyxatCont with Controller {
         'tannarxiReal': kirim.tannarxiReal,
         'trQoldiq': kirim.trQoldiq,
         'vaqtS': vaqts,
+        'nomi': kirim.mahsulot.nomi,
       }, where: "tr='${kirim.tr}'");
     }
 
