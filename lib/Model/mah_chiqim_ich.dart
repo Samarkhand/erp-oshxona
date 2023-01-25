@@ -27,6 +27,7 @@ class MahChiqimIch  {
   int trKont = 0;
   int trMah = 0;
   int trKirim = 0;
+  int trKirimUch = 0;
   int sana = 0;
   int vaqtS = 0;
   int vaqt = 0;
@@ -41,6 +42,7 @@ class MahChiqimIch  {
   Mahsulot get mahsulot => Mahsulot.obyektlar[trMah]!;
   Kont? get kont => trKont == 0 ? null : Kont.obyektlar[trKont];
   MahKirim? get kirim => trKirim == 0 ? null : MahKirim.obyektlar[trKirim];
+  MahKirim? get kirimUch => trKirimUch == 0 ? null : MahKirim.obyektlar[trKirimUch];
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   DateTime get vaqtDT => DateTime.fromMillisecondsSinceEpoch(vaqt);
   DateTime get vaqtSDT => DateTime.fromMillisecondsSinceEpoch(vaqtS);
@@ -56,6 +58,7 @@ class MahChiqimIch  {
     trKont = int.parse(json['trKont'].toString());
     trMah = int.parse(json['trMah'].toString());
     trKirim = int.parse(json['trKirim'].toString());
+    trKirimUch = int.parse(json['trKirimUch'].toString());
     sana = int.parse(json['sana'].toString()) * 1000;
     vaqtS = int.parse(json['vaqtS'].toString()) * 1000;
     vaqt = int.parse(json['vaqt'].toString()) * 1000;
@@ -77,6 +80,7 @@ class MahChiqimIch  {
         'trKont': trKont,
         'trMah': trMah,
         'trKirim': trKirim,
+        'trKirimUch': trKirimUch,
         'sana': toSecond(sana),
         'vaqtS': toSecond(vaqtS),
         'vaqt': toSecond(vaqt),
@@ -116,6 +120,7 @@ class MahChiqimIchService extends MahChiqimService {
       "trKont"	INTEGER NOT NULL DEFAULT 0,
       "trMah"	INTEGER NOT NULL DEFAULT 0,
       "trKirim"	INTEGER NOT NULL DEFAULT 0,
+      "trKirimUch"	INTEGER NOT NULL DEFAULT 0,
       "sana"	INTEGER NOT NULL DEFAULT 0,
       "vaqtS"	INTEGER NOT NULL DEFAULT 0,
       "vaqt"	INTEGER NOT NULL DEFAULT 0,

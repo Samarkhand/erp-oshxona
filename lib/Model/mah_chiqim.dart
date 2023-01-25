@@ -3,6 +3,7 @@ import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 
 class MahChiqim {
 
@@ -12,6 +13,15 @@ class MahChiqim {
   }
 
   delete() {
+    if(qulf){
+      throw ExceptionIW(
+        Alert(
+          AlertType.error,
+          "Qulflangan",
+          desc: "Qulflangan chiqimni o'chirish mumkun emas"
+        ),
+      );
+    }
     obyektlar.remove(this);
     return service!.deleteId(trHujjat, tr);
   }

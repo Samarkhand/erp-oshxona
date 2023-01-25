@@ -200,7 +200,7 @@ class HujjatRoyxatCont with Controller {
         }
       });
     }
-      logConsole(objectListSummaAndMiqdori);
+      //logConsole(objectListSummaAndMiqdori);
     
     return objectListSummaAndMiqdori;
   }

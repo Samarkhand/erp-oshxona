@@ -108,11 +108,9 @@ class MahQoldiq {
 
   Future<void> ozaytir([num miqdor = 1.0]) async {
     qoldi -= miqdor;
-    sotildi += miqdor;
     await service!.update(
       {
         "qoldi": qoldi,
-        "sotildi": sotildi,
         "ozQoldimi": mahsulot!.minMiqdori >= qoldi ? 1 : 0,
         "vaqtS": DateTime.now().millisecondsSinceEpoch,
       },
@@ -122,7 +120,6 @@ class MahQoldiq {
 
   Future<void> kopaytir([num miqdor = 1.0]) async {
     qoldi += miqdor;
-    sotildi -= miqdor;
     await service!.update(
       {
         "qoldi": qoldi,

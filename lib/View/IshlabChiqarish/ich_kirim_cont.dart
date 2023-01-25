@@ -102,6 +102,7 @@ class IchKirimRoyxatCont with Controller {
         for(var tarkibMah in tarkiblar){
           barchaTarkib.add({
             'mah' : tarkibMah.trMah,
+            'trKirim': obj.tr,
             'mahTarkib' : tarkibMah.trMahTarkib,
             'miqdori' : tarkibMah.miqdori,
             'miqdoriChiq' : (tarkibMah.miqdori * obj.miqdori).decimal(3),

@@ -298,13 +298,13 @@ class MahKirim {
         'tannarxi': kirim.tannarxiReal,
       };
       map['sum'] = ((map['miqdori'] * map['tannarxi']) as double).decimal(2);
-      //await kirim.ozaytir(map['miqdori']);
-      miqdori -= kirim.qoldi;
+      await kirim.ozaytir(map['miqdori']);
 
       partiyalar.add(map);
 
       umSon += map['miqdori'];
       umSum += map['sum'];
+      miqdori -= kirim.qoldi;
     }
     num narx = (umSum / umSon).decimal(2);
     if(narx <= 0) {

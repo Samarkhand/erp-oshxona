@@ -2,7 +2,6 @@ import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
-import 'package:erp_oshxona/Model/m_tarkib.dart';
 import 'package:erp_oshxona/Model/mah_chiqim_ich.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mah_qoldiq.dart';
@@ -29,17 +28,19 @@ class IchiChiqimRoyxatCont with Controller {
   List<Mahsulot> mahsulotList = [];
   List<MahChiqimIch> chiqimList = [];
 
-  Map<int, TextEditingController> buyurtmaCont = {};
+  Map<int, TextEditingController> chiqimCont = {};
 
   Map<Mahsulot, num> mahChiqim = {};
   Map<Mahsulot, num> mahQoldiq = {};
+
+  Map<Mahsulot, num> chiqMahMap = {};
 
   Future<void> init(widget, Function setState, {required BuildContext context}) async {
     this.setState = setState;
     this.widget = widget;
     this.context = context;
 
-    hujjat = widget.partiya.hujjat;
+    hujjat = widget.partiya.hujjatChiq!;
     partiya = widget.partiya;
     barchaTarkib = widget.barchaTarkib;
 
@@ -84,9 +85,10 @@ class IchiChiqimRoyxatCont with Controller {
   Future<void> loadItems() async {
     await MahChiqimIch.service!.select(where: "trHujjat=${hujjat.tr} ORDER BY tr DESC").then((values) { 
       for (var value in values) {
-        var buyurtma = MahChiqimIch.fromJson(value);
-        MahChiqimIch.obyektlar.add(buyurtma);
-        buyurtmaCont[buyurtma.tr] = TextEditingController(text: buyurtma.miqdori.toStringAsFixed(3));
+        var chiqim = MahChiqimIch.fromJson(value);
+        chiqMahMap[chiqim.mahsulot] = (chiqMahMap[chiqim.mahsulot] ?? 0) + chiqim.miqdori;
+        MahChiqimIch.obyektlar.add(chiqim);
+        chiqimCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(3));
       }
     });
   }
@@ -99,7 +101,7 @@ class IchiChiqimRoyxatCont with Controller {
   chiqimFromAtribute() async {
     chiqimList = [];
     for(var map in barchaTarkib){
-      await add(Mahsulot.obyektlar[map['mahTarkib']]!, map['miqdoriChiq']);
+      await add(Mahsulot.obyektlar[map['mahTarkib']]!, map['miqdoriChiq'], map['trKirim']);
     }
     chiqimList.sort(
       (a, b) => -a.tr.compareTo(b.tr),
@@ -114,16 +116,33 @@ class IchiChiqimRoyxatCont with Controller {
   }
 
   qulflash() async {
-    final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
+    showLoading(text: "Qulflashga tayyorlanmoqda...");
+    for(var chiq in chiqimList){
+      if(await MahQoldiq.sotiladimi(chiq.mahsulot, chiqMahMap[chiq.mahsulot]!) != null){
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Qulflab bo'lmaydi"),
+          duration: Duration(seconds: 5),
+        ));
+        hideLoading();
+        return;
+      }
+    }
+    Map chiqimla = {};
+
+    showLoading(text: "Tannarx qo'yilmoqda...");
+    for(var mah in chiqMahMap.entries){
+      var partiyalari = await MahKirim.chiqar(mah.key, mah.value);
+      print(partiyalari);
+      chiqimla[mah.key.tr] = partiyalari['partiyalar'];
+    }
+    hideLoading();
+    //return;
+
     showLoading(text: "Tarkib tuzilmoqda...");
+   
+    final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
     for(var chiqim in chiqimList){
-      try{
-        await MahKirim.chiqar(chiqim.mahsulot, chiqim.miqdori);
-        await MahQoldiq.ozaytirMah(chiqim.mahsulot, miqdor: chiqim.miqdori);
-      }
-      on ExceptionIW catch (e){
-        alertDialog(context, e.alert);
-      }
+      chiqim.mahsulot.mQoldiq!.ozaytir(chiqim.miqdori);
     }
 
     int turi = MahKirimTur.kirimIch.tr;
@@ -149,7 +168,7 @@ class IchiChiqimRoyxatCont with Controller {
     var hujjatTarqat = Hujjat(HujjatTur.tarqatish.tr);
     hujjatTarqat.tr = await Hujjat.service!.newId(hujjatTarqat.turi);
     hujjatTarqat.qulf = false;
-    hujjatTarqat.trHujjat = partiya.hujjat.tr;
+    hujjatTarqat.trHujjat = partiya.trHujjat;
     hujjatTarqat.sana = partiya.sana;
     hujjatTarqat.vaqt = vaqts;
     hujjatTarqat.vaqtS = vaqts;
@@ -162,33 +181,58 @@ class IchiChiqimRoyxatCont with Controller {
     hideLoading();
   }
 
-  addToList(Mahsulot buyurtma) async {
+  addToList(Mahsulot chiqim) async {
     String? value = await inputDialog(context, "");
     if(value != null){
       num miqdori = num.tryParse(value) ?? 0;
-      await add(buyurtma, miqdori);
+      await add(chiqim, miqdori);
     }
   }
 
-  add(Mahsulot mah, [num miqdori = 1]) async {
+  add(Mahsulot mah, [num miqdori = 1, int trKirimUCh = 0]) async {
     var chiqim = MahChiqimIch();
     chiqim.trHujjat = partiya.trChiqim;
     chiqim.tr = await MahChiqimIch.service!.newId(chiqim.trHujjat);
     chiqim.trMah = mah.tr;
     chiqim.miqdori = miqdori;
+    chiqim.trKirimUch = trKirimUCh;
     chiqim.sana = partiya.sana;
     chiqim.vaqt = DateTime.now().millisecondsSinceEpoch;
     chiqim.vaqtS = chiqim.vaqt;
     chiqimList.add(chiqim);
-    buyurtmaCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(3));
+    chiqMahMap[chiqim.mahsulot] = (chiqMahMap[chiqim.mahsulot] ?? 0) + chiqim.miqdori;
+    chiqimCont[chiqim.tr] = TextEditingController(text: chiqim.miqdori.toStringAsFixed(3));
     setState(() => chiqimList);
     await chiqim.insert();
   }
 
-  remove(MahChiqimIch buyurtma) async {
-    chiqimList.remove(buyurtma);
-    setState(() => chiqimList);
-    buyurtma.delete();
+  miqdorHisobla(MahChiqimIch chiqim){
+    chiqMahMap[chiqim.mahsulot] = 0;
+    for(var chiq in chiqimList.where((element) => element.mahsulot == chiqim.mahsulot)){
+      chiqMahMap[chiq.mahsulot] = chiqMahMap[chiq.mahsulot]! + chiq.miqdori;
+    }
+    setState(() => chiqMahMap[chiqim.mahsulot]);
+  }
+  miqdorOchirsinmi(MahChiqimIch chiqim){
+    var tarkibla = chiqimList.where((element) => element.mahsulot == chiqim.mahsulot);
+    if(tarkibla.isEmpty){
+      chiqMahMap.remove(chiqim.mahsulot);
+    }
+  }
+
+  remove(MahChiqimIch chiqim) async {
+    try{
+      chiqim.delete();
+      chiqimList.remove(chiqim);
+      miqdorHisobla(chiqim);
+      miqdorOchirsinmi(chiqim);
+    }
+    on ExceptionIW catch (_, e){
+      alertDialog(context, _.alert);
+    }
+    finally {
+      setState(() => chiqimList);
+    }
   }
 
   mahIzlash(String value){
@@ -199,12 +243,5 @@ class IchiChiqimRoyxatCont with Controller {
               element.nomi.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
-  }
-
-  Map _brtmJonatganiMalumot(){
-    return {
-      'hujjat': hujjat.toJson(),
-      'mahsulotlar': chiqimList.map((e) => e.toJson()).toList(),
-    };
   }
 }

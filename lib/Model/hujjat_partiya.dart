@@ -17,6 +17,7 @@ class HujjatPartiya {
   int sana = 0;
 
   Hujjat get hujjat => Hujjat.ol(HujjatTur.kirimIch, trHujjat)!;
+  Hujjat? get hujjatChiq => Hujjat.ol(HujjatTur.chiqimIch, trChiqim);
   Mahal get mahal => Mahal.obyektlar[trMahal]!;
   DateTime get sanaDT => DateTime.fromMillisecondsSinceEpoch(sana);
   

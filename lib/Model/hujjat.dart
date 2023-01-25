@@ -30,7 +30,7 @@ class Hujjat {
   static List<Hujjat> get chiqimlar => obyektlar.where((element) => element.turi == HujjatTur.chiqim.tr).toList();
   static List<Hujjat> get buyurtmalar => obyektlar.where((element) => element.turi == HujjatTur.buyurtma.tr).toList();
   static List<Hujjat> olList(HujjatTur turi) => obyektlar.where((element) => element.turi == turi.tr).toList();
-  static Hujjat? ol(HujjatTur turi, int tr) => obyektlar.firstWhere((element) => element.turi == turi.tr && element.tr == tr);
+  static Hujjat? ol(HujjatTur turi, int tr) => obyektlar.firstWhere((element) => element.turi == turi.tr && element.tr == tr, orElse: () => Hujjat(0)..tr=0);
 
   int turi = 0;
   int tr = 0;

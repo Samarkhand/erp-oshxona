@@ -7,6 +7,7 @@ import 'package:erp_oshxona/Model/mah_chiqim.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
 import 'package:erp_oshxona/Model/mah_qoldiq.dart';
 import 'package:erp_oshxona/Model/mahsulot.dart';
+import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:erp_oshxona/View/MahChiqim/chiqim_royxat_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
@@ -128,11 +129,18 @@ class ChiqimRoyxatCont with Controller {
   }
 
   remove(MahChiqim tarkib) async {
-    tarkibList.remove(tarkib);
-    miqdorHisobla(tarkib);
-    miqdorOchirsinmi(tarkib);
-    setState(() => tarkibList);
-    tarkib.delete();
+    try{
+      tarkib.delete();
+      tarkibList.remove(tarkib);
+      miqdorHisobla(tarkib);
+      miqdorOchirsinmi(tarkib);
+    }
+    on ExceptionIW catch (_, e){
+      alertDialog(context, _.alert);
+    }
+    finally{
+      setState(() => tarkibList);
+    }
   }
 
   mahIzlash(String value) {
@@ -159,20 +167,24 @@ class ChiqimRoyxatCont with Controller {
         return;
       }
     }
-    showLoading(text: "Tannatx qo'yilmoqda...");
-    for(var chiq in chiqMahMap.entries){
-      var partiyalari = await MahKirim.chiqar(chiq.key, chiq.value);
+    Map chiqimla = {};
+
+    showLoading(text: "Tannarx qo'yilmoqda...");
+    for(var mah in chiqMahMap.entries){
+      var partiyalari = await MahKirim.chiqar(mah.key, mah.value);
       print(partiyalari);
+      chiqimla[mah.key.tr] = partiyalari['partiyalar'];
     }
     hideLoading();
-    return;
+    //return;
 
     showLoading(text: "Qulflanmoqda...");
     final int vaqts = toSecond(DateTime.now().millisecondsSinceEpoch);
     hujjat.qulf = true;
     hujjat.sts = HujjatSts.tugallangan.tr;
+    hujjat.vaqtS = vaqts;
     await Hujjat.service!.update({
-      'qulf': hujjat.qulf ? 1 : 0,
+      'qulf': 1,
       'sts': hujjat.sts,
       'vaqtS': vaqts,
     }, where: "turi='${hujjat.turi}' AND tr='${hujjat.tr}'");
@@ -180,12 +192,41 @@ class ChiqimRoyxatCont with Controller {
     showLoading(text: "Qoldiqdan ayrilmoqda...");
     for(var chiq in tarkibList){
       MahQoldiq qoldiq = MahQoldiq.obyektlar[chiq.trMah]!;
-      await qoldiq.ozaytir(chiq.miqdori);
+      List partiyalar = chiqimla[chiq.trMah]!;
+      chiq.qulf = true;
+      int yangiTr = 0;
 
-      await MahChiqim.service!.update({
-        'qulf': hujjat.qulf ? 1 : 0,
-        'vaqtS': vaqts,
-      }, where: "trHujjat='${hujjat.tr}' AND tr='${chiq.tr}'");
+      for(int i = 0; i < partiyalar.length; i++){
+        if(i == 0){
+          chiq.tannarxi = partiyalar[i]['tannarxi'];
+          chiq.miqdori = partiyalar[i]['miqdori'];
+          chiq.trKirim = partiyalar[i]['trKirim'];
+          await MahChiqim.service!.update({
+            'qulf': 1,
+            'trKirim': chiq.trKirim,
+            'tannarxi': chiq.tannarxi,
+            'vaqtS': vaqts,
+          }, where: "trHujjat='${hujjat.tr}' AND tr='${chiq.tr}'");
+          await qoldiq.ozaytir(chiq.miqdori);
+        }
+        else{
+          var chiqFor = MahChiqim.fromJson(chiq.toJson());
+          if(yangiTr == 0){
+            yangiTr = await MahChiqim.service!.newId(chiq.trHujjat);
+          }
+          else {
+            yangiTr++;
+          }
+          chiqFor.tr = yangiTr;
+          chiqFor.tannarxi = partiyalar[i]['tannarxi'];
+          chiqFor.miqdori = partiyalar[i]['miqdori'];
+          chiqFor.trKirim = partiyalar[i]['trKirim'];
+          chiqFor.vaqt = vaqts*1000;
+          chiqFor.vaqtS = vaqts*1000;
+          await MahChiqim.service!.insert(chiqFor.toJson());
+          await qoldiq.ozaytir(chiqFor.miqdori);
+        }
+      }
     }
     hideLoading();
   }
@@ -202,7 +243,6 @@ class ChiqimRoyxatCont with Controller {
     if(tarkibla.isEmpty){
       chiqMahMap.remove(chiqim.mahsulot);
     }
-
   }
 
   qulfOch() async {
