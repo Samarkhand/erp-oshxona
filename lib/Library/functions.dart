@@ -16,10 +16,8 @@ import 'dart:convert';
 import 'package:http/http.dart';
 // ignore: depend_on_referenced_packages
 import 'package:crypto/crypto.dart';
-
 import 'package:erp_oshxona/Model/static/mablag.dart';
 import 'package:erp_oshxona/View/Auth/qulf_view.dart';
-import 'package:erp_oshxona/View/Auth/registratsiya_view.dart';
 import 'package:erp_oshxona/Model/static/qulf.dart';
 import 'package:erp_oshxona/View/asosiy_view.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
@@ -237,7 +235,7 @@ Widget? openHujjat(Hujjat object){
   else if(HujjatTur.kirimIch.tr == object.turi){
     var partiya = HujjatPartiya.id(object.tr);
     if(object.sts == HujjatSts.tugallanganPrt.tr){
-      view = const SizedBox();
+      view = IchKirimRoyxatView(partiya);
     }
     else if(object.sts == HujjatSts.tayyorlashPrt.tr){
       view = const SizedBox();

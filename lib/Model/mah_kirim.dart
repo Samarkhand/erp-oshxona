@@ -179,7 +179,6 @@ class MahKirim {
   @override
   int get hashCode => tr.hashCode;
 
-  
   insert() async {
     obyektlar[tr] = this;
     await service!.insert(toJson());

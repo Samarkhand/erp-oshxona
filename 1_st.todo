@@ -7,9 +7,6 @@ Concept:
     - trKotib qo'yib chiqilsin
     - trQoldiq qo'yib ciqilsin
     - 
-    - Partiya
-        - taom tanlash oynasi @done
-        - masalliq boshqarish oynasi @done
     - Temalik buttonlar hosil qilish
         - primary: elevated, text, outlined
         - secondary
@@ -24,11 +21,6 @@ Concept:
         - summa chiqarilsin
         - ichidagi masalliq soni chiqarilsin
         - summa chiqarilsin agar ichki hujjat bo'lmasa
-        - Model. @done
-        - ro'yxati @done
-    - Hujjat Partiya
-        - mahal va smena chiqarilsin
-        - ichidagi tayyor mahsulotlar soni chiqarilsin
         - Model. @done
         - ro'yxati @done
     - Chiqim
@@ -51,21 +43,13 @@ Concept:
         - saqlash va yangi mah knopkasi
         - mah crud #MAN
         - Delete shart bilan: agar qoldig'i yoki bu oy davomida kirim, chiqim bo'lmagan bo'lsagina o'chirilsin
-    - Tayyorlash
-        - qoldiq qoshiladigan bo'lsin
-        - qoldiq ayriladigan bo'lsin
-        - 
-    - Tarqatish
-        - hujjat ro'yxatida
-            - statusi ko'rinsin: faol / tugallangan
-            - tarqatilgan soni
-            - taom soni ko'rinsin
-        - ichida
-            - chiqim uchun mahsulotlar ro'yxati card'i
-            - hozirgi kont (hodim) ma'lumoti, statusi card'i
-            - o'ngda allaqachon olganlar ro'yxati card'i
     - MBolim, MOlchov, MBrend crud #MAN
     - kirim
         - delete
         - Model @done
         - ro'yxati @done
+
+0302845811
+0329440515
+0303097475
+0302171043

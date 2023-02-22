@@ -55,19 +55,19 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
   AppBar? _appBar(BuildContext context) {
     const kichikTS = TextStyle(fontSize: 16, fontWeight: FontWeight.normal);
     return AppBar(
-      actions: _buildActions(),
-      title: Wrap(
+      actions: _cont.isLoading ? [] : _buildActions(),
+      title: _cont.isLoading ? Text(_cont.loadingLabel) : Wrap(
           alignment: WrapAlignment.center,
           runAlignment: WrapAlignment.center,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             _cont.hujjat.qulf ? const Icon(Icons.lock) : const SizedBox(),
             Text(" ${_cont.hujjat.turiObj.nomi}  "),
-            Text("No ${_cont.hujjat.raqami}, ", style: kichikTS),
+            Text("No ${_cont.partiya.hujjat.raqami}, ", style: kichikTS),
             Text("${_cont.partiya.mahal.nomi}, ", style: kichikTS),
-            Text("${dateFormat.format(_cont.hujjat.sanaDT)}  ",
+            Text("${dateFormat.format(_cont.partiya.hujjat.sanaDT)}  ",
                 style: kichikTS),
-            statusBadge(_cont.hujjat.status),
+            statusBadge(_cont.partiya.hujjat.status),
           ]),
     );
   }
@@ -279,6 +279,7 @@ class _IchiChiqimRoyxatViewState extends State<IchiChiqimRoyxatView> {
         return Material(
           child: InkWell(
             onTap: () async {
+              _cont.kirimUchTanla(context, object);
               /*
               //_cont.dialogTextFieldCont.text = object.miqdori.toStringAsFixed(object.mahsulotTarkib.kasr);
               String? value = await inputDialog(context,

@@ -66,7 +66,7 @@ class HujjatPartiyaRoyxatCont with Controller {
   }
 
   Future<void> loadItems() async {
-    var add = widget.turi != null ? " turi=${widget.turi} AND " : "";
+    var add = widget.turi != 0 ? " turi=${widget.turi} AND " : "";
     await Hujjat.service!
         .select(
             where:
