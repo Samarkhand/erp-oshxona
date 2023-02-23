@@ -1,15 +1,14 @@
-import 'package:erp_oshxona/Library/functions.dart';
 import 'package:erp_oshxona/Model/system/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onCancel, Function? onSave}) async {
+  Future<String?> inputDialog(BuildContext context, String? qiymat, {String title = 'Miqdor kiriting', String hintText = "Miqdori", Function? onCancel, Function? onSave}) async {
     var cont = TextEditingController(text: qiymat);
     await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Miqdor kiriting'),
+          title: Text(title),
           content: TextField(
             controller: cont,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -19,7 +18,7 @@ Future<String?> inputDialog(BuildContext context, String? qiymat, {Function? onC
             autofocus: true,
             textAlign: TextAlign.center,
             decoration: InputDecoration(
-              hintText: "Miqdori",
+              hintText: hintText,
               suffix: IconButton(
                 icon: const Icon(Icons.close), 
                 onPressed: () {

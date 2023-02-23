@@ -163,7 +163,6 @@ class HujjatPartiyaService {
   }
 
   Future<int> insert(Map map) async {
-    map['turi'] = (map['turi'] == 0) ? null : map['turi'];
     map['tr'] = (map['tr'] == 0) ? null : map['tr'];
 
     var insertId = await db.insert(map as Map<String, dynamic>, "$tableName");

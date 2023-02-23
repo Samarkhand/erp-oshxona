@@ -1,15 +1,16 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
-import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/hujjat_partiya.dart';
 import 'package:erp_oshxona/Model/hujjat_tarqat.dart';
-import 'package:erp_oshxona/Model/mah_chiqim_ich.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
+import 'package:erp_oshxona/Model/mah_qoldiq.dart';
+import 'package:erp_oshxona/Model/mah_tarqat.dart';
 import 'package:erp_oshxona/View/MahTarqat/tarqat_view.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:erp_oshxona/Model/kBolim.dart';
 import 'package:erp_oshxona/Model/kont.dart';
 import 'package:erp_oshxona/Model/system/controller.dart';
+import 'package:select_dialog/select_dialog.dart';
 
 class TarqatishCont with Controller {
   late TarqatishView widget;
@@ -26,6 +27,10 @@ class TarqatishCont with Controller {
 
   TextEditingController tagInputCont = TextEditingController();
   FocusNode tagInputFN = FocusNode();
+  FocusNode keyListenerFN = FocusNode();
+  FocusNode kontAddFN = FocusNode();
+
+  Map<int, int> ikkinchiHujjat = {};
 
   Future<void> init(widget, Function setState, {required BuildContext context}) async {
     this.setState = setState;
@@ -67,23 +72,23 @@ class TarqatishCont with Controller {
     }
   }
 
-  Future<void> loadItems() async {}
+  Future<void> loadItems() async {
+    await HujjatTarqat.service!.select().then((values) {
+      for (var value in values) {
+        var hujjatTarqat = HujjatTarqat.fromJson(value);
+        ikkinchiHujjat[hujjatTarqat.trKont] = (ikkinchiHujjat[hujjatTarqat.trKont] ?? 0) + 1;
+        tarqatilganlar.add(hujjatTarqat);
+        HujjatTarqat.obyektlar.add(hujjatTarqat);
+      }
+    });
+  }
 
-  loadFromGlobal(){
+  loadFromGlobal() async {
     int turi = MahKirimTur.kirimIch.tr;
     for (var ent in MahKirim.obyektlar.entries.where((element) => element.value.trHujjat==partiya.trHujjat && element.value.turi==turi)){
       var kirim = ent.value;
       taomnoma.add(kirim);
       taomnomaCont[kirim.tr] = TextEditingController(text: /*kirim.miqdori*/1.toStringAsFixed(kirim.mahsulot.kasr));
-    }
-
-    for(int i = 0; i < 20; i++){
-      var hujjatTarqat = HujjatTarqat();
-      hujjatTarqat.qulf = false;
-      hujjatTarqat.trKont = i + 1000;
-      hujjatTarqat.trHujjat = partiya.hujjat.tr;
-      hujjatTarqat.sana = partiya.sana;
-      tarqatilganlar.add(hujjatTarqat);
     }
   }
 
@@ -94,17 +99,57 @@ class TarqatishCont with Controller {
     }
   }
 
-  add(Kont kont, List<MahKirim> mahsulotlar) async {
+  bool kontLoading = false;
+
+  add(Kont? kont, List<MahKirim> mahsulotlar, {String izoh = ''}) async {
+    var ikh = false;
+    kontLoading = true;
     var tarqatish = HujjatTarqat();
     tarqatish.trHujjat = hujjat.tr;
-    tarqatish.trKont = kont.tr;
-    tarqatish.kodi = kont.tag;
+    tarqatish.qulf = true;
+    if(kont != null){
+      tarqatish.trKont = kont.tr;
+      tarqatish.kodi = kont.tag;
+      var list = tarqatilganlar.where((element) => element.trKont == kont.tr);
+      ikkinchiHujjat[kont.tr] = list.length + 1;
+      if(list.isNotEmpty){}
+    }
     tarqatish.sana = partiya.sana;
     tarqatish.vaqt = DateTime.now().millisecondsSinceEpoch;
     tarqatish.vaqtS = tarqatish.vaqt;
+    tarqatish.izoh = izoh;
+
     tarqatilganlar.add(tarqatish);
-    setState(() => tarqatilganlar);
-    await tarqatish.insert();
+    setState(() {tarqatilganlar;hodim = null;});
+    tarqatish.tr = await tarqatish.insert();
+
+    var tr = await MahTarqat.service!.newId(tarqatish.tr);
+    for(var kirim in taomnoma){
+      var mahTarqat = MahTarqat();
+      mahTarqat.trHujjat = tarqatish.tr;
+      mahTarqat.tr = tr;
+      mahTarqat.qulf = true;
+      mahTarqat.trKont = (kont != null) ? kont.tr : 0;
+      mahTarqat.trMah = kirim.trMah;
+      mahTarqat.trKirim = kirim.tr;
+      mahTarqat.miqdori = taomnomaMiqdor[kirim.tr]!;
+      mahTarqat.tannarxi = kirim.tannarxiReal;
+      mahTarqat.sana = tarqatish.sana;
+      mahTarqat.vaqt = tarqatish.vaqt;
+      mahTarqat.vaqtS = tarqatish.vaqt;
+      mahTarqat.nomi = mahTarqat.mahsulot.nomi;
+      mahTarqat.kodi = tarqatish.kodi;
+      mahTarqat.izoh = izoh;
+      await mahTarqat.insert();
+      await kirim.ozaytir(mahTarqat.miqdori);
+      await mahTarqat.mahsulot.mQoldiq!.ozaytir(mahTarqat.miqdori);
+      tr++;
+    }
+    setState((){
+      taomnoma;
+    });
+    await Future.delayed(const Duration(seconds: 2));
+    kontLoading = false;
   }
 
   remove(HujjatTarqat tarqatish) async {
@@ -121,4 +166,60 @@ class TarqatishCont with Controller {
       setState(() => hodim = null);
     }
   }
+
+  Future<String?> izohSora() async {
+    String? qiymat = '';
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Izoh kiriting"),
+          content: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(hintText: "Izoh"),
+            onChanged: ((value) => qiymat = value),
+            onSubmitted: (value) {
+              qiymat = value;
+              Navigator.pop(context);
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Bekor', style: TextStyle(color: Colors.grey)),
+              onPressed: () {
+                qiymat = null;
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Saqlash'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
+      return qiymat;
+  }
+
+  saqlashTuriTanlash(context) {
+    SelectDialog.showModal<MahQoldiq>(
+      context,
+      label: "Menyuga qo'shgani maxsulot tanlang",
+      items: MahQoldiq.obyektlar.values.where((element) => element.qoldi > 0)
+          .toList(),
+      onChange: (selected) {
+      },
+      searchBoxDecoration: const InputDecoration(hintText: "Izlash"),
+      itemBuilder: (context, item, isSelected) {
+        return ListTile(
+          title: Text(item.mahsulot!.nomi),
+          subtitle: Text("${item.qoldi.toStringAsFixed(item.mahsulot!.kasr)} ${item.mOlchov.nomi}"),
+        );
+      },
+    );
+  }
+  
 }

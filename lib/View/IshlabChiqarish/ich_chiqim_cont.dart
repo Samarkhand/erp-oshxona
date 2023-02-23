@@ -260,6 +260,7 @@ class IchiChiqimRoyxatCont with Controller {
 
     // Tarqatish hujjati ochilyapti
     var hujjatTarqat = Hujjat(HujjatTur.tarqatish.tr);
+    hujjatTarqat.yangiRaqam();
     hujjatTarqat.tr = await Hujjat.service!.newId(hujjatTarqat.turi);
     hujjatTarqat.qulf = false;
     hujjatTarqat.trHujjat = partiya.trHujjat;
@@ -270,7 +271,6 @@ class IchiChiqimRoyxatCont with Controller {
 
     setState((){
       chiqimList;
-
     });
 
     hideLoading();
