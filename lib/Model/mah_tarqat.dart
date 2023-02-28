@@ -7,7 +7,7 @@ import 'package:erp_oshxona/Model/mahsulot.dart';
 class MahTarqat  {
 
   static Set<MahTarqat> obyektlar = {};
-  static MahTarqatService? service;
+  static late MahTarqatService service;
 
   int trHujjat = 0;
   int tr = 0;
@@ -36,7 +36,7 @@ class MahTarqat  {
   
   MahTarqat();
 
-  MahTarqat.fromJson(Map<String, dynamic> json) {
+  MahTarqat.fromJson(Map json) {
     trHujjat = int.parse(json['trHujjat'].toString());
     tr = int.parse(json['tr'].toString());
     qulf = json['qulf'].toString() == "1" ? true : false;
@@ -84,12 +84,12 @@ class MahTarqat  {
   
   insert() {
     obyektlar.add(this);
-    return service!.insert(toJson());
+    return service.insert(toJson());
   }
 
   delete() {
     obyektlar.remove(this);
-    return service!.deleteId(trHujjat, tr);
+    return service.deleteId(trHujjat, tr);
   }
 
 }

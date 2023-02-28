@@ -185,7 +185,7 @@ class HujjatRoyxatCont with Controller {
       });
     }
     else if (HujjatTur.tarqatish.tr == widget.turi!.tr) {
-      await MahTarqat.service!.select(where: "turi='${widget.turi!.tr}'").then((values) {
+      await MahTarqat.service.select(where: "turi='${widget.turi!.tr}'").then((values) {
         for (var value in values) {
           objectListSummaAndMiqdori[value['trHujjat']] = {
             'summa': objectListSummaAndMiqdori[value['trHujjat']] != null

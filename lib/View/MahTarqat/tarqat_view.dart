@@ -1,6 +1,7 @@
 import 'package:erp_oshxona/Model/hujjat.dart';
 import 'package:erp_oshxona/Model/hujjat_davomi.dart';
 import 'package:erp_oshxona/Model/mah_kirim.dart';
+import 'package:erp_oshxona/Model/mahsulot.dart';
 import 'package:erp_oshxona/View/MahTarqat/tarqat_cont.dart';
 import 'package:erp_oshxona/Widget/card_hujjat.dart';
 import 'package:erp_oshxona/Widget/dialog.dart';
@@ -80,11 +81,24 @@ class _TarqatishViewState extends State<TarqatishView> {
   List<Widget>? _buildActions() {
     if (_cont.hujjat.sts == HujjatSts.ochilgan.tr) {
       return <Widget>[
-        IconButton(onPressed: () {}, icon: const Icon(Icons.lock), tooltip: "Qulflash"),
+        IconButton(
+          icon: const Icon(Icons.lock_outline),
+          tooltip: "Qulflash",
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(Icons.edit),
+          tooltip: "Tahrirlash",
+          onPressed: () {},
+        ),
       ];
     } else {
       return <Widget>[
-        IconButton(onPressed: () {}, icon: const Icon(Icons.lock_open), tooltip: "Qulfdan ochish"),
+        IconButton(
+          icon: const Icon(Icons.lock_open),
+          tooltip: "Qulfdan ochish",
+          onPressed: () {},
+        ),
       ];
     }
   }
@@ -133,16 +147,14 @@ class _TarqatishViewState extends State<TarqatishView> {
   Widget _kontCard() {
     var kont = _cont.hodim;
     return SizedBox(
-      height: 300, 
+      height: 300,
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         color: Theme.of(context).primaryColor,
         margin: const EdgeInsets.symmetric(vertical: 5),
-        child: 
-          Stack(
-            fit: StackFit.loose,
-            children: [
-              Padding(
+        child: Stack(fit: StackFit.loose, children: [
+          Padding(
             padding: const EdgeInsets.all(25),
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -156,8 +168,8 @@ class _TarqatishViewState extends State<TarqatishView> {
                     hintText: "(F9) Enter NFC Card",
                     hintStyle: const TextStyle(color: Colors.white70),
                     contentPadding: const EdgeInsets.all(10),
-                    prefixIcon:
-                        const Icon(Icons.card_membership, color: Colors.white70),
+                    prefixIcon: const Icon(Icons.card_membership,
+                        color: Colors.white70),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.close),
                       color: Colors.white70,
@@ -183,24 +195,27 @@ class _TarqatishViewState extends State<TarqatishView> {
                   ),
                   style: const TextStyle(color: Colors.white),
                   cursorColor: Colors.white,
-                  showCursor: false,
+                  //showCursor: false,
                   onChanged: (value) {},
                   onFieldSubmitted: (value) {
-                    _cont.tagInputCont.text = '';
                     _cont.kontTop(value);
-                    _cont.kontAddFN.requestFocus();
                   },
                 ),
                 const SizedBox(height: 15),
-                Text("Hodim", style: MyTheme.d5.copyWith(color: Colors.white70)),
+                Text("Hodim",
+                    style: MyTheme.d5.copyWith(color: Colors.white70)),
                 const SizedBox(height: 5),
                 Row(
                   children: [
-                    (_cont.ikkinchiHujjat[kont?.tr] ?? 0) > 0 ? const Icon(Icons.warning, color: Colors.orange) : const SizedBox(),
-                    (_cont.ikkinchiHujjat[kont?.tr] ?? 0) > 0 ? const SizedBox(width: 10) : const SizedBox(),
+                    (_cont.ikkinchiHujjat[kont?.tr] ?? 0) > 0
+                        ? const Icon(Icons.warning, color: Colors.orange)
+                        : const SizedBox(),
+                    (_cont.ikkinchiHujjat[kont?.tr] ?? 0) > 0
+                        ? const SizedBox(width: 10)
+                        : const SizedBox(),
                     Expanded(
                       child: Text(kont?.nomi ?? "Noma'lum",
-                        style: MyTheme.h3.copyWith(color: Colors.white)),
+                          style: MyTheme.h3.copyWith(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -215,7 +230,8 @@ class _TarqatishViewState extends State<TarqatishView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("Kartochka raqami",
-                              style: MyTheme.d5.copyWith(color: Colors.white70)),
+                              style:
+                                  MyTheme.d5.copyWith(color: Colors.white70)),
                           const SizedBox(height: 5),
                           Text(kont?.tag ?? "Noma'lum",
                               style: MyTheme.h5.copyWith(color: Colors.white)),
@@ -245,14 +261,16 @@ class _TarqatishViewState extends State<TarqatishView> {
                           izoh = await _cont.izohSora();
                           if (izoh == null) kiritaver = false;
                         }
-                        if ((_cont.ikkinchiHujjat[_cont.hodim?.tr] ?? 0) > 1) {
+                        if ((_cont.ikkinchiHujjat[_cont.hodim?.tr] ?? 0) > 0) {
                           izoh = await _cont.izohSora();
                           if (izoh == null) kiritaver = false;
                         }
                         if (kiritaver) {
-                          _cont.add(_cont.hodim, _cont.taomnoma, izoh: izoh ?? "");
+                          _cont.add(_cont.hodim, _cont.taomnoma,
+                              izoh: izoh ?? "");
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
                             content: Text("Izoh kiritish shart"),
                             duration: Duration(seconds: 5),
                           ));
@@ -264,10 +282,14 @@ class _TarqatishViewState extends State<TarqatishView> {
               ],
             ),
           ),
-              _cont.kontLoading ? Material(color: Colors.white30, 
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        child: const Center(child: CircularProgressIndicator())) : const SizedBox(),
-          ]),
+          _cont.kontLoading
+              ? Material(
+                  color: Colors.white30,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  child: const Center(child: CircularProgressIndicator()))
+              : const SizedBox(),
+        ]),
       ),
     );
   }
@@ -307,7 +329,52 @@ class _TarqatishViewState extends State<TarqatishView> {
                   ),
                   SizedBox(
                     width: 160,
-                    child: _miqdorOzgartirTF(object),
+                    child: _miqdorOzgartirTF(
+                        object.mahsulot, _cont.taomnomaCont[object.tr]!),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    royxat.add(const Divider(height: 60, thickness: 1));
+    for (var object in _cont.qoshimcha) {
+      royxat.add(
+        Material(
+          child: InkWell(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(Icons.remove_red_eye),
+                    ),
+                    onTap: () {},
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(object.mahsulot!.nomi,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                            "${object.qoldi} ${object.mahsulot!.mOlchov.nomi}"),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 160,
+                    child: _miqdorOzgartirTF(
+                        object.mahsulot!, _cont.qoshimchaCont[object.tr]!),
                   ),
                 ],
               ),
@@ -368,7 +435,7 @@ class _TarqatishViewState extends State<TarqatishView> {
                   ? Colors.red.withOpacity(0.3)
                   : Colors.transparent,
           child: InkWell(
-            onTap: () async {},
+            onTap: () => _cont.tarqatishHujjati(object),
             child: Padding(
               padding: const EdgeInsets.all(7),
               child: Row(
@@ -414,8 +481,7 @@ class _TarqatishViewState extends State<TarqatishView> {
     ];
   }
 
-  _miqdorOzgartirTF(MahKirim object) {
-    TextEditingController cont = _cont.taomnomaCont[object.tr]!;
+  _miqdorOzgartirTF(Mahsulot mahsulot, TextEditingController cont) {
     return TextField(
       controller: cont,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -428,7 +494,7 @@ class _TarqatishViewState extends State<TarqatishView> {
         contentPadding:
             const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
         border: const OutlineInputBorder(),
-        suffixText: " ${object.mahsulot.mOlchov.nomi}",
+        suffixText: " ${mahsulot.mOlchov.nomi}",
         suffixIcon: IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {
@@ -436,7 +502,7 @@ class _TarqatishViewState extends State<TarqatishView> {
             if ((value - 1) < 0) {
               cont.text = '0';
             } else {
-              cont.text = (value + 1).toStringAsFixed(object.mahsulot.kasr);
+              cont.text = (value + 1).toStringAsFixed(mahsulot.kasr);
             }
           },
         ),
@@ -447,7 +513,7 @@ class _TarqatishViewState extends State<TarqatishView> {
             if ((value - 1) < 0) {
               cont.text = '0';
             } else {
-              cont.text = (value - 1).toStringAsFixed(object.mahsulot.kasr);
+              cont.text = (value - 1).toStringAsFixed(mahsulot.kasr);
             }
           },
         ),

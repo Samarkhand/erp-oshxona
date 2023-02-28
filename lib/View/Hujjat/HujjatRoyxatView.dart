@@ -80,8 +80,7 @@ class _HujjatRoyxatViewState extends State<HujjatRoyxatView> {
                         context: context,
                         builder: (context) => Dialog(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    10.0)), //this right here
+                                borderRadius: BorderRadius.circular(10.0)), 
                             child: HujjatIchiView.yangi(widget.turi!.tr)),
                       );
                       await _cont.loadFromGlobal();
